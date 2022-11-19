@@ -21,8 +21,10 @@ public class PlayerRotation : MonoBehaviour
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _hit, 100, ground))
         {
+            //Nessa variavel está sendo feito a distância do player para onde o raycast está batendo
             Vector3 playerToMouse = _hit.point - (transform.position);
             playerToMouse.y = 0;
+            //Nessa variavel está sendo feito o calculo da rotação necessária para o player utilizando o lerp para suavizar
             Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(playerToMouse), 0.2f);
             _rb.MoveRotation(newRotation);
         }
