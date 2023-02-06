@@ -13,7 +13,9 @@ public class PlayerMovement : MonoBehaviour
 {
     private PlayerStats _status;
     private Rigidbody _rb;
+
     private Vector3 _inputMovimento;
+
     //!!! O atributo speed será modificado em breve para comportar modificações por scriptObject
     private float _speed;
 
@@ -25,13 +27,12 @@ public class PlayerMovement : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
     }
 
-    public void OnMove(InputAction.CallbackContext context)
+    public void SetInputMovimento(Vector3 valor)
     {
-        _inputMovimento = context.ReadValue<Vector2>();
-        //O movimento vertical não será utilizado, por isso está sendo zerado
+        _inputMovimento = valor;
     }
 
-    
+
     //Para uso de componentes envolvendo fisicas (Nesse caso o RigidBody) é recomendado utilizar o fixed update
     void FixedUpdate()
     {
@@ -39,6 +40,6 @@ public class PlayerMovement : MonoBehaviour
         _inputMovimento = _inputMovimento.normalized * (_speed * Time.deltaTime);
         Vector3 auxVector3 = new Vector3(_inputMovimento.x, 0, _inputMovimento.y);
         if(!_status.verifyDown() && !_status.verifyDeath())
-        _rb.MovePosition(transform.position + auxVector3);
+            _rb.MovePosition(transform.position + auxVector3);
     }
 }

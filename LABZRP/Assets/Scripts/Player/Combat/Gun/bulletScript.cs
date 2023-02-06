@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
 [RequireComponent(typeof(Rigidbody))]
 public class bulletScript : MonoBehaviour
 {
     public Rigidbody _rb;
     private float damage;
+    public float distance;
     public float speedBullet = 20f;
     
     
@@ -29,7 +29,8 @@ public class bulletScript : MonoBehaviour
 
     IEnumerator waiter()
     {
-        yield return new WaitForSeconds(5);
+        float tempo = distance / speedBullet;
+        yield return new WaitForSeconds(tempo);
         Destroy(gameObject);
     }
 

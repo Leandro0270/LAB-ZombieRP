@@ -8,4 +8,5 @@ public class ScObPlayerStats : ScriptableObject
     public float health;
     public float speed;
     public float revivalSpeed;
+    public ScObGunSpecs startGun;
 }
