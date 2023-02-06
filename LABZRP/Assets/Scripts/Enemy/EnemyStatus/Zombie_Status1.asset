@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 700e4713376b3d542888ea71c7bd4dfb, type: 3}
   m_Name: Zombie_Status1
   m_EditorClassIdentifier: 
-  health: 1000
+  health: 50
   speed: 0
   damage: 0

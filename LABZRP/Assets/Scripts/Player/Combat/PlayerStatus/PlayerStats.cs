@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.Controls;
 
 public class PlayerStats : MonoBehaviour
 {
-    public ScObPlayerStats playerStatus;
+    private ScObPlayerStats playerStatus;
     private bool isDown;
     private bool isDead ;
     private float totalLife;
@@ -14,8 +14,7 @@ public class PlayerStats : MonoBehaviour
     private float downLife = 100f;
     private float speed;
 
-
-    private void Awake()
+    private void Start()
     {
         speed = playerStatus.speed;
         totalLife = playerStatus.health;
@@ -36,6 +35,10 @@ public class PlayerStats : MonoBehaviour
         
     }
 
+    public void setPlayerStats(ScObPlayerStats stats)
+    {
+        playerStatus = stats;
+    }
     public float getSpeed()
     {
         return speed;
