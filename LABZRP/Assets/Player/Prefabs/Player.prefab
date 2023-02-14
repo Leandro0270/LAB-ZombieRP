@@ -84,7 +84,7 @@ MonoBehaviour:
   danoMelee: 200
   canoDaArma: {fileID: 4110660743831084722}
   MeleeHitBox: {fileID: 3624177854058355071, guid: 99c1d0175a333f841be64f6601c297d4, type: 3}
-  bala: {fileID: 2295327280672719565, guid: d46cf653ac4409c4eb5d2509d8713424, type: 3}
+  bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   VisualArma: {fileID: 4110660743618978061}
   claraoTiro: {fileID: 0}
   buracoParede: {fileID: 0}
