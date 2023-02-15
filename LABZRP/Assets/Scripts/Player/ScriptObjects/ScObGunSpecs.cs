@@ -7,7 +7,7 @@ public class ScObGunSpecs : ScriptableObject
 {
     public int dano;
     public float tempoEntreDisparos, tempoRecarga, dispersao;
-    public int tamanhoPente, balasPorDisparo;
+    public int totalBalas, tamanhoPente, balasPorDisparo;
     public bool segurarGatilho;
-    public Mesh modelo3d;
+    public GameObject modelo3d;
 }
