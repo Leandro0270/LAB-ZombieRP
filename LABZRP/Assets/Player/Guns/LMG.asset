@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
+  m_Name: LMG
+  m_EditorClassIdentifier: 
+  dano: 20
+  tempoEntreDisparos: 1
+  tempoRecarga: 3
+  dispersao: 0.48
+  totalBalas: 300
+  tamanhoPente: 56
+  balasPorDisparo: 1
+  segurarGatilho: 1
+  modelo3d: {fileID: 1734295216003526792, guid: e28a136329cf66c468853bf91e179f16, type: 3}
