@@ -15,4 +15,4 @@ MonoBehaviour:
   health: 100
   speed: 10
   revivalSpeed: 5
-  startGun: {fileID: 11400000, guid: 30ef433445cc395418c082e89e2b61a3, type: 2}
+  startGun: {fileID: 11400000, guid: 8c4bd23560b23fc448e6daee61720fb4, type: 2}
