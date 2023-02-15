@@ -9,8 +9,8 @@ public class PlayerStats : MonoBehaviour
     private ScObPlayerStats playerStatus;
     private bool isDown;
     private bool isDead ;
-    private float totalLife;
-    private float life;
+    public float totalLife;
+    public float life;
     private float downLife = 100f;
     private float speed;
 
@@ -33,6 +33,15 @@ public class PlayerStats : MonoBehaviour
             }
         }
         
+    }
+    
+    
+    public void ReceiveHeal(float heal)
+    {
+        if (!isDown && !isDead)
+            life += heal;
+        if (life > totalLife)
+            life = totalLife;
     }
 
     public void setPlayerStats(ScObPlayerStats stats)
@@ -80,6 +89,16 @@ public class PlayerStats : MonoBehaviour
             isDead = true;
 
         return isDead;
+    }
+    
+    public float GetLife()
+    {
+        return life;
+    }
+    
+    public float GetTotalLife()
+    {
+        return totalLife;
     }
 
 }
