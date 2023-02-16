@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 4110660743282712480}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -82,6 +82,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   danoMelee: 200
+  _maxBalas: 0
+  _totalBalas: 0
+  _tamanhoPente: 0
+  _balasPorDisparo: 0
   canoDaArma: {fileID: 1809394511760243526}
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
@@ -100,6 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  totalLife: 0
+  life: 0
 --- !u!114 &4110660743282712486
 MonoBehaviour:
   m_ObjectHideFlags: 0
