@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 [RequireComponent(typeof(Rigidbody))]
-public class bulletScript : MonoBehaviour
+public class BulletScript : MonoBehaviour
 {
     public Rigidbody _rb;
     private float damage;
@@ -14,6 +14,7 @@ public class bulletScript : MonoBehaviour
     
     private void Awake()
     {
+        _rb = GetComponent<Rigidbody>();
         StartCoroutine(waiter());
     }
     

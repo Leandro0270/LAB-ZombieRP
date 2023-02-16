@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
@@ -14,7 +10,7 @@ public class WeaponSystem : MonoBehaviour
         public int danoMelee;
         private int _dano;
         private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao;
-        private int _tamanhoPente, _balasPorDisparo;
+        public int _maxBalas,_totalBalas, _tamanhoPente, _balasPorDisparo;
         private bool _segurarGatilho;
         private int _balasRestantes, _disparosAEfetuar;
 
@@ -23,12 +19,12 @@ public class WeaponSystem : MonoBehaviour
         private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto;
 
         //Referencia
-        public GameObject canoDaArma;
-        public bulletScript MeleeHitBox;
-        public bulletScript bala;
+        public Transform canoDaArma;
+        public BulletScript MeleeHitBox;
+        public BulletScript _bala;
+        public GameObject arma;
 
         //Grafico
-        [SerializeField] private GameObject VisualArma;
         public GameObject claraoTiro, buracoParede;
 
 
@@ -43,9 +39,12 @@ public class WeaponSystem : MonoBehaviour
                 _tamanhoPente = _specsArma.tamanhoPente;
                 _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
                 _balasRestantes = _tamanhoPente;
+                _maxBalas = _specsArma.totalBalas;
+                _totalBalas = _maxBalas;
                 _prontoParaAtirar = true;
                 _meleePronto = true;
-                VisualArma.GetComponent<MeshFilter>().mesh = _specsArma.modelo3d;
+                GameObject armaStart = Instantiate(_specsArma.modelo3d, arma.transform.position, _specsArma.modelo3d.transform.rotation);
+                armaStart.transform.parent = arma.transform;
         }
 
         public void SetGunStatus(ScObGunSpecs gun)
@@ -66,7 +65,7 @@ private void Update()
         private void melee()
         {
                 _meleePronto = false;
-                bulletScript _hitboxMelee =Instantiate(MeleeHitBox, canoDaArma.transform.position, canoDaArma.transform.rotation);
+                BulletScript _hitboxMelee =Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 _hitboxMelee.SetDamage(danoMelee);
                 Invoke("ResetarMelee", _tempoEntreMelee);
                 if (_balasRestantes > 1)
@@ -82,12 +81,12 @@ private void Update()
                 _prontoParaAtirar = false;
                 //calcular direção dos tiros com a dispersão de bala
                 float y = Random.Range(-_dispersao, _dispersao);
-                Vector3 auxVector = canoDaArma.transform.rotation.eulerAngles;
+                Vector3 auxVector = canoDaArma.rotation.eulerAngles;
                 Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
                 
                 //Spawn da bala
-                bulletScript _bala =Instantiate(bala, canoDaArma.transform.position, dispersaoCalculada);
-                _bala.SetDamage(_dano);
+                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
+                bala.SetDamage(_dano);
                 _balasRestantes--; 
                 _disparosAEfetuar--;
                 Invoke("ResetarTiro", _tempoEntreDisparos);
@@ -100,16 +99,26 @@ private void Update()
 
         private void Recarregar()
         {
+                if(_totalBalas > 0 && _balasRestantes < _tamanhoPente){
                         _prontoParaAtirar = false;
                         _recarregando = true;
                         Invoke("ReloadTerminado", _tempoRecarga);
-                
+                }
         }
 
         private void ReloadTerminado()
         {
                 Debug.Log("Recarregado");
-                _balasRestantes = _tamanhoPente;
+                if(_totalBalas >= _tamanhoPente)
+                {
+                        _totalBalas -= _tamanhoPente;
+                        _balasRestantes = _tamanhoPente;
+                }
+                else if(_totalBalas < _tamanhoPente && _totalBalas > 0)
+                {
+                        _balasRestantes = _totalBalas;
+                        _totalBalas = 0;
+                }
                 _recarregando = false;
                 ResetarTiro();
         }
@@ -168,6 +177,25 @@ private void Update()
                         melee();
 
                 }
+        }
+        
+        
+        public int GetAtualAmmo()
+        {
+                return _totalBalas;
+        }
+        
+        public int GetMaxBalas()
+        {
+                return _maxBalas;
+        }
+        public void ReceiveAmmo(int ammo)
+        {
+                PlayerStats status = GetComponent<PlayerStats>();
+                if (!status.verifyDown() && !status.verifyDeath())
+                        _totalBalas += ammo;
+                if (_totalBalas > _maxBalas)
+                        _totalBalas = _maxBalas;
         }
         public void AuxReload()
         {
