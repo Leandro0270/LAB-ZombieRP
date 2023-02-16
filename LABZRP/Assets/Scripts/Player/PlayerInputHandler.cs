@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -47,13 +44,12 @@ public class PlayerInputHandler : MonoBehaviour
         
         if(obj.action.name == _controls.Gameplay.Melee.name)
             OnMelee();
-        
-        if(obj.action.name == _controls.Gameplay.ShootTap.name)
+
+        if (obj.action.name == _controls.Gameplay.ShootTap.name)
             OnShootTap(obj);
-        
+
         if(obj.action.name == _controls.Gameplay.ShootHold.name)
             OnShootPress(obj);
-
     }
 
 
