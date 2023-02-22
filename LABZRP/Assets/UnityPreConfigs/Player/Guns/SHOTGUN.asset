@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: SHOTGUN
   m_EditorClassIdentifier: 
-  dano: 27
-  tempoEntreDisparos: 1
+  dano: 8
+  tempoEntreDisparos: 0.07
   tempoRecarga: 2
-  dispersao: 1
+  dispersao: 20
   totalBalas: 80
   tamanhoPente: 12
-  balasPorDisparo: 6
+  balasPorDisparo: 4
   segurarGatilho: 0
   modelo3d: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}

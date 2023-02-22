@@ -129,7 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92129db02e9b5884fadc4c44fdd4e8ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rb: {fileID: 2608895103628317097}
+  bloodParticle: {fileID: 1000012909287652, guid: abb9f519b142e304d9c45b56afa768bc, type: 3}
   distance: 50
   speedBullet: 80
 --- !u!108 &7305771011970772335

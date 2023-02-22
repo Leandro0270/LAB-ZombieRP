@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: AR
   m_EditorClassIdentifier: 
-  dano: 20
-  tempoEntreDisparos: 1
-  tempoRecarga: 2
-  dispersao: 0.48
+  dano: 23
+  tempoEntreDisparos: 0.4
+  tempoRecarga: 4
+  dispersao: 5
   totalBalas: 200
   tamanhoPente: 30
   balasPorDisparo: 1
