@@ -13,9 +13,11 @@ public class PlayerStats : MonoBehaviour
     public float life;
     private float downLife = 100f;
     private float speed;
+    private CâmeraMovement _camera;
 
     private void Start()
     {
+        _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
         speed = playerStatus.speed;
         totalLife = playerStatus.health;
         life = totalLife;
@@ -56,16 +58,10 @@ public class PlayerStats : MonoBehaviour
     public void takeDamage(float damage)
     {
         if (!isDown && !isDead)
-            life =- damage;
+            life -= damage;
     }
 
-    public void takeHeal(float heal)
-    {
-        if (!isDown && !isDead)
-            life =+ heal;
-        if (life > totalLife)
-            life = totalLife;
-    }
+
 
     public void revived()
     {
@@ -73,13 +69,18 @@ public class PlayerStats : MonoBehaviour
         {
             isDown = false;
             life = totalLife * 0.3f;
+            _camera.addPlayer(gameObject);
         }
     }
 
     public bool verifyDown()
     {
         if (!isDead && life <= 0)
+        {
             isDown = true;
+            _camera.removePlayer(gameObject);
+        }
+
         return isDown;
     }
 

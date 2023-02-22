@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CâmeraMovement : MonoBehaviour
@@ -8,6 +9,9 @@ public class CâmeraMovement : MonoBehaviour
     public List<Transform> targets; // Lista de objetos a seguir
     public Vector3 offset; // Distância da câmera aos objetos
     public float smoothTime = 0.5f; // Suavização do movimento da câmera
+    public float defaultCenterY = 10f; // Altura padrão do centro Y
+    public float distanceThreshold = 10f; // Distância mínima entre os jogadores para aumentar o centro Y
+    public float heightIncrease = 5f; // Altura a ser adicionada ao centro Y se os jogadores estiverem distantes
 
     private Vector3 velocity;
 
@@ -34,11 +38,44 @@ public class CâmeraMovement : MonoBehaviour
         }
         center /= targets.Count;
 
+        // Verifique se os jogadores estão distantes
+        bool playersAreFar = false;
+        foreach (Transform target in targets)
+        {
+            if (Vector3.Distance(target.position, center) > distanceThreshold)
+            {
+                playersAreFar = true;
+                break;
+            }
+        }
+
+        // Se os jogadores estiverem distantes, aumente o centro Y
+        if (playersAreFar)
+        {
+            center.y = defaultCenterY + heightIncrease;
+        }
+        else
+        {
+            center.y = defaultCenterY;
+        }
+
         // Calcule a nova posição da câmera com base na posição média
         Vector3 targetPosition = center + offset;
-        targetPosition.y = transform.position.y;
 
         // Suavize o movimento da câmera
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
+    
+    
+    public void addPlayer (GameObject player)
+    {
+        targets.Add(player.transform);
+    }
+    
+    public void removePlayer (GameObject player)
+    {
+        targets.Remove(player.transform);
+    }
+    
+
 }
