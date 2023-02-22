@@ -37,13 +37,14 @@ public class BulletScript : MonoBehaviour
 
 void OnTriggerEnter(Collider objetoDeColisao)
     {
-        Debug.Log(damage);
         Destroy(gameObject.GetComponent<BoxCollider>());
+        Destroy(gameObject.GetComponent<Light>());
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
         if(_status != null)
         {
-            Debug.Log("Chega aqui");
             _status.takeDamage(damage);
+            if(_status.get_life() < 1)
+                _status.killEnemy();
         }
         Destroy(gameObject);
     }
