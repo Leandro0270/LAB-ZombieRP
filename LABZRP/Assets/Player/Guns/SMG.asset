@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SMG
   m_EditorClassIdentifier: 
   dano: 15
-  tempoEntreDisparos: 1
+  tempoEntreDisparos: 0.2
   tempoRecarga: 1
   dispersao: 0.6
   totalBalas: 300
