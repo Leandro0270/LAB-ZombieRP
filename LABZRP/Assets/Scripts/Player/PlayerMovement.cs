@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour
         //Time.deltaTime normaliza a atualização de comandos independente da quantidade de frames
         _inputMovimento = _inputMovimento.normalized * (_speed * Time.deltaTime);
         Vector3 auxVector3 = new Vector3(_inputMovimento.x, 0, _inputMovimento.y);
-        if(!_status.verifyDown() && !_status.verifyDeath())
+        if(!_status.verifyDown())
             _rb.MovePosition(transform.position + auxVector3);
     }
 }

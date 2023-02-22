@@ -24,20 +24,8 @@ public class PlayerStats : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        if (verifyDown()){
-            if(downLife > 1)
-                downLife =- Time.deltaTime;
-            else
-            {
-                isDead = true;
-            }
-        }
-        
-    }
-    
-    
+
+
     public void ReceiveHeal(float heal)
     {
         if (!isDown && !isDead)
@@ -59,6 +47,20 @@ public class PlayerStats : MonoBehaviour
     {
         if (!isDown && !isDead)
             life -= damage;
+        if (life < 1)
+        {
+            isDown = true;
+            deadTimer();
+        }
+    }
+
+    public void deadTimer()
+    {
+        if(verifyDown() && downLife >1)
+            downLife -= Time.deltaTime;
+        else
+            isDead = true;
+            
     }
 
 
