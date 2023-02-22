@@ -46,6 +46,11 @@ void OnTriggerEnter(Collider objetoDeColisao)
             if(_status.get_life() < 1)
                 _status.killEnemy();
         }
+        PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
+        if (status != null)
+        {
+            status.takeDamage(damage*0.5f);
+        }
         Destroy(gameObject);
     }
 
