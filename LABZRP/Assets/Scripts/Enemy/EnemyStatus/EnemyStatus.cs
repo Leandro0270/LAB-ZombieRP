@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyStatus : MonoBehaviour
 {
     public ScObEnemyStats _status;
+    private GameObject hordeManager;
     private bool isDead = false;
     private float totalLife;
     private float _life;
@@ -15,6 +16,8 @@ public class EnemyStatus : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        //Armazena um objeto que estiver com a tag horderManager na variavel hordermManager
+        hordeManager = GameObject.FindGameObjectWithTag("HorderManager");
         totalLife = _status.health;
         _life = totalLife;
         _speed = _status.speed;
@@ -22,14 +25,7 @@ public class EnemyStatus : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Debug.Log(_life);
-        if (_life < 1)
-        {
-            killEnemy();
-        }
-    }
+  
 
     public void takeDamage(float damage)
     {
@@ -40,6 +36,7 @@ public class EnemyStatus : MonoBehaviour
     {
         Destroy(GetComponent<BoxCollider>());
         isDead = true;
+        hordeManager.GetComponent<HordeManager>().decrementZombiesAlive();
         StartCoroutine(waiter());
 
     }
@@ -48,5 +45,10 @@ public class EnemyStatus : MonoBehaviour
     {
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
+    }
+
+    public float get_life()
+    {
+        return _life;
     }
 }
