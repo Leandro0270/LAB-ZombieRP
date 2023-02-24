@@ -24,21 +24,12 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "ShootTap",
-                    "type": "Button",
-                    "id": "787306be-b58b-4567-a373-b965a45ea882",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ShootHold",
                     "type": "Button",
                     "id": "32642154-05b8-443d-ba0c-4d19eb8cb384",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": "Hold",
+                    "interactions": "Hold(duration=2)",
                     "initialStateCheck": false
                 },
                 {
@@ -54,6 +45,15 @@
                     "name": "Melee",
                     "type": "Button",
                     "id": "0d1f3ac0-0eb7-4701-8af1-2e425804453e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Tap(duration=0.5,pressPoint=0.5)",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Select",
+                    "type": "Button",
+                    "id": "be592db1-3300-469b-8406-0f4e28f89b6f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -151,28 +151,6 @@
                 },
                 {
                     "name": "",
-                    "id": "7a44aa4a-eb20-47fa-a62e-a7a143222ca8",
-                    "path": "<Keyboard>/space",
-                    "interactions": "Tap,Hold",
-                    "processors": "",
-                    "groups": "Keyboard",
-                    "action": "ShootTap",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "926a6574-2e02-4d43-b221-73a0130f341f",
-                    "path": "<Gamepad>/rightTrigger",
-                    "interactions": "Press(behavior=2)",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "ShootTap",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "5fa75072-141a-4a9c-85c8-7ede6b32086e",
                     "path": "<Gamepad>/buttonWest",
                     "interactions": "",
@@ -234,6 +212,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Melee",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fbe27cb0-d864-4f18-829e-262c24e05bea",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Select",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bc72942f-fa42-4e62-a7d1-6b2d83460e81",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Select",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
