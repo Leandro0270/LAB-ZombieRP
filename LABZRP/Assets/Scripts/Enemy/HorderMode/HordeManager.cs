@@ -14,8 +14,10 @@ public class HordeManager : MonoBehaviour
     private int zombiesAlive = 0;
     public GameObject zombiePrefab;
     private GameObject[] spawnPoints;
+    private ItemHorderGenerator Itemgenerator;
     void Start()
     {
+        Itemgenerator = GetComponent<ItemHorderGenerator>();
         currentHordeZombies = firstHorde;
         //Pega os objetos que possuem a tag SpawnPoint
         spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
@@ -54,8 +56,9 @@ public class HordeManager : MonoBehaviour
     //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
     IEnumerator SpawnZombie()
     {
+        Itemgenerator.GenerateItem();
         //inicia um loop que ira rodar conforme a variavel spawnCount, e ira rodar conforme o tempo que foi passado na variavel spawnTime
-        for (int i = 0; i < this.currentHordeZombies; i++)
+        for (int i = 0; i < currentHordeZombies; i++)
         {
             yield return new WaitForSeconds(spawnTime);
             //Pega um numero aleatorio entre 0 e o tamanho do array de spawnPoints
@@ -67,7 +70,6 @@ public class HordeManager : MonoBehaviour
 
 
         }
-        //para o laço por um tempo que foi passado na variavel spawnTime
 
     }
     

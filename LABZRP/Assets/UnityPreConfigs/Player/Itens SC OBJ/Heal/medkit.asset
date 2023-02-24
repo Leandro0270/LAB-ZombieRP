@@ -9,8 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b93396da08f17846968b4f4aef21af3, type: 3}
-  m_Name: medkit
+  m_Script: {fileID: 11500000, guid: 25b76a8f8699df8469e4c986b3778191, type: 3}
+  m_Name: Medkit
   m_EditorClassIdentifier: 
-  heal: 20
+  nome: Medkit
+  life: 50
+  Balas: 0
   modelo3d: {fileID: 6516442556788688566, guid: d834ad99e494f264d9a41dab5b3e892b, type: 3}

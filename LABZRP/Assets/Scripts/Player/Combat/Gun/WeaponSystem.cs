@@ -115,7 +115,6 @@ private void Update()
         }
         private void ReloadTerminado()
         {
-                Debug.Log("Recarregado");
                 if(_totalBalas >= _tamanhoPente)
                 {
                         _totalBalas -= _tamanhoPente;
