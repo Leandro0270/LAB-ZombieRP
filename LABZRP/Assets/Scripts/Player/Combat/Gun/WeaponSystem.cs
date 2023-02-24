@@ -25,12 +25,13 @@ public class WeaponSystem : MonoBehaviour
         public GameObject arma;
 
         //Grafico
-        public GameObject claraoTiro, buracoParede;
+        private PlayerAnimationManager _playerAnimationManager;
 
 
 
         private void Start()
         {
+                _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
                 _dano = _specsArma.dano;
                 _dispersao = _specsArma.dispersao;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
@@ -65,9 +66,11 @@ private void Update()
         private void melee()
         {
                 _meleePronto = false;
-                BulletScript _hitboxMelee =Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
+                BulletScript _hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 _hitboxMelee.SetDamage(danoMelee);
+                _playerAnimationManager.setAttack();
                 Invoke("ResetarMelee", _tempoEntreMelee);
+                
                 if (_balasRestantes > 1)
                 {
                         Invoke("ResetarTiro", 2);
@@ -106,6 +109,10 @@ private void Update()
                 }
         }
 
+        public void setProntoparaAtirar(bool aux)
+        {
+                _prontoParaAtirar = aux;
+        }
         private void ReloadTerminado()
         {
                 Debug.Log("Recarregado");
@@ -134,20 +141,7 @@ private void Update()
                 _meleePronto = true;
         }
 
-        public void AuxShootTap(InputAction.CallbackContext ctx)
-        {
-                switch (ctx.phase)
-                {
-                        case InputActionPhase.Performed:
-                                _atirando = false;
-                                break;
-                        case InputActionPhase.Started:
-                                _atirando = true;
-                                break;
-                        case InputActionPhase.Canceled:
-                                break;
-                }
-        }
+
 
         public void AuxShootPress(InputAction.CallbackContext ctx)
         {
@@ -156,8 +150,12 @@ private void Update()
                         case InputActionPhase.Performed:
                                 if(_segurarGatilho)
                                         _atirando = true;
+                                else{
+                                        _atirando = false;
+                                }
                                 break;
                         case InputActionPhase.Started:
+                                _atirando = true;
                                 break;
                         case InputActionPhase.Canceled:
                                 _atirando = false;
