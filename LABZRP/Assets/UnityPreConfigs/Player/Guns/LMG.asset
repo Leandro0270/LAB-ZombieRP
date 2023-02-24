@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: LMG
   m_EditorClassIdentifier: 
-  dano: 19
-  tempoEntreDisparos: 0.3
-  tempoRecarga: 8
-  dispersao: 8
+  dano: 20
+  tempoEntreDisparos: 0.6
+  tempoRecarga: 3
+  dispersao: 0.48
   totalBalas: 300
   tamanhoPente: 56
   balasPorDisparo: 1

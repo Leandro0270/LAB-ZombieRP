@@ -15,15 +15,6 @@ public class CâmeraMovement : MonoBehaviour
 
     private Vector3 velocity;
 
-    private void Start()
-    {
-        // Encontre todos os objetos com a tag "Player" e adicione à lista de alvos
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            targets.Add(player.transform);
-        }
-    }
 
     private void FixedUpdate()
     {
