@@ -20,6 +20,7 @@ public class PlayerStats : MonoBehaviour
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
     private WeaponSystem _weaponSystem;
+    private ItemHorderGenerator _itemHorderGenerator;
     public GameObject blood1;
     public GameObject bloodSplash;
     public GameObject blood2;
@@ -30,6 +31,8 @@ public class PlayerStats : MonoBehaviour
         speed = playerStatus.speed;
         totalLife = playerStatus.health;
         life = totalLife;
+        _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
+        _itemHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
         _camera.addPlayer(gameObject);
         _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
@@ -94,8 +97,10 @@ public class PlayerStats : MonoBehaviour
         if(verifyDown() && downLife >1)
             downLife -= Time.deltaTime;
         else
+        {
+            _itemHorderGenerator.removePlayer(gameObject);
             isDead = true;
-            
+        }
     }
 
 

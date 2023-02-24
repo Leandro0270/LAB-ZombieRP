@@ -12,5 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b76a8f8699df8469e4c986b3778191, type: 3}
   m_Name: AmmoBox
   m_EditorClassIdentifier: 
-  quantidade: 30
+  nome: AmmoBox
+  life: 0
+  Balas: 50
   modelo3d: {fileID: 2706944161218026890, guid: 6af670f6ceadc9843a43effb6aaad10b, type: 3}
