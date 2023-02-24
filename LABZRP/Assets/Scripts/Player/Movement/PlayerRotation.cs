@@ -17,13 +17,10 @@ public class PlayerRotation : MonoBehaviour
 
     private PlayerStats _status;
     private Vector3 _inputRotation;
-
     private Vector3 _inputMouse;
-
     private Vector3 _lateInputRotation;
-
-
     private Rigidbody _rb;
+    private bool _canRotate = true;
     //Variavel que vai armazenar onde o raycast está batendo
 
 
@@ -77,11 +74,16 @@ void Start()
                     Vector3 FixRotation = new Vector3(playerToMouse.z, 0, -playerToMouse.x);
                     //Nessa variavel está sendo feito o calculo da rotação necessária para o player utilizando o lerp para suavizar
                     Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(FixRotation), 0.2f);
-                    if(!_status.verifyDown() && !_status.verifyDeath())
+                    if(_canRotate)
                         _rb.MoveRotation(newRotation);
             }
         }
 
+    }
+    
+    public void setCanRotate(bool valor)
+    {
+        _canRotate = valor;
     }
 }
     
