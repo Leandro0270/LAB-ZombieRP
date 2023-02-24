@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LMG
   m_EditorClassIdentifier: 
   dano: 20
-  tempoEntreDisparos: 1
+  tempoEntreDisparos: 0.6
   tempoRecarga: 3
   dispersao: 0.48
   totalBalas: 300

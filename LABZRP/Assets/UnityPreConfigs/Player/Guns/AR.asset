@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AR
   m_EditorClassIdentifier: 
   dano: 20
-  tempoEntreDisparos: 1
+  tempoEntreDisparos: 0.5
   tempoRecarga: 2
   dispersao: 0.48
   totalBalas: 200

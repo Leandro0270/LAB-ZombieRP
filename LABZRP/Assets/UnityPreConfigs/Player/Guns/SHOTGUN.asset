@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SHOTGUN
   m_EditorClassIdentifier: 
   dano: 27
-  tempoEntreDisparos: 1
+  tempoEntreDisparos: 0.06
   tempoRecarga: 2
-  dispersao: 1
+  dispersao: 30
   totalBalas: 80
   tamanhoPente: 12
   balasPorDisparo: 6
