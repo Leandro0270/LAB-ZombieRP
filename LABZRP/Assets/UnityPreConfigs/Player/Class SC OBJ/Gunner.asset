@@ -15,4 +15,6 @@ MonoBehaviour:
   health: 120
   speed: 10
   revivalSpeed: 15
+  timeBeteweenMelee: 2
+  meleeDamage: 20
   startGun: {fileID: 11400000, guid: c4684c4bbc6a654458383aa43d451e4c, type: 2}
