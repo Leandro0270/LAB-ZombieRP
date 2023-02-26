@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - WALL
+  - ItemSpawnPoints
+  - HorderManager
+  - SpawnPoint
+  - PlayersUI
+  - PlayerHead
   layers:
   - Default
   - TransparentFX

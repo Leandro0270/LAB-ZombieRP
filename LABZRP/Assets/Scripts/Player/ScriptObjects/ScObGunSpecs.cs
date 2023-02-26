@@ -10,4 +10,5 @@ public class ScObGunSpecs : ScriptableObject
     public int totalBalas, tamanhoPente, balasPorDisparo;
     public bool segurarGatilho;
     public GameObject modelo3d;
+    public bool isShotgun;
 }
