@@ -60,19 +60,25 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
-            switch (obj.phase)
-            {
-                case InputActionPhase.Performed:
-                    OnMelee();
-                    break;
-                case InputActionPhase.Canceled:
-                    break;
-            }
+            OnMelee();
         }
 
         if (obj.action.name == _controls.Gameplay.ShootHold.name)
         {
             OnShootPress(obj);
+        }
+
+        if (obj.action.name == _controls.Gameplay.Select.name)
+        {
+            switch (obj.phase)
+            {
+                case InputActionPhase.Started:
+                    OnSelect(true);
+                    break;
+                case InputActionPhase.Canceled:
+                    OnSelect(false);
+                    break;
+            }
         }
     }
 
@@ -113,6 +119,11 @@ public class PlayerInputHandler : MonoBehaviour
     public void OnShootPress(CallbackContext ctx)
     {
         _attack.AuxShootPress(ctx);
+    }
+    
+    public void OnSelect(bool value)
+    {
+        _status.setInteracting(value);
     }
     
     
