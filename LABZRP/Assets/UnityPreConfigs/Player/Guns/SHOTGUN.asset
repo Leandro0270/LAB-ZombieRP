@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SHOTGUN
   m_EditorClassIdentifier: 
   dano: 27
-  tempoEntreDisparos: 0.06
+  tempoEntreDisparos: 0.1
   tempoRecarga: 2
   dispersao: 30
   totalBalas: 80
@@ -21,3 +21,4 @@ MonoBehaviour:
   balasPorDisparo: 6
   segurarGatilho: 0
   modelo3d: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}
+  isShotgun: 1
