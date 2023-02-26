@@ -85,14 +85,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61c2b5747bd284b9610fc74dc5d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxBalas: 0
-  _totalBalas: 0
-  _tamanhoPente: 0
-  _balasPorDisparo: 0
   canoDaArma: {fileID: 1809394511760243526}
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
-  arma: {fileID: 4110660743618978061}
+  armaSpawn: {fileID: 4110660743618978061}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,12 +101,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalLife: 0
-  life: 0
-  dispersaoSangue: 0.5
   blood1: {fileID: 2966845090613900317, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   bloodSplash: {fileID: 1000012909287652, guid: e850fdfb763505648832a454decc718b, type: 3}
   blood2: {fileID: 8872853283871129778, guid: e38114ce4a569c84eb86986683a5b546, type: 3}
+  dispersaoSangue: 0.5
+  totalLife: 0
+  life: 0
+  PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
 --- !u!114 &4110660743282712486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -342,6 +339,10 @@ PrefabInstance:
     - target: {fileID: -4276389627041721746, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 79.711
+      objectReference: {fileID: 0}
+    - target: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+      propertyPath: m_TagString
+      value: PlayerHead
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
       propertyPath: m_Name

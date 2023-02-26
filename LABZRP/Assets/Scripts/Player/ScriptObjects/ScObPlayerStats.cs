@@ -11,4 +11,5 @@ public class ScObPlayerStats : ScriptableObject
     public float timeBeteweenMelee;
     public float meleeDamage;
     public ScObGunSpecs startGun;
+    public Color MainColor;
 }

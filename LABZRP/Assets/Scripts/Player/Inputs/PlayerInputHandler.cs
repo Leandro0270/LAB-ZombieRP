@@ -70,6 +70,7 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (obj.action.name == _controls.Gameplay.ShootHold.name)
         {
+            
             OnShootPress(obj);
         }
 
@@ -113,13 +114,11 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnReload()
     {
-        Debug.Log("Chamou");
         _attack.AuxReload();
     }
 
     public void OnMelee()
     {
-        Debug.Log("Chamou");
         _attack.AuxMelee();
     }
 

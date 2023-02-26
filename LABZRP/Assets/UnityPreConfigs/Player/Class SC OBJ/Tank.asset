@@ -18,3 +18,4 @@ MonoBehaviour:
   timeBeteweenMelee: 2
   meleeDamage: 20
   startGun: {fileID: 11400000, guid: 597a5ff67bc1a344d897ef4936f1d1d5, type: 2}
+  MainColor: {r: 0.7924528, g: 0.47430065, b: 0.19063722, a: 1}
