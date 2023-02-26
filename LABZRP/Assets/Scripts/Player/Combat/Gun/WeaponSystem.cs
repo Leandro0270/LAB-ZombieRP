@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class WeaponSystem : MonoBehaviour
@@ -11,55 +12,42 @@ public class WeaponSystem : MonoBehaviour
         private float _danoMelee;
         private int _dano;
         private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao;
-        public int _maxBalas,_totalBalas, _tamanhoPente, _balasPorDisparo;
+        private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
         private bool _segurarGatilho;
         private int _balasRestantes, _disparosAEfetuar;
+        private bool _isShotgun;
 
         //ações
-
         private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto;
 
         //Referencia
         public Transform canoDaArma;
         public BulletScript MeleeHitBox;
         public BulletScript _bala;
-        public GameObject arma;
+        public GameObject armaSpawn;
 
         //Grafico
         private PlayerAnimationManager _playerAnimationManager;
+        private GameObject armaStart;
 
+        //UI
+        private BULLETS_UI _bulletsUI;
 
-
+//======================================================================================================
+//Unity base functions
         private void Start()
         {
                 _playerStats = GetComponent<PlayerStats>();
                 _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
-                _dano = _specsArma.dano;
                 _danoMelee = _playerStats.getMeleeDamage();
                 _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
-                _dispersao = _specsArma.dispersao;
-                _balasPorDisparo = _specsArma.balasPorDisparo;
-                _tempoRecarga = _specsArma.tempoRecarga;
-                _segurarGatilho = _specsArma.segurarGatilho;
-                _tamanhoPente = _specsArma.tamanhoPente;
-                _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
-                _balasRestantes = _tamanhoPente;
-                _maxBalas = _specsArma.totalBalas;
-                _totalBalas = _maxBalas;
-                _prontoParaAtirar = true;
-                _meleePronto = true;
-                GameObject armaStart = Instantiate(_specsArma.modelo3d, arma.transform.position, _specsArma.modelo3d.transform.rotation);
-                armaStart.transform.parent = arma.transform;
+                ApplyGunSpecs();
+
         }
 
-        public void SetGunStatus(ScObGunSpecs gun)
+        private void Update()
         {
-                _specsArma = gun;
-        }
 
-private void Update()
-        {
-                
                 if (!_attMelee && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
                 {
                         if (_balasRestantes >= _balasPorDisparo)
@@ -72,12 +60,13 @@ private void Update()
                                 _disparosAEfetuar = _balasRestantes;
                                 Atirar();
                         }
-                        
+
                 }
-                
+
         }
 
-
+//======================================================================================================
+//Main Functions
         private void melee()
         {
                 _meleePronto = false;
@@ -87,6 +76,7 @@ private void Update()
                 Invoke("ResetarMelee", _tempoEntreMelee);
 
         }
+
         private void Atirar()
         {
                 _prontoParaAtirar = false;
@@ -94,72 +84,109 @@ private void Update()
                 float y = Random.Range(-_dispersao, _dispersao);
                 Vector3 auxVector = canoDaArma.rotation.eulerAngles;
                 Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
-                
+
                 //Spawn da bala
                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                 bala.SetDamage(_dano);
-                _balasRestantes--; 
+                _balasRestantes--;
                 _disparosAEfetuar--;
+                _bulletsUI.setBalasPente(_balasRestantes);
                 Invoke("ResetarTiro", _tempoEntreDisparos);
-                if (_disparosAEfetuar > 0 && _balasRestantes > 0){
+                if (_disparosAEfetuar > 0 && _balasRestantes > 0)
+                {
                         Invoke("Atirar", _tempoEntreDisparos);
                 }
-
-
         }
 
         private void Recarregar()
         {
-                if(_totalBalas > 0 && _balasRestantes < _tamanhoPente){
+                if (_totalBalas > 0 && _balasRestantes < _tamanhoPente)
+                {
                         _prontoParaAtirar = false;
                         _recarregando = true;
                         Invoke("ReloadTerminado", _tempoRecarga);
                 }
         }
 
-        public void setProntoparaAtirar(bool aux)
-        {
-                _prontoParaAtirar = aux;
-        }
+//======================================================================================================
+//Aux Functions
         private void ReloadTerminado()
         {
-                if(_totalBalas >= _tamanhoPente)
+                if (_totalBalas >= _tamanhoPente)
                 {
                         _totalBalas -= _tamanhoPente - _balasRestantes;
                         _balasRestantes = _tamanhoPente;
                 }
-                else if(_totalBalas < _tamanhoPente)
+                else if (_totalBalas < _tamanhoPente)
                 {
                         _balasRestantes = _totalBalas;
                         _totalBalas = 0;
                 }
+
                 _recarregando = false;
+                _bulletsUI.setBalasPente(_balasRestantes);
+                _bulletsUI.setBalasTotal(_totalBalas);
                 ResetarTiro();
         }
-        
+
 
         private void ResetarTiro()
         {
                 _prontoParaAtirar = true;
         }
-        
+
         private void ResetarMelee()
         {
                 _meleePronto = true;
         }
 
+        private void ApplyGunSpecs()
+        {
+                _isShotgun = _specsArma.isShotgun;
+                _dano = _specsArma.dano;
+                _dispersao = _specsArma.dispersao;
+                _balasPorDisparo = _specsArma.balasPorDisparo;
+                _tempoRecarga = _specsArma.tempoRecarga;
+                _segurarGatilho = _specsArma.segurarGatilho;
+                _tamanhoPente = _specsArma.tamanhoPente;
+                _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
+                _balasRestantes = _tamanhoPente;
+                _maxBalas = _specsArma.totalBalas;
+                _totalBalas = _maxBalas;
+                _prontoParaAtirar = true;
+                _meleePronto = true;
+                armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
+                        _specsArma.modelo3d.transform.rotation);
+                armaStart.transform.parent = armaSpawn.transform;
+        }
+        
 
 
+//================================================================================================
+        //Input Actions
+        public void AuxMelee()
+        {
+                if (!_atirando && _meleePronto && !_recarregando)
+                        melee();
+        }
+        public void AuxReload()
+        {
+                if (_balasRestantes < _tamanhoPente && !_recarregando && !_attMelee)
+                        Recarregar();
+        }
+        
         public void AuxShootPress(InputAction.CallbackContext ctx)
         {
                 switch (ctx.phase)
                 {
                         case InputActionPhase.Performed:
-                                if(_segurarGatilho)
+                                if (_segurarGatilho)
                                         _atirando = true;
-                                else{
+                                else
+                                {
                                         _atirando = false;
                                 }
+
                                 break;
                         case InputActionPhase.Started:
                                 _atirando = true;
@@ -169,23 +196,10 @@ private void Update()
                                 break;
                 }
         }
-
-        public void AuxMelee()
-        {
-                if(!_atirando && _meleePronto && !_recarregando)
-                        melee();
-        }
         
+        //================================================================================================
+        //Map interaction
         
-        public int GetAtualAmmo()
-        {
-                return _totalBalas;
-        }
-        
-        public int GetMaxBalas()
-        {
-                return _maxBalas;
-        }
         public void ReceiveAmmo(int ammo)
         {
                 PlayerStats status = GetComponent<PlayerStats>();
@@ -194,9 +208,50 @@ private void Update()
                 if (_totalBalas > _maxBalas)
                         _totalBalas = _maxBalas;
         }
-        public void AuxReload()
+        //================================================================================================
+        //Getters and setters
+        public int GetAtualAmmo()
         {
-                if(_balasRestantes< _tamanhoPente && !_recarregando && !_attMelee)
-                        Recarregar();
+                return _totalBalas;
         }
+
+        public int GetMaxBalas()
+        {
+                return _maxBalas;
+        }
+
+        public bool GetIsShotgun()
+        {
+                return _isShotgun;
+        }
+
+        public int GetBalasPente()
+        {
+                return _balasRestantes;
+        }
+        
+        public void SetGunVisable(bool isGunVisable)
+        {
+                armaStart.SetActive(isGunVisable);
+        }
+        
+        public void SetProntoparaAtirar(bool aux)
+        {
+                _prontoParaAtirar = aux;
+        }
+        
+        public void SetGunStatus(ScObGunSpecs gun)
+        {
+                _specsArma = gun;
+        }
+        
+        public void setBullets_UI(BULLETS_UI bullets)
+        {
+                _bulletsUI = bullets;
+                _bulletsUI.initializeHud(_tamanhoPente, _totalBalas, _isShotgun);
+        }
+        //================================================================================================
+
 }
+
+

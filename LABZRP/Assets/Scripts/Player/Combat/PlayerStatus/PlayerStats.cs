@@ -7,81 +7,71 @@ using Random = UnityEngine.Random;
 
 public class PlayerStats : MonoBehaviour
 {
+    
+    //VISUAL
+    public GameObject blood1;
+    public GameObject bloodSplash;
+    public GameObject blood2;
     private PlayerAnimationManager _playerAnimationManager;
+    public float dispersaoSangue = 2;
+    
+    //Player Specs
+   
     private ScObPlayerStats _playerStatus;
     private bool _isDown;
-    private bool _isDead ;
+    private bool _isDead;
     public float totalLife;
     public float life;
     private float _downLife = 100f;
     private float _speed;
-    public float dispersaoSangue = 2;
     private float _revivalSpeed;
     private float _timeBetweenMelee;
     private float _meleeDamage;
     private bool _interacting;
     private bool _stopDeathLife = false;
+    
+    //UI
+    private HealthBar_UI _healthBarUi;
+    public GameObject PlayerUI;
+    private Color _characterColor;
+
+    //Script components
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
     private WeaponSystem _weaponSystem;
     private ItemHorderGenerator _itemHorderGenerator;
-    public GameObject blood1;
-    public GameObject bloodSplash;
-    public GameObject blood2;
+
+
+
+
+
+//======================================================================================================
+//Unity base functions
 
     private void Start()
     {
-        
-        _speed = _playerStatus.speed;
-        totalLife = _playerStatus.health;
-        life = totalLife;
-        _revivalSpeed = _playerStatus.revivalSpeed;
-        _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
-        _meleeDamage = _playerStatus.meleeDamage;
-        _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
-        _itemHorderGenerator.addPlayer(gameObject);
-        _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
-        _camera.addPlayer(gameObject);
-        _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
-        _weaponSystem = GetComponent<WeaponSystem>();
-        _playerMovement = GetComponent<PlayerMovement>();
-        _playerRotation = GetComponent<PlayerRotation>();
+        _InitializePlayerSpecs();
     }
+    
 
-    // Update is called once per frame
-
-    private void Update()
+        private void Update()
     {
+        
         if (_isDown && !_isDead && !_stopDeathLife)
         {
+            _healthBarUi.SetHealth((int)_downLife);
             _downLife -= Time.deltaTime;
+            
         }
-
         if (_downLife <= 0)
         {
             PlayerDeath();
         }
     }
-    
 
-    public void ReceiveHeal(float heal)
-    {
-        if (!_isDown && !_isDead)
-            life += heal;
-        if (life > totalLife)
-            life = totalLife;
-    }
-
-    public void setPlayerStats(ScObPlayerStats stats)
-    {
-        _playerStatus = stats;
-    }
-    public float getSpeed()
-    {
-        return _speed;
-    }
-
+//======================================================================================================
+//Main functions
     public void takeDamage(float damage)
     {
         if (!_isDown && !_isDead)
@@ -94,6 +84,7 @@ public class PlayerStats : MonoBehaviour
             GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
             Destroy(_bloodSplash, 2f);
             life -= damage;
+            _healthBarUi.SetHealth((int)life);
         }
 
         if (life < 1)
@@ -103,30 +94,23 @@ public class PlayerStats : MonoBehaviour
             _isDown = true;
             GetComponent<CapsuleCollider>().enabled = false;
             GetComponent<BoxCollider>().enabled = true;
-            _weaponSystem.setProntoparaAtirar(false);
+            _weaponSystem.SetProntoparaAtirar(false);
             _camera.removePlayer(gameObject);
             _playerMovement.setCanMove(false);
             _playerRotation.setCanRotate(false);
             _playerAnimationManager.setDowning();
             _playerAnimationManager.setDown(true);
+            _weaponSystem.SetGunVisable(false);
+            _healthBarUi.setColor(Color.gray);
+            
         }
     }
-
-    public void PlayerDeath()
-    {
-        
-            _itemHorderGenerator.removePlayer(gameObject);
-            _isDead = true;
-        
-    }
-
-
 
     public void revived()
     {
         if (_isDown && !_isDead)
         {
-            _weaponSystem.setProntoparaAtirar(true);
+            _weaponSystem.SetProntoparaAtirar(true);
             GetComponent<CapsuleCollider>().enabled = true;
             GetComponent<BoxCollider>().enabled = false;
             _playerRotation.setCanRotate(true);
@@ -135,9 +119,65 @@ public class PlayerStats : MonoBehaviour
             _playerAnimationManager.setDown(false);
             life = totalLife * 0.3f;
             _camera.addPlayer(gameObject);
+            _weaponSystem.SetGunVisable(true);
+            _healthBarUi.setColor(_characterColor);
+            _healthBarUi.SetHealth((int)life);
+
         }
     }
 
+    public void PlayerDeath()
+    {
+        
+        _itemHorderGenerator.removePlayer(gameObject);
+        _isDead = true;
+        
+    }
+    
+    public void ReceiveHeal(float heal)
+    {
+        if (!_isDown && !_isDead)
+            life += heal;
+        if (life > totalLife)
+            life = totalLife;
+    }
+    
+    private void _InitializePlayerSpecs()
+    {
+        _weaponSystem = GetComponent<WeaponSystem>();
+        _playerMovement = GetComponent<PlayerMovement>();
+        _playerRotation = GetComponent<PlayerRotation>();
+        _characterColor = _playerStatus.MainColor;
+        _speed = _playerStatus.speed;
+        totalLife = _playerStatus.health;
+        life = totalLife;
+        _revivalSpeed = _playerStatus.revivalSpeed;
+        _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
+        _meleeDamage = _playerStatus.meleeDamage;
+        _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
+        _itemHorderGenerator.addPlayer(gameObject);
+        _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
+        _camera.addPlayer(gameObject);
+        _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
+        GameObject findCanvaHud = GameObject.FindGameObjectWithTag("PlayersUI");
+        if (findCanvaHud == null)
+            Debug.LogError("Não foi encontrado o Canvas HUD, posicione ele na cena");
+        PlayerUiHandler playerUiConfig = Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
+        playerUiConfig.transform.parent = findCanvaHud.transform;
+        playerUiConfig.setPlayer(this.gameObject);
+    }
+
+    //================================================================================================
+    //Getters and Setters
+    
+    
+    
+    public void sethealthBarUi(HealthBar_UI healthBarUi)
+    {
+        _healthBarUi = healthBarUi;
+        healthBarUi.setColor(_characterColor);
+        healthBarUi.setMaxHealth((int)totalLife);
+    }
     public bool verifyDown()
     {
         return _isDown;
@@ -197,4 +237,12 @@ public class PlayerStats : MonoBehaviour
         _stopDeathLife = value;
     }
     
+    public void setPlayerStats(ScObPlayerStats stats)
+    {
+        _playerStatus = stats;
+    }
+    public float getSpeed()
+    {
+        return _speed;
+    }
 }
