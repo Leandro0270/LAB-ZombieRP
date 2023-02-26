@@ -11,7 +11,7 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerRotation _rotate;
     private WeaponSystem _attack;
     private PlayerStats _status;
-    public float delay = 1.5f;
+    public float delay = 2f;
     private float delayTimer = 0f;
     private void Awake()
     {
@@ -60,7 +60,12 @@ public class PlayerInputHandler : MonoBehaviour
 
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
-            OnMelee();
+            if(delayTimer <= 0)
+            {
+                OnMelee();
+                delayTimer= delay;
+            }
+                
         }
 
         if (obj.action.name == _controls.Gameplay.ShootHold.name)
@@ -108,11 +113,13 @@ public class PlayerInputHandler : MonoBehaviour
 
     public void OnReload()
     {
+        Debug.Log("Chamou");
         _attack.AuxReload();
     }
 
     public void OnMelee()
     {
+        Debug.Log("Chamou");
         _attack.AuxMelee();
     }
 
