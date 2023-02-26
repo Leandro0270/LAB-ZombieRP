@@ -8,17 +8,19 @@ using Random = UnityEngine.Random;
 public class PlayerStats : MonoBehaviour
 {
     private PlayerAnimationManager _playerAnimationManager;
-    private ScObPlayerStats playerStatus;
-    private bool isDown;
-    private bool isDead ;
+    private ScObPlayerStats _playerStatus;
+    private bool _isDown;
+    private bool _isDead ;
     public float totalLife;
     public float life;
-    private float downLife = 100f;
-    private float speed;
+    private float _downLife = 100f;
+    private float _speed;
     public float dispersaoSangue = 2;
     private float _revivalSpeed;
     private float _timeBetweenMelee;
     private float _meleeDamage;
+    private bool _interacting;
+    private bool _stopDeathLife = false;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
@@ -31,12 +33,12 @@ public class PlayerStats : MonoBehaviour
     private void Start()
     {
         
-        speed = playerStatus.speed;
-        totalLife = playerStatus.health;
+        _speed = _playerStatus.speed;
+        totalLife = _playerStatus.health;
         life = totalLife;
-        _revivalSpeed = playerStatus.revivalSpeed;
-        _timeBetweenMelee = playerStatus.timeBeteweenMelee;
-        _meleeDamage = playerStatus.meleeDamage;
+        _revivalSpeed = _playerStatus.revivalSpeed;
+        _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
+        _meleeDamage = _playerStatus.meleeDamage;
         _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
         _itemHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
@@ -49,10 +51,23 @@ public class PlayerStats : MonoBehaviour
 
     // Update is called once per frame
 
+    private void Update()
+    {
+        if (_isDown && !_isDead && !_stopDeathLife)
+        {
+            _downLife -= Time.deltaTime;
+        }
+
+        if (_downLife <= 0)
+        {
+            PlayerDeath();
+        }
+    }
+    
 
     public void ReceiveHeal(float heal)
     {
-        if (!isDown && !isDead)
+        if (!_isDown && !_isDead)
             life += heal;
         if (life > totalLife)
             life = totalLife;
@@ -60,16 +75,16 @@ public class PlayerStats : MonoBehaviour
 
     public void setPlayerStats(ScObPlayerStats stats)
     {
-        playerStatus = stats;
+        _playerStatus = stats;
     }
     public float getSpeed()
     {
-        return speed;
+        return _speed;
     }
 
     public void takeDamage(float damage)
     {
-        if (!isDown && !isDead)
+        if (!_isDown && !_isDead)
         {
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
@@ -85,7 +100,7 @@ public class PlayerStats : MonoBehaviour
         {
             GameObject _blood2 = Instantiate(blood2, transform.position, blood2.transform.rotation);
             Destroy(_blood2, 15f);
-            isDown = true;
+            _isDown = true;
             GetComponent<CapsuleCollider>().enabled = false;
             GetComponent<BoxCollider>().enabled = true;
             _weaponSystem.setProntoparaAtirar(false);
@@ -94,33 +109,29 @@ public class PlayerStats : MonoBehaviour
             _playerRotation.setCanRotate(false);
             _playerAnimationManager.setDowning();
             _playerAnimationManager.setDown(true);
-            deadTimer();
         }
     }
 
-    public void deadTimer()
+    public void PlayerDeath()
     {
-        if(verifyDown() && downLife >1)
-            downLife -= Time.deltaTime;
-        else
-        {
+        
             _itemHorderGenerator.removePlayer(gameObject);
-            isDead = true;
-        }
+            _isDead = true;
+        
     }
 
 
 
     public void revived()
     {
-        if (isDown && !isDead)
+        if (_isDown && !_isDead)
         {
             _weaponSystem.setProntoparaAtirar(true);
             GetComponent<CapsuleCollider>().enabled = true;
             GetComponent<BoxCollider>().enabled = false;
             _playerRotation.setCanRotate(true);
             _playerMovement.setCanMove(true);
-            isDown = false;
+            _isDown = false;
             _playerAnimationManager.setDown(false);
             life = totalLife * 0.3f;
             _camera.addPlayer(gameObject);
@@ -129,21 +140,12 @@ public class PlayerStats : MonoBehaviour
 
     public bool verifyDown()
     {
-        if (!isDead && life <= 0)
-        {
-            isDown = true;
-            _camera.removePlayer(gameObject);
-        }
-
-        return isDown;
+        return _isDown;
     }
 
     public bool verifyDeath()
     {
-        if (isDown && downLife < 1)
-            isDead = true;
-
-        return isDead;
+        return _isDead;
     }
     
     public float GetLife()
@@ -158,7 +160,7 @@ public class PlayerStats : MonoBehaviour
 
     public void updateSpeedMovement()
     {
-        _playerMovement.setSpeed(speed);
+        _playerMovement.setSpeed(_speed);
     }
 
     public float getMeleeDamage()
@@ -174,6 +176,25 @@ public class PlayerStats : MonoBehaviour
     public float getRevivalSpeed()
     {
         return _revivalSpeed;
+    }
+    
+    public void setInteracting(bool value)
+    {
+        _interacting = value;
+    }
+
+    public bool GetisDead()
+    {
+        return _isDead;
+    }
+    public bool getInteracting()
+    {
+        return _interacting;
+    }
+    
+    public void stopDeathCounting(bool value)
+    {
+        _stopDeathLife = value;
     }
     
 }
