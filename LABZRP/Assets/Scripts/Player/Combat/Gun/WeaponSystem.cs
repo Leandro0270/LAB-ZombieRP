@@ -5,9 +5,10 @@ using Random = UnityEngine.Random;
 public class WeaponSystem : MonoBehaviour
 {
         private ScObGunSpecs _specsArma;
+        private PlayerStats _playerStats;
 
         //Status das armas
-        public int danoMelee;
+        private float _danoMelee;
         private int _dano;
         private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao;
         public int _maxBalas,_totalBalas, _tamanhoPente, _balasPorDisparo;
@@ -31,8 +32,11 @@ public class WeaponSystem : MonoBehaviour
 
         private void Start()
         {
+                _playerStats = GetComponent<PlayerStats>();
                 _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
                 _dano = _specsArma.dano;
+                _danoMelee = _playerStats.getMeleeDamage();
+                _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
                 _dispersao = _specsArma.dispersao;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
                 _tempoRecarga = _specsArma.tempoRecarga;
@@ -55,28 +59,32 @@ public class WeaponSystem : MonoBehaviour
 
 private void Update()
         {
+                
                 if (!_attMelee && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
                 {
-                        _disparosAEfetuar = _balasPorDisparo;
-                        Atirar();
+                        if (_balasRestantes >= _balasPorDisparo)
+                        {
+                                _disparosAEfetuar = _balasPorDisparo;
+                                Atirar();
+                        }
+                        else
+                        {
+                                _disparosAEfetuar = _balasRestantes;
+                                Atirar();
+                        }
+                        
                 }
+                
         }
 
 
         private void melee()
         {
                 _meleePronto = false;
-                BulletScript _hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
-                _hitboxMelee.SetDamage(danoMelee);
+                BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
+                hitboxMelee.SetDamage(_danoMelee);
                 _playerAnimationManager.setAttack();
                 Invoke("ResetarMelee", _tempoEntreMelee);
-                
-                if (_balasRestantes > 1)
-                {
-                        Invoke("ResetarTiro", 2);
-                }
-
-                _attMelee = false;
 
         }
         private void Atirar()
@@ -117,10 +125,10 @@ private void Update()
         {
                 if(_totalBalas >= _tamanhoPente)
                 {
-                        _totalBalas -= _tamanhoPente;
+                        _totalBalas -= _tamanhoPente - _balasRestantes;
                         _balasRestantes = _tamanhoPente;
                 }
-                else if(_totalBalas < _tamanhoPente && _totalBalas > 0)
+                else if(_totalBalas < _tamanhoPente)
                 {
                         _balasRestantes = _totalBalas;
                         _totalBalas = 0;
@@ -164,16 +172,8 @@ private void Update()
 
         public void AuxMelee()
         {
-                if (_meleePronto)
-                {
-                        _attMelee = true;
-                        if (_recarregando)
-                        {
-                                _recarregando = false;
-                        }
+                if(!_atirando && _meleePronto && !_recarregando)
                         melee();
-
-                }
         }
         
         

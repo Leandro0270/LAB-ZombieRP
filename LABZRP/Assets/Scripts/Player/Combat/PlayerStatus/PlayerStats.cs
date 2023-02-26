@@ -16,6 +16,9 @@ public class PlayerStats : MonoBehaviour
     private float downLife = 100f;
     private float speed;
     public float dispersaoSangue = 2;
+    private float _revivalSpeed;
+    private float _timeBetweenMelee;
+    private float _meleeDamage;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
@@ -31,6 +34,9 @@ public class PlayerStats : MonoBehaviour
         speed = playerStatus.speed;
         totalLife = playerStatus.health;
         life = totalLife;
+        _revivalSpeed = playerStatus.revivalSpeed;
+        _timeBetweenMelee = playerStatus.timeBeteweenMelee;
+        _meleeDamage = playerStatus.meleeDamage;
         _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
         _itemHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
@@ -155,4 +161,19 @@ public class PlayerStats : MonoBehaviour
         _playerMovement.setSpeed(speed);
     }
 
+    public float getMeleeDamage()
+    {
+        return _meleeDamage;
+    }
+    
+    public float getTimeBetweenMelee()
+    {
+        return _timeBetweenMelee;
+    }
+    
+    public float getRevivalSpeed()
+    {
+        return _revivalSpeed;
+    }
+    
 }
