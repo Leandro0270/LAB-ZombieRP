@@ -31,6 +31,11 @@ public class PlayerConfigurationManager : MonoBehaviour
     {
         playerConfigs[index].playerStats = stats;
     }
+    
+    public void SetPlayerSkin(int index, ScObPlayerCustom playerCustom)
+    {
+        playerConfigs[index].playerCustom = playerCustom;
+    }
 
     public List<PlayerConfiguration> GetPlayerConfigs()
     {
@@ -73,4 +78,6 @@ public class PlayerConfiguration
     
     public bool isReady { get; set; }
     public ScObPlayerStats playerStats { get; set; }
+    
+    public ScObPlayerCustom playerCustom { get; set; }
 }
