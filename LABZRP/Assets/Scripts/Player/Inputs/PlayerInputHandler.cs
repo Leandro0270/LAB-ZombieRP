@@ -6,11 +6,13 @@ using static UnityEngine.InputSystem.InputAction;
 public class PlayerInputHandler : MonoBehaviour
 {
     private PlayerController _controls;
+    private PauseMenu _pause;
     private PlayerConfiguration _playerConfig;
     private PlayerMovement _move;
     private PlayerRotation _rotate;
     private WeaponSystem _attack;
     private PlayerStats _status;
+    private CustomizePlayerInGame _customize;
     public float delay = 2f;
     private float delayTimer = 0f;
     private void Awake()
@@ -19,7 +21,10 @@ public class PlayerInputHandler : MonoBehaviour
         _rotate = GetComponent<PlayerRotation>();
         _attack = GetComponent<WeaponSystem>();
         _status = GetComponent<PlayerStats>();
+        _customize = GetComponent<CustomizePlayerInGame>();
         _controls = new PlayerController();
+        //adiciona ao _pause uma procura de componente com a tag "UI"
+        _pause = GameObject.FindGameObjectWithTag("UI").GetComponent<PauseMenu>();
 
     }
 
@@ -39,6 +44,8 @@ public class PlayerInputHandler : MonoBehaviour
             _status.setPlayerStats(pc.playerStats);
         if(_attack != null)
             _attack.SetGunStatus(pc.playerStats.startGun);
+        if(_customize != null)
+            _customize.SetSkin(pc.playerCustom);
     }
 
     private void Input_onActionTriggered(CallbackContext obj)
@@ -58,6 +65,10 @@ public class PlayerInputHandler : MonoBehaviour
             OnReload();
         }
 
+        if (obj.action.name == _controls.Gameplay.Pause.name)
+        {
+            OnPause();
+        }
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
             if(delayTimer <= 0)
@@ -88,6 +99,12 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
+    
+    
+    public void OnPause()
+    {
+        _pause.EscButton();
+    }
 
     public void OnMove(CallbackContext context)
     {
