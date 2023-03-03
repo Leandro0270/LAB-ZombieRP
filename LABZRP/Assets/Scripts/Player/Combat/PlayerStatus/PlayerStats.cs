@@ -29,6 +29,7 @@ public class PlayerStats : MonoBehaviour
     private float _meleeDamage;
     private bool _interacting;
     private bool _stopDeathLife = false;
+    private bool _SetupColorComplete = false;
     
     //UI
     private HealthBar_UI _healthBarUi;
@@ -57,9 +58,19 @@ public class PlayerStats : MonoBehaviour
 
         private void Update()
     {
-        
+
+        if(!_SetupColorComplete)
+        {
+            if (_healthBarUi.getColor() != _characterColor)
+            {
+                
+                _healthBarUi.setColor(_characterColor);
+                _SetupColorComplete = true;
+            }
+        }
         if (_isDown && !_isDead && !_stopDeathLife)
         {
+            _healthBarUi.setColor(Color.gray);
             _healthBarUi.SetHealth((int)_downLife);
             _downLife -= Time.deltaTime;
             
@@ -68,6 +79,10 @@ public class PlayerStats : MonoBehaviour
         {
             PlayerDeath();
         }
+        
+        if(_isDown)
+            if(_healthBarUi.getColor() != _characterColor)
+                _healthBarUi.setColor(Color.gray);
     }
 
 //======================================================================================================

@@ -22,11 +22,11 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private List<Material> Shoes;
 
 
-    private int SkinIndex = 1;
-    private int EyesIndex = 1;
-    private int tshirtIndex = 1;
-    private int pantsIndex = 1;
-    private int ShoesIndex = 1;
+    private int SkinIndex = 0;
+    private int EyesIndex = 0;
+    private int tshirtIndex = 0;
+    private int pantsIndex = 0;
+    private int ShoesIndex = 0;
 
     private float ignoreInputTime = 0.5f;
 
@@ -70,15 +70,11 @@ public class PlayerSetupMenuController : MonoBehaviour
             return;
         ScObPlayerCustom ScOb = ScriptableObject.CreateInstance<ScObPlayerCustom>();
         ScOb.Skin = Skin[SkinIndex];
-        Debug.Log("EyesIndex: " + EyesIndex);
         ScOb.Eyes = Eyes[EyesIndex];
-        Debug.Log("Eyes: " + tshirtIndex);
+  
         ScOb.tshirt = tshirt[tshirtIndex];
-        Debug.Log("Eyes: " + pantsIndex);
         ScOb.pants = pants[pantsIndex];
-        Debug.Log("Eyes: " + ShoesIndex);
         ScOb.Shoes = Shoes[ShoesIndex];
-        Debug.Log("Eyes: " + ScOb.Shoes);
         PlayerConfigurationManager.Instance.SetPlayerSkin(PlayerIndex, ScOb);
         
         PlayerConfigurationManager.Instance.ReadyPlayer(PlayerIndex);
@@ -92,76 +88,77 @@ public class PlayerSetupMenuController : MonoBehaviour
     //Player Customization
     public void SetNextSkin()
     {
-        if (SkinIndex <= Skin.Count - 1)
-        {
-            playerPrefab.SetSkinMaterial(Skin[SkinIndex]);
+        if (SkinIndex < (Skin.Count - 1))
             SkinIndex++;
-        }
         else
         {
             SkinIndex = 0;
-            playerPrefab.SetSkinMaterial(Skin[SkinIndex]);
         }
+        
+        playerPrefab.SetSkinMaterial(Skin[SkinIndex]);
+
     }
     
     
     public void SetNextEyes()
-    {
-        Debug.Log("Seleciono olhos");
-        if (EyesIndex <= Eyes.Count - 1)
+    {Debug.Log("EyesIndex: " + EyesIndex);
+        if (EyesIndex < (Eyes.Count - 1))
         {
-            playerPrefab.SetEyesMaterial(Eyes[EyesIndex]);
+            
             EyesIndex++;
         }
         else
         {
             EyesIndex = 0;
-            playerPrefab.SetEyesMaterial(Eyes[EyesIndex]);
         }
+        playerPrefab.SetEyesMaterial(Eyes[EyesIndex]);
+
     }
     
     public void SetNextTshirt()
     {
-        Debug.Log("Seleciono camisa");
-        if (tshirtIndex <= tshirt.Count - 1)
+        Debug.Log("ShirtIndex: " + tshirtIndex);
+        if (tshirtIndex < (tshirt.Count - 1))
         {
-            playerPrefab.SetTshirtMaterial(tshirt[tshirtIndex]);
             tshirtIndex++;
         }
         else
         {
             tshirtIndex = 0;
-            playerPrefab.SetTshirtMaterial(tshirt[tshirtIndex]);
         }
+        
+        playerPrefab.SetTshirtMaterial(tshirt[tshirtIndex]);
+
     }
     
     public void SetNextPants()
     {
-        Debug.Log("Seleciono calças");
-        if (pantsIndex <= pants.Count - 1)
+        Debug.Log("PantsIndex: " + pantsIndex);
+        if (pantsIndex < (pants.Count - 1))
         {
-            playerPrefab.SetPantsMaterial(pants[pantsIndex]);
             pantsIndex++;
         }
         else
         {
             pantsIndex = 0;
-            playerPrefab.SetPantsMaterial(pants[pantsIndex]);
         }
+        playerPrefab.SetPantsMaterial(pants[pantsIndex]);
+
     }
     
     public void SetNextShoes()
     {
-        Debug.Log("Seleciono sapatos");
-        if (ShoesIndex <= Shoes.Count - 1)
+        Debug.Log("ShoesIndex: " + ShoesIndex);
+        if (ShoesIndex < (Shoes.Count - 1))
         {
-            playerPrefab.SetShoesMaterial(Shoes[ShoesIndex]);
             ShoesIndex++;
         }
         else
         {
             ShoesIndex = 0;
-            playerPrefab.SetShoesMaterial(Shoes[ShoesIndex]);
         }
+        
+        playerPrefab.SetShoesMaterial(Shoes[ShoesIndex]);
+
     }
 }
