@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
 
 public class PlayerStats : MonoBehaviour
@@ -37,6 +38,7 @@ public class PlayerStats : MonoBehaviour
     private Color _characterColor;
 
     //Script components
+    public DecalProjector _playerIndicator;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
@@ -180,6 +182,7 @@ public class PlayerStats : MonoBehaviour
         PlayerUiHandler playerUiConfig = Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
         playerUiConfig.transform.parent = findCanvaHud.transform;
         playerUiConfig.setPlayer(this.gameObject);
+        _playerIndicator.material = _playerStatus.PlayerIndicator;
     }
 
     //================================================================================================
