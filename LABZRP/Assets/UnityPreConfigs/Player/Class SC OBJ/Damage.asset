@@ -19,3 +19,4 @@ MonoBehaviour:
   meleeDamage: 20
   startGun: {fileID: 11400000, guid: 69bebbcf8871c2d45b3f2a9537691a0b, type: 2}
   MainColor: {r: 0.6792453, g: 0.27233893, b: 0.27233893, a: 1}
+  PlayerIndicator: {fileID: 2100000, guid: 79d7a5a89369f6a468dc0a912e327073, type: 2}
