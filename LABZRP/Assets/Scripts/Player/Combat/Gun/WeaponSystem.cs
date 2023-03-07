@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class WeaponSystem : MonoBehaviour
@@ -32,6 +33,8 @@ public class WeaponSystem : MonoBehaviour
 
         //UI
         private BULLETS_UI _bulletsUI;
+        public Slider reloadSlider;
+        private Slider _reloadSliderInstance;
 
 //======================================================================================================
 //Unity base functions
@@ -61,6 +64,12 @@ public class WeaponSystem : MonoBehaviour
                                 Atirar();
                         }
 
+                }
+                
+                if(_recarregando)
+                {
+                        _reloadSliderInstance.value += Time.deltaTime;
+                        _reloadSliderInstance.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 6, 0));
                 }
 
         }
@@ -100,8 +109,11 @@ public class WeaponSystem : MonoBehaviour
 
         private void Recarregar()
         {
-                if (_totalBalas > 0 && _balasRestantes < _tamanhoPente)
+                if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando)
                 {
+                        _reloadSliderInstance = Instantiate(reloadSlider, transform.position, Quaternion.identity);
+                        _reloadSliderInstance.transform.SetParent(GameObject.Find("Canvas").transform);
+                        _reloadSliderInstance.maxValue = _tempoRecarga;
                         _prontoParaAtirar = false;
                         _recarregando = true;
                         Invoke("ReloadTerminado", _tempoRecarga);
@@ -126,6 +138,7 @@ public class WeaponSystem : MonoBehaviour
                 _recarregando = false;
                 _bulletsUI.setBalasPente(_balasRestantes);
                 _bulletsUI.setBalasTotal(_totalBalas);
+                Destroy(_reloadSliderInstance.gameObject);
                 ResetarTiro();
         }
 

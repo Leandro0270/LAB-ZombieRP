@@ -240,11 +240,7 @@ public class PlayerStats : MonoBehaviour
     {
         _interacting = value;
     }
-
-    public bool GetisDead()
-    {
-        return _isDead;
-    }
+    
     public bool getInteracting()
     {
         return _interacting;

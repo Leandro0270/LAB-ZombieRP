@@ -90,6 +90,7 @@ MonoBehaviour:
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   armaSpawn: {fileID: 4110660743618978061}
+  reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72eff89277a41734ca9551a792354d0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _RevivalSlider: {fileID: 7409909291770244018, guid: 9f494792fd1ed05419d8e60841969643, type: 3}
 --- !u!65 &3281851553285552828
 BoxCollider:
   m_ObjectHideFlags: 0
