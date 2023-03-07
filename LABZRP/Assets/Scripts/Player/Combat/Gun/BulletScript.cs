@@ -2,9 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using Object = UnityEngine.Object;
 public class BulletScript : MonoBehaviour
 {
+    public GameObject BulletHole;
     public GameObject bloodParticle;
     private Rigidbody _rb;
     private float damage;
@@ -37,13 +39,26 @@ public class BulletScript : MonoBehaviour
 
 void OnTriggerEnter(Collider objetoDeColisao)
     {
+        if (objetoDeColisao.gameObject.CompareTag("WALL"))
+        {
+            GameObject NewBulletHole = Instantiate(BulletHole, objetoDeColisao.ClosestPointOnBounds(transform.position), transform.rotation);
+            Destroy(NewBulletHole,20f);
+            Destroy(gameObject.GetComponent<MeshFilter>());
+            Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
+            Destroy(gameObject.GetComponent<BoxCollider>());
+            Destroy(gameObject.GetComponent<Light>());
+            Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+            Destroy(gameObject);
+
+        }
         
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
         if(_status != null)
         {
 
             if(!_status.isDeadEnemy()){
-                Destroy(gameObject.GetComponent<Rigidbody>());
+                Destroy(gameObject.GetComponent<MeshFilter>());
+                Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
                 Destroy(gameObject.GetComponent<BoxCollider>());
                 Destroy(gameObject.GetComponent<Light>());
                 Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
@@ -58,7 +73,8 @@ void OnTriggerEnter(Collider objetoDeColisao)
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
-            Destroy(gameObject.GetComponent<Rigidbody>());
+            Destroy(gameObject.GetComponent<MeshFilter>());
+            Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
             Destroy(gameObject.GetComponent<BoxCollider>());
             Destroy(gameObject.GetComponent<Light>());
             Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
@@ -67,11 +83,6 @@ void OnTriggerEnter(Collider objetoDeColisao)
 
         }
         //Verifica se o objeto colidido tem a tag "WALL"
-
-    if (objetoDeColisao.gameObject.CompareTag("WALL"))
-        {
-            Destroy(gameObject);
-        }
 
     }
 public void SetDamage(float damage)
