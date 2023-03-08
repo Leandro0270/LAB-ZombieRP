@@ -22,7 +22,7 @@ public class HordeManager : MonoBehaviour
     public void Start()
     {
         
-        HorderText.text = "Preapare for the First Horder";
+         HorderText.text = "Prepare for the First Horder";
         Itemgenerator = GetComponent<ItemHorderGenerator>();
         currentHordeZombies = firstHorde;
         //Pega os objetos que possuem a tag SpawnPoint
