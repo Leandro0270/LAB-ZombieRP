@@ -13,6 +13,7 @@ public class EnemyStatus : MonoBehaviour
     private float _life;
     private float _speed;
     private float _damage;
+    [SerializeField] private ZombieAnimationController _animator;
 
 
     // Start is called before the first frame update
@@ -40,11 +41,14 @@ public class EnemyStatus : MonoBehaviour
 
     public void killEnemy()
     {
-        GetComponent<BoxCollider>().size = new Vector3(1,0.07f,1);
-        GetComponent<BoxCollider>().center = new Vector3(0,-0.5f,0);
+        Destroy(GetComponent<CapsuleCollider>());
+        GetComponent<BoxCollider>().enabled = true;
         isDead = true;
         GameObject NewBloodParticle= Instantiate(blood2, new Vector3(transform.position.x, 57, transform.position.z), blood2.transform.rotation);
         Destroy(NewBloodParticle, 8f);
+        _animator.setTarget(false);
+        _animator.triggerDown();
+        GetComponent<EnemyFollow>().setIsAlive(false);
         hordeManager.GetComponent<HordeManager>().decrementZombiesAlive();
         StartCoroutine(waiter());
 
@@ -64,5 +68,10 @@ public class EnemyStatus : MonoBehaviour
     public bool isDeadEnemy()
     {
         return isDead;
+    }
+
+    public float getDamage()
+    {
+        return _damage;
     }
 }

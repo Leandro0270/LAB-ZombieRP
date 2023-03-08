@@ -23,9 +23,6 @@ public class PlayerInputHandler : MonoBehaviour
         _status = GetComponent<PlayerStats>();
         _customize = GetComponent<CustomizePlayerInGame>();
         _controls = new PlayerController();
-        //adiciona ao _pause uma procura de componente com a tag "UI"
-        _pause = GameObject.FindGameObjectWithTag("UI").GetComponent<PauseMenu>();
-
     }
 
     private void Update()
@@ -64,11 +61,7 @@ public class PlayerInputHandler : MonoBehaviour
         {
             OnReload();
         }
-
-        if (obj.action.name == _controls.Gameplay.Pause.name)
-        {
-            OnPause();
-        }
+        
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
             if(delayTimer <= 0)
@@ -101,10 +94,6 @@ public class PlayerInputHandler : MonoBehaviour
 
     
     
-    public void OnPause()
-    {
-        _pause.EscButton();
-    }
 
     public void OnMove(CallbackContext context)
     {
