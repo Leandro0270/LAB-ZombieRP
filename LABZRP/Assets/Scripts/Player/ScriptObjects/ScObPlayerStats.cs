@@ -12,4 +12,5 @@ public class ScObPlayerStats : ScriptableObject
     public float meleeDamage;
     public ScObGunSpecs startGun;
     public Color MainColor;
+    public Material PlayerIndicator;
 }

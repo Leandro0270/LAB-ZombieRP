@@ -39,7 +39,6 @@ public class BULLETS_UI : MonoBehaviour
     }
     public void updateText()
     {
-        Debug.Log(isShotgun);
         if (isShotgun)
             texto.text = (balasPente / 6) + " / " + (balasTotal / 6);
         else

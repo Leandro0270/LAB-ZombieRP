@@ -2,11 +2,17 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ReviveScript : MonoBehaviour
 {
     private PlayerStats _playerStats;
     private float _timeToRevive;
+    public Slider _RevivalSlider;
+    private bool _isReviving = false;
+    private Slider _RevivalUIInstance;
+    private float _revivalSpeed;
+    private float MaxRevivalSpeed;
     
     // Start is called before the first frame update
     void Start()
@@ -14,12 +20,29 @@ public class ReviveScript : MonoBehaviour
         _playerStats = GetComponent<PlayerStats>();
     }
 
+    private void Update()
+    {
+        if(_isReviving)
+        {
+            if (_RevivalUIInstance != null)
+            {
+                _RevivalUIInstance.value = MaxRevivalSpeed - _timeToRevive;
+            }
+        }
+    }
+
+
     // Update is called once per frame
     void OnTriggerEnter(Collider ctx)
     {
         if (ctx.GetComponent<PlayerStats>() != null)
         {
-            _timeToRevive = ctx.GetComponent<PlayerStats>().getRevivalSpeed();
+            if (!_isReviving)
+            {
+                _timeToRevive = ctx.GetComponent<PlayerStats>().getRevivalSpeed();
+                MaxRevivalSpeed = _timeToRevive;
+                
+            }
         }
     }
     
@@ -27,15 +50,32 @@ public class ReviveScript : MonoBehaviour
     {
         if (ctx.GetComponent<PlayerStats>() != null)
         {
-            bool pressing = ctx.GetComponent<PlayerStats>().getInteracting();
-            
-            if (pressing && !_playerStats.GetisDead())
+             bool pressing = ctx.GetComponent<PlayerStats>().getInteracting();
+
+            if (pressing && _playerStats.verifyDown())
             {
+                _isReviving = true;
+                instantiateRevivalUI();
+                _RevivalUIInstance.transform.position = Camera.main.WorldToScreenPoint(ctx.gameObject.transform.position + new Vector3(0, 6, 0));
+                _RevivalUIInstance.maxValue = MaxRevivalSpeed;
                 _playerStats.stopDeathCounting(true);
                 _timeToRevive -= Time.deltaTime;
                 if (_timeToRevive <= 0)
                 {
+                    _isReviving = false;
+                    Destroy(_RevivalUIInstance.gameObject);
+                    _revivalSpeed = 10;
                     _playerStats.revived();
+                }
+            }
+            
+            if (ctx.GetComponent<PlayerStats>().getInteracting() == false && _playerStats.verifyDown())
+            {
+                if (_RevivalUIInstance != null)
+                {
+                    _isReviving = false;
+                    _timeToRevive = MaxRevivalSpeed;
+                    Destroy(_RevivalUIInstance.gameObject);
                 }
             }
         }
@@ -46,6 +86,19 @@ public class ReviveScript : MonoBehaviour
         if (other.GetComponent<PlayerStats>() != null)
         {
             _playerStats.stopDeathCounting(false);
+            _isReviving = false;
+            if(_RevivalUIInstance != null)
+                Destroy(_RevivalUIInstance.gameObject);
+        }
+    }
+
+    private void instantiateRevivalUI()
+    {
+        if (_RevivalUIInstance == null)
+        {
+            GameObject canva = GameObject.FindGameObjectWithTag("Canva");
+            _RevivalUIInstance = Instantiate(_RevivalSlider, (transform.position), Quaternion.identity);
+            _RevivalUIInstance.gameObject.transform.SetParent(canva.transform);
         }
     }
 }

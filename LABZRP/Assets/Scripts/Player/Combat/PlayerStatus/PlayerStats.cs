@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
 
 public class PlayerStats : MonoBehaviour
@@ -29,6 +30,7 @@ public class PlayerStats : MonoBehaviour
     private float _meleeDamage;
     private bool _interacting;
     private bool _stopDeathLife = false;
+    private bool _SetupColorComplete = false;
     
     //UI
     private HealthBar_UI _healthBarUi;
@@ -36,6 +38,7 @@ public class PlayerStats : MonoBehaviour
     private Color _characterColor;
 
     //Script components
+    public DecalProjector _playerIndicator;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
@@ -57,9 +60,19 @@ public class PlayerStats : MonoBehaviour
 
         private void Update()
     {
-        
+
+        if(!_SetupColorComplete)
+        {
+            if (_healthBarUi.getColor() != _characterColor)
+            {
+                
+                _healthBarUi.setColor(_characterColor);
+                _SetupColorComplete = true;
+            }
+        }
         if (_isDown && !_isDead && !_stopDeathLife)
         {
+            _healthBarUi.setColor(Color.gray);
             _healthBarUi.SetHealth((int)_downLife);
             _downLife -= Time.deltaTime;
             
@@ -68,6 +81,10 @@ public class PlayerStats : MonoBehaviour
         {
             PlayerDeath();
         }
+        
+        if(_isDown)
+            if(_healthBarUi.getColor() != _characterColor)
+                _healthBarUi.setColor(Color.gray);
     }
 
 //======================================================================================================
@@ -165,6 +182,7 @@ public class PlayerStats : MonoBehaviour
         PlayerUiHandler playerUiConfig = Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
         playerUiConfig.transform.parent = findCanvaHud.transform;
         playerUiConfig.setPlayer(this.gameObject);
+        _playerIndicator.material = _playerStatus.PlayerIndicator;
     }
 
     //================================================================================================
@@ -222,11 +240,7 @@ public class PlayerStats : MonoBehaviour
     {
         _interacting = value;
     }
-
-    public bool GetisDead()
-    {
-        return _isDead;
-    }
+    
     public bool getInteracting()
     {
         return _interacting;

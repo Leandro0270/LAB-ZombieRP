@@ -30,4 +30,10 @@ public class HealthBar_UI : MonoBehaviour
     {
         _fill.color = color;
     }
+    
+    
+    public Color getColor()
+    {
+        return _fill.color;
+    }
 }
