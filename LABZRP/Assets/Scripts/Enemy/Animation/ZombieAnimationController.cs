@@ -17,9 +17,9 @@ public class ZombieAnimationController : MonoBehaviour
     {
         _animator.SetTrigger("Attacking");
     }
-    public void setDown(bool down)
+    public void triggerDown()
     {
-        _animator.SetBool("isDead", down);
+        _animator.SetTrigger("isDying");
     }
        
 }

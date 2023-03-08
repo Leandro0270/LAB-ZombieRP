@@ -18,11 +18,11 @@ public class HordeManager : MonoBehaviour
     public GameObject zombiePrefab;
     private GameObject[] spawnPoints;
     private ItemHorderGenerator Itemgenerator;
-    // [SerializeField] private TextMeshProUGUI HorderText;
+    [SerializeField] private TextMeshProUGUI HorderText;
     public void Start()
     {
         
-        // HorderText.text = "Prepare for the First Horder";
+         HorderText.text = "Prepare for the First Horder";
         Itemgenerator = GetComponent<ItemHorderGenerator>();
         currentHordeZombies = firstHorde;
         //Pega os objetos que possuem a tag SpawnPoint
@@ -47,7 +47,7 @@ public class HordeManager : MonoBehaviour
         {
             timeBetweenHordesUI -= Time.deltaTime;
             //Vai printar o tempo que falta para a proxima horder formatado com no máximo 2 casas decimais
-            // HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F2");
+            HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F2");
 
         }
 }
@@ -56,7 +56,7 @@ public class HordeManager : MonoBehaviour
         public void decrementZombiesAlive()
         {
             zombiesAlive--;
-            // HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + zombiesAlive;
+            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + zombiesAlive;
             if (zombiesAlive == 0)
             {
                 currentHorde++;
@@ -73,7 +73,7 @@ public class HordeManager : MonoBehaviour
         IEnumerator SpawnZombie()
         {
             Itemgenerator.GenerateItem();
-            // HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
+            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
 
             //inicia um loop que ira rodar conforme a variavel spawnCount, e ira rodar conforme o tempo que foi passado na variavel spawnTime
             for (int i = 0; i < currentHordeZombies; i++)
