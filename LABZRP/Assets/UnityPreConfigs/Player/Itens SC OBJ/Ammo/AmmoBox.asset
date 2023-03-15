@@ -15,4 +15,4 @@ MonoBehaviour:
   nome: AmmoBox
   life: 0
   Balas: 50
-  modelo3d: {fileID: 2706944161218026890, guid: 6af670f6ceadc9843a43effb6aaad10b, type: 3}
+  modelo3d: {fileID: 7991626508051034808, guid: 710f5600369e6e2468f1afee4cdf3cee, type: 3}
