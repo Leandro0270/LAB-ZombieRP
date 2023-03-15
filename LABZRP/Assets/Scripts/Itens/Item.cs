@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 
 public class Item : MonoBehaviour
 {
-    private ScObItem ItemScOB;
+    public ScObItem ItemScOB;
     private GameObject StartItem;
     public void Start()
     {
