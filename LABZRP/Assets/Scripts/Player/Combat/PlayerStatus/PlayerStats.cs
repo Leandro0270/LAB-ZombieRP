@@ -157,6 +157,8 @@ public class PlayerStats : MonoBehaviour
             life += heal;
         if (life > totalLife)
             life = totalLife;
+        _healthBarUi.SetHealth((int)life);
+
     }
     
     private void _InitializePlayerSpecs()
