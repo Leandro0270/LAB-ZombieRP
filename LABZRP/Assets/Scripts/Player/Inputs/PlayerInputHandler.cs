@@ -43,6 +43,11 @@ public class PlayerInputHandler : MonoBehaviour
             _attack.SetGunStatus(pc.playerStats.startGun);
         if(_customize != null)
             _customize.SetSkin(pc.playerCustom);
+            //Pega o dispositivo que o jogador está usando
+        if(_rotate != null)
+            if(_playerConfig.Input.devices[0].device is Gamepad)
+                _rotate.SetGamepadValidation(true);
+
     }
 
     private void Input_onActionTriggered(CallbackContext obj)
@@ -107,14 +112,12 @@ public class PlayerInputHandler : MonoBehaviour
     {
         if (_rotate != null)
         {
-            if (ctx.control.device is Gamepad){
-                _rotate.SetGamepadValidation(true);
-                
-                if(ctx.ReadValue<Vector2>() != new Vector2(0,0))
+
+            if(ctx.ReadValue<Vector2>() != new Vector2(0,0))
                      _rotate.setRotationInput(ctx.ReadValue<Vector2>());
             }
 
-        }
+        
         
     }
 

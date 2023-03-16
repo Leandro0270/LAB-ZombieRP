@@ -220,6 +220,8 @@ public class WeaponSystem : MonoBehaviour
                         _totalBalas += ammo;
                 if (_totalBalas > _maxBalas)
                         _totalBalas = _maxBalas;
+                _bulletsUI.setBalasPente(_balasRestantes);
+                _bulletsUI.setBalasTotal(_totalBalas);
         }
         //================================================================================================
         //Getters and setters
