@@ -6,6 +6,7 @@ public class Item : MonoBehaviour
 {
     public ScObItem ItemScOB;
     private GameObject StartItem;
+    private bool _itemIsSpawned = false;
     public void Start()
     {
         
@@ -15,10 +16,8 @@ public class Item : MonoBehaviour
 
     public void Update()
     {
-        if(StartItem == null)
-        {
-            instanceItem();
-        }
+        if (!StartItem)
+            StartItem = instanceItem();
     }
 
     void OnTriggerEnter(Collider objetoDeColisao)
