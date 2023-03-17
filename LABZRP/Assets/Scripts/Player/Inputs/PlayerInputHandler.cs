@@ -115,7 +115,7 @@ public class PlayerInputHandler : MonoBehaviour
 
             if(ctx.ReadValue<Vector2>() != new Vector2(0,0))
                      _rotate.setRotationInput(ctx.ReadValue<Vector2>());
-            }
+        }
 
         
         

@@ -10,6 +10,7 @@ public class ItemHorderGenerator : MonoBehaviour
     public int playersCount = 0;
     public List<ScObItem> specsItems;
     private GameObject[] SpawnPoints;
+    [SerializeField] private MainGameManager mainGameManager;
 
     private void Start()
     {
@@ -33,10 +34,18 @@ public class ItemHorderGenerator : MonoBehaviour
             for (int i = 0; i < playersCount; i++)
             {
                 int randomSpawn = Random.Range(0, SpawnPoints.Length);
+                if (mainGameManager.getCountItens() != 0 && mainGameManager.getCountItens() < SpawnPoints.Length)
+                { 
+                    while (!mainGameManager.verifyItemDistance(SpawnPoints[randomSpawn].transform))
+                    {
+                            randomSpawn = Random.Range(0, SpawnPoints.Length);
+                    }
+                }
+
                 int randomItens = Random.Range(0, specsItems.Count);
-                Debug.Log("Spawnou");
                 GameObject SpawnItem = Instantiate(item, SpawnPoints[randomSpawn].transform.position, SpawnPoints[randomSpawn].transform.rotation);
                 SpawnItem.GetComponent<Item>().setItem(specsItems[randomItens]);
+                mainGameManager.addItem(SpawnItem);
             }
        
         }

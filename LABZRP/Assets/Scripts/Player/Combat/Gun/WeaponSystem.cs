@@ -51,7 +51,7 @@ public class WeaponSystem : MonoBehaviour
         private void Update()
         {
 
-                if (!_attMelee && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
+                if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
                 {
                         if (_balasRestantes >= _balasPorDisparo)
                         {
@@ -179,7 +179,7 @@ public class WeaponSystem : MonoBehaviour
         //Input Actions
         public void AuxMelee()
         {
-                if (!_atirando && _meleePronto && !_recarregando)
+                if (!_atirando && _meleePronto && !_recarregando && _prontoParaAtirar)
                         melee();
         }
         public void AuxReload()
