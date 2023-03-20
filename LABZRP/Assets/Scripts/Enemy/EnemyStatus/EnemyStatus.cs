@@ -42,6 +42,7 @@ public class EnemyStatus : MonoBehaviour
     public void killEnemy()
     {
         Destroy(GetComponent<CapsuleCollider>());
+        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeEnemy(gameObject);
         GetComponent<BoxCollider>().enabled = true;
         isDead = true;
         GameObject NewBloodParticle= Instantiate(blood2, new Vector3(transform.position.x, 57, transform.position.z), blood2.transform.rotation);

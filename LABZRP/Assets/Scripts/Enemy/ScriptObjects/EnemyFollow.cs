@@ -19,6 +19,8 @@ public class EnemyFollow : MonoBehaviour
     {
         players = GameObject.FindGameObjectsWithTag("Player");
         target = GetTarget(players);
+        if (animation == null)
+            animation = GetComponentInChildren<ZombieAnimationController>();
         animation.setTarget(true);
     }
 

@@ -6,7 +6,6 @@ public class Item : MonoBehaviour
 {
     public ScObItem ItemScOB;
     private GameObject StartItem;
-    private bool _itemIsSpawned = false;
     public void Start()
     {
         
@@ -35,6 +34,8 @@ public class Item : MonoBehaviour
                     {
                         playerAmmo.ReceiveAmmo(ItemScOB.Balas);
                         status.ReceiveHeal(ItemScOB.life);
+                        //acha o game object pela tag
+                        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
                         Destroy(gameObject);
                     }
                 }
@@ -53,6 +54,7 @@ public class Item : MonoBehaviour
                     if (status.GetLife() < status.GetTotalLife())
                     {
                         status.ReceiveHeal(ItemScOB.life);
+                        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
                         Destroy(gameObject);
                     }
                 }
@@ -68,6 +70,7 @@ public class Item : MonoBehaviour
                     if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas())
                     {
                         playerAmmo.ReceiveAmmo(ItemScOB.Balas);
+                        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
                         Destroy(gameObject);
                     }
                 }

@@ -50,6 +50,7 @@ public class WeaponSystem : MonoBehaviour
 
         private void Update()
         {
+                
 
                 if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
                 {
@@ -78,7 +79,11 @@ public class WeaponSystem : MonoBehaviour
 //Main Functions
         private void melee()
         {
-                _meleePronto = false;
+                if (_danoMelee == 0)
+                {
+                        _danoMelee = _playerStats.getMeleeDamage();
+                }
+                        _meleePronto = false;
                 BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 hitboxMelee.SetDamage(_danoMelee);
                 _playerAnimationManager.setAttack();
