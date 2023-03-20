@@ -11,7 +11,6 @@ public class ReviveScript : MonoBehaviour
     public Slider _RevivalSlider;
     private bool _isReviving = false;
     private Slider _RevivalUIInstance;
-    private float _revivalSpeed;
     private float MaxRevivalSpeed;
     
     // Start is called before the first frame update
@@ -64,7 +63,6 @@ public class ReviveScript : MonoBehaviour
                 {
                     _isReviving = false;
                     Destroy(_RevivalUIInstance.gameObject);
-                    _revivalSpeed = 10;
                     _playerStats.revived();
                 }
             }

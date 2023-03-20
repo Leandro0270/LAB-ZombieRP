@@ -25,6 +25,11 @@ public class PlayerInputHandler : MonoBehaviour
         _controls = new PlayerController();
     }
 
+    private void Start()
+    {
+        GameObject.Find("GameManager").GetComponent<MainGameManager>().addPlayer(this.gameObject);
+    }
+
     private void Update()
     {
         if(delayTimer > 0)

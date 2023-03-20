@@ -6,9 +6,9 @@ using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviour
 {
-    private List<GameObject> players;
-    private List<GameObject> enemies;
-    private List<GameObject> itens;
+    [SerializeField] private List<GameObject> players;
+    [SerializeField] private List<GameObject> enemies;
+    [SerializeField] private List<GameObject> itens;
     
     
     
@@ -30,7 +30,7 @@ public class MainGameManager : MonoBehaviour
         //for each de todos os itens verificando a distancia do parametro de transform passado e caso não esteja no raio de 5 metros retorna true
         foreach (GameObject item in itens)
         {
-            if (Vector3.Distance(item.transform.position, Spawnpoint.position) > 5)
+            if (Vector3.Distance(item.transform.position, Spawnpoint.position) > 20)
             {
                 return true;
             }
@@ -66,5 +66,17 @@ public class MainGameManager : MonoBehaviour
     {
         int randomPlayer = Random.Range(0, players.Count);
         return players[randomPlayer];
+    }
+    
+    
+    public void removeItem(GameObject item)
+    {
+        itens.Remove(item);
+    }
+    
+    
+    public void removeEnemy(GameObject enemy)
+    {
+        enemies.Remove(enemy);
     }
 }
