@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,13 +14,16 @@ public class EnemyStatus : MonoBehaviour
     private float _life;
     private float _speed;
     private float _damage;
+    private bool isSpecial = false;
     [SerializeField] private ZombieAnimationController _animator;
+    private EnemyFollow _enemyFollow;
 
 
     // Start is called before the first frame update
     void Awake()
     {
         //Armazena um objeto que estiver com a tag horderManager na variavel hordermManager
+        _enemyFollow = GetComponent<EnemyFollow>();
         hordeManager = GameObject.FindGameObjectWithTag("HorderManager");
         totalLife = _status.health;
         _life = totalLife;
@@ -28,7 +32,11 @@ public class EnemyStatus : MonoBehaviour
     }
 
     // Update is called once per frame
-  
+
+    private void Start()
+    {
+        _enemyFollow.getEnemy().speed = _speed;
+    }
 
     public void takeDamage(float damage)
     {
@@ -61,6 +69,12 @@ public class EnemyStatus : MonoBehaviour
         Destroy(gameObject);
     }
 
+    
+    public bool getIsSpecial()
+    {
+        return isSpecial;
+    }
+    
     public float get_life()
     {
         return _life;

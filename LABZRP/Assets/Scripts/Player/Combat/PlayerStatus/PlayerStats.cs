@@ -44,6 +44,7 @@ public class PlayerStats : MonoBehaviour
     private PlayerRotation _playerRotation;
     private WeaponSystem _weaponSystem;
     private ItemHorderGenerator _itemHorderGenerator;
+    private PlayerPoints _playerPoints;
 
 
 
@@ -189,7 +190,6 @@ public class PlayerStats : MonoBehaviour
 
     //================================================================================================
     //Getters and Setters
-    
     
     
     public void sethealthBarUi(HealthBar_UI healthBarUi)
