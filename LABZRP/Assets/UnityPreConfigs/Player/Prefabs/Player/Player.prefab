@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 3281851553285552828}
   - component: {fileID: 2231204110317931586}
   - component: {fileID: 8166761122169303627}
+  - component: {fileID: 1921763957812739907}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -214,6 +215,19 @@ MonoBehaviour:
   ShoesMesh:
   - {fileID: 6584152666732624451}
   - {fileID: 8994633827249973543}
+--- !u!114 &1921763957812739907
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4110660743282712483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4399a725445c7dc4ea5d793ffa7a6f99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointsPerNormalZombie: 10
 --- !u!1 &4110660743618978061
 GameObject:
   m_ObjectHideFlags: 0

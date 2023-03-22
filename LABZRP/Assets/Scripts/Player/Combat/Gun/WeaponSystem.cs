@@ -8,6 +8,7 @@ public class WeaponSystem : MonoBehaviour
 {
         private ScObGunSpecs _specsArma;
         private PlayerStats _playerStats;
+        private PlayerPoints _playerPoints;
 
         //Status das armas
         private float _danoMelee;
@@ -20,6 +21,9 @@ public class WeaponSystem : MonoBehaviour
 
         //ações
         private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto;
+        private int NormalZombiesKilled;
+        private int SpecialZombiesKilled;
+
 
         //Referencia
         public Transform canoDaArma;
@@ -43,6 +47,7 @@ public class WeaponSystem : MonoBehaviour
                 _playerStats = GetComponent<PlayerStats>();
                 _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
                 _danoMelee = _playerStats.getMeleeDamage();
+                _playerPoints = GetComponent<PlayerPoints>();
                 _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
                 ApplyGunSpecs();
 
@@ -86,6 +91,7 @@ public class WeaponSystem : MonoBehaviour
                         _meleePronto = false;
                 BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 hitboxMelee.SetDamage(_danoMelee);
+                hitboxMelee.setMelee(true);
                 _playerAnimationManager.setAttack();
                 Invoke("ResetarMelee", _tempoEntreMelee);
 
@@ -102,6 +108,7 @@ public class WeaponSystem : MonoBehaviour
                 //Spawn da bala
                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                 bala.SetDamage(_dano);
+                bala.setShooter(this);
                 _balasRestantes--;
                 _disparosAEfetuar--;
                 _bulletsUI.setBalasPente(_balasRestantes);
@@ -230,6 +237,17 @@ public class WeaponSystem : MonoBehaviour
         }
         //================================================================================================
         //Getters and setters
+
+        public void addKilledNormalZombie()
+        {
+                _playerPoints.addPoints();
+                NormalZombiesKilled++;
+        }
+
+        public void addKilledSpecialZombie()
+        {
+                SpecialZombiesKilled++;
+        }
         public int GetAtualAmmo()
         {
                 return _totalBalas;

@@ -22,6 +22,7 @@ public class EnemyFollow : MonoBehaviour
         if (animation == null)
             animation = GetComponentInChildren<ZombieAnimationController>();
         animation.setTarget(true);
+        
     }
 
     // Update is called once per frame
@@ -117,6 +118,11 @@ public class EnemyFollow : MonoBehaviour
     public void setIsAlive(bool isAlive)
     {
         this.isAlive = isAlive;
+    }
+    
+    public NavMeshAgent getEnemy()
+    {
+        return enemy;
     }
 
 }
