@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BulletHole: {fileID: 5816881631203203802, guid: 1730c0f53f0585540a1e6cee3c81235d, type: 3}
-  bloodParticle: {fileID: 1000012909287652, guid: abb9f519b142e304d9c45b56afa768bc, type: 3}
+  bloodParticle: {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
   distance: 50
   speedBullet: 80
 --- !u!108 &7305771011970772335
