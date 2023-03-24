@@ -4,7 +4,7 @@ public class ZombieAnimationController : MonoBehaviour
 {
     private Animator _animator;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _animator = GetComponent<Animator>();
     }
