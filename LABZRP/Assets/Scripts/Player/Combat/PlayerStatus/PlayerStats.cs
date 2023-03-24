@@ -10,6 +10,8 @@ public class PlayerStats : MonoBehaviour
 {
     
     //VISUAL
+    public float delayBlood = 1f;
+    private float _delayBloodTimer; 
     public GameObject blood1;
     public GameObject bloodSplash;
     public GameObject blood2;
@@ -86,6 +88,8 @@ public class PlayerStats : MonoBehaviour
         if(_isDown)
             if(_healthBarUi.getColor() != _characterColor)
                 _healthBarUi.setColor(Color.gray);
+        if(_delayBloodTimer > 0)
+            _delayBloodTimer -= Time.deltaTime;
     }
 
 //======================================================================================================
@@ -97,10 +101,16 @@ public class PlayerStats : MonoBehaviour
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
             Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 0.27f, transform.position.z +x);
-            GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
-            Destroy(_blood1, 15f);
-            GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
-            Destroy(_bloodSplash, 2f);
+            if (_delayBloodTimer == 0)
+            {
+                GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
+                Destroy(_blood1, 15f);
+                GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
+                Destroy(_bloodSplash, 2f);
+                _delayBloodTimer = delayBlood;
+
+            }
+
             life -= damage;
             _healthBarUi.SetHealth((int)life);
         }
@@ -187,7 +197,8 @@ public class PlayerStats : MonoBehaviour
         playerUiConfig.setPlayer(this.gameObject);
         _playerIndicator.material = _playerStatus.PlayerIndicator;
     }
-
+    
+    
     //================================================================================================
     //Getters and Setters
     
@@ -216,6 +227,21 @@ public class PlayerStats : MonoBehaviour
     public float GetTotalLife()
     {
         return totalLife;
+    }
+    
+    public void ReceiveTemporarySlow(float time, float speed)
+    {
+        float updatedSpeed = _speed - speed;
+        float baseSpeed = _speed;
+        _speed = updatedSpeed;
+        _playerMovement.setSpeed(updatedSpeed);
+        StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+    }
+    private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
+    {
+        yield return new WaitForSeconds(time);
+        _speed = baseSpeed;
+    _playerMovement.setSpeed(baseSpeed);
     }
 
     public void updateSpeedMovement()
