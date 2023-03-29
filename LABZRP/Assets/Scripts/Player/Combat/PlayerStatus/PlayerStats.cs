@@ -177,6 +177,7 @@ public class PlayerStats : MonoBehaviour
         _weaponSystem = GetComponent<WeaponSystem>();
         _playerMovement = GetComponent<PlayerMovement>();
         _playerRotation = GetComponent<PlayerRotation>();
+        _playerPoints = GetComponent<PlayerPoints>();
         _characterColor = _playerStatus.MainColor;
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
@@ -286,5 +287,10 @@ public class PlayerStats : MonoBehaviour
     public float getSpeed()
     {
         return _speed;
+    }
+    
+    public PlayerPoints getPlayerPoints()
+    {
+        return _playerPoints;
     }
 }
