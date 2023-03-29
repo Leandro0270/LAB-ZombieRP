@@ -16,3 +16,4 @@ MonoBehaviour:
   life: 50
   Balas: 0
   modelo3d: {fileID: 6516442556788688566, guid: d834ad99e494f264d9a41dab5b3e892b, type: 3}
+  Price: 10

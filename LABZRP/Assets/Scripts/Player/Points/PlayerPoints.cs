@@ -6,17 +6,27 @@ public class PlayerPoints : MonoBehaviour
 {
     [SerializeField] private int pointsPerNormalZombie = 10;
     private int points = 0;
-    
-    
+
+
     public void addPoints()
     {
         Debug.Log(points);
         points += pointsPerNormalZombie;
     }
-    
+
     public void addPoints(int points)
     {
         this.points += points;
     }
-    
+
+    public void removePoints(int points)
+    {
+        this.points -= points;
+    }
+
+    public int getPoints()
+    {
+        return points;
+    }
+
 }

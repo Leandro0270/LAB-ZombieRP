@@ -40,6 +40,10 @@ public class WeaponSystem : MonoBehaviour
         public Slider reloadSlider;
         private Slider _reloadSliderInstance;
 
+        //Debug
+        public ScObGunSpecs novaArma;
+        public bool changeGUN = false;
+
 //======================================================================================================
 //Unity base functions
         private void Start()
@@ -56,6 +60,7 @@ public class WeaponSystem : MonoBehaviour
         private void Update()
         {
                 
+
 
                 if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
                 {
@@ -131,6 +136,15 @@ public class WeaponSystem : MonoBehaviour
                         Invoke("ReloadTerminado", _tempoRecarga);
                 }
         }
+        
+        public void ChangeGun(ScObGunSpecs NewGun)
+        {
+                _specsArma = NewGun;
+                Destroy(armaStart);
+                ApplyGunSpecs();
+        }
+
+
 
 //======================================================================================================
 //Aux Functions
@@ -168,20 +182,33 @@ public class WeaponSystem : MonoBehaviour
         private void ApplyGunSpecs()
         {
                 _isShotgun = _specsArma.isShotgun;
+                if (_isShotgun)
+                {
+                        _tamanhoPente = _specsArma.tamanhoPente;
+                        _tamanhoPente *= 6;
+                        _balasRestantes = _tamanhoPente;
+                        _maxBalas = _specsArma.totalBalas;
+                        _maxBalas *= 6;
+                        _totalBalas = _maxBalas;
+                }
+                else
+                {
+                        _tamanhoPente = _specsArma.tamanhoPente;
+                        _balasRestantes = _tamanhoPente;
+                        _maxBalas = _specsArma.totalBalas;
+                        _totalBalas = _maxBalas;
+                }
+
                 _dano = _specsArma.dano;
                 _dispersao = _specsArma.dispersao;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
                 _tempoRecarga = _specsArma.tempoRecarga;
                 _segurarGatilho = _specsArma.segurarGatilho;
-                _tamanhoPente = _specsArma.tamanhoPente;
                 _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
-                _balasRestantes = _tamanhoPente;
-                _maxBalas = _specsArma.totalBalas;
-                _totalBalas = _maxBalas;
                 _prontoParaAtirar = true;
                 _meleePronto = true;
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
-                        _specsArma.modelo3d.transform.rotation);
+                       armaSpawn.transform.rotation);
                 armaStart.transform.parent = armaSpawn.transform;
         }
         
