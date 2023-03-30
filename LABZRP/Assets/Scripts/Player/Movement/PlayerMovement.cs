@@ -7,12 +7,12 @@ using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
 //Esse comando faz com que seja necessario o objeto em que o script for aplicado tenha o componente RIGIDBODY
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerMovement : MonoBehaviour
 {
     private PlayerStats _status;
-    private Rigidbody _rb;
+    private CharacterController _controller;
     private PlayerAnimationManager _animationManager;
     private Vector3 _inputMovimento;
     private bool _canMove = true;
@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
         _status = GetComponent<PlayerStats>();
         _speed = _status.getSpeed();
         //_rb está recebendo o componente Rigidbody de onde o script está sendo aplicado
-        _rb = GetComponent<Rigidbody>();
+        _controller = GetComponent<CharacterController>();
     }
 
     public void SetInputMovimento(Vector3 valor)
@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour
         Vector3 auxVector3 = new Vector3(auxVecto2.x, 0, auxVecto2.y);
         if (_canMove && auxVector3 != Vector3.zero)
         {
-            _rb.MovePosition(transform.position + auxVector3);
+            _controller.Move(auxVector3);
             _animationManager.setMovement(true);
         }
         else
