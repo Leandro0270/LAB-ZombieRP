@@ -92,8 +92,8 @@ public class WeaponSystem : MonoBehaviour
                 if (_danoMelee == 0)
                 {
                         _danoMelee = _playerStats.getMeleeDamage();
-                }
-                        _meleePronto = false;
+                } 
+                _meleePronto = false;
                 BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 hitboxMelee.SetDamage(_danoMelee);
                 hitboxMelee.setMelee(true);
@@ -105,22 +105,43 @@ public class WeaponSystem : MonoBehaviour
         private void Atirar()
         {
                 _prontoParaAtirar = false;
-                //calcular direção dos tiros com a dispersão de bala
-                float y = Random.Range(-_dispersao, _dispersao);
-                Vector3 auxVector = canoDaArma.rotation.eulerAngles;
-                Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
-
-                //Spawn da bala
-                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
-                bala.SetDamage(_dano);
-                bala.setShooter(this);
-                _balasRestantes--;
-                _disparosAEfetuar--;
-                _bulletsUI.setBalasPente(_balasRestantes);
-                Invoke("ResetarTiro", _tempoEntreDisparos);
-                if (_disparosAEfetuar > 0 && _balasRestantes > 0)
+                if (!_isShotgun)
                 {
-                        Invoke("Atirar", _tempoEntreDisparos);
+                        //calcular direção dos tiros com a dispersão de bala
+                        float y = Random.Range(-_dispersao, _dispersao);
+                        Vector3 auxVector = canoDaArma.rotation.eulerAngles;
+                        Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
+
+                        //Spawn da bala
+                        BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
+                        bala.SetDamage(_dano);
+                        bala.setShooter(this);
+                        _balasRestantes--;
+                        _disparosAEfetuar--;
+                        _bulletsUI.setBalasPente(_balasRestantes);
+                        Invoke("ResetarTiro", _tempoEntreDisparos);
+                        if (_disparosAEfetuar > 0 && _balasRestantes > 0)
+                        {
+                                Invoke("Atirar", _tempoEntreDisparos);
+                        }
+                }
+                else
+                {
+                        for (int i = 0; i < _balasPorDisparo; i++)
+                        {
+                                //calcular direção dos tiros com a dispersão de bala
+                                float y = Random.Range(-_dispersao, _dispersao);
+                                Vector3 auxVector = canoDaArma.rotation.eulerAngles;
+                                Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
+                                //Spawn da bala
+                                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
+                                bala.SetDamage(_dano);
+                                bala.setShooter(this);
+                                
+                        }
+                        _balasRestantes -= _balasPorDisparo;
+                        _bulletsUI.setBalasPente(_balasRestantes);
+                        Invoke("ResetarTiro", _tempoEntreDisparos);
                 }
         }
 
