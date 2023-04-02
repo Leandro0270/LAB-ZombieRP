@@ -12,6 +12,7 @@ public class EnemyFollow : MonoBehaviour
     private GameObject target;
     private bool canWalk = true;
     private bool isAlive = true;
+    private bool followPlayers = true;
 
     public ZombieAnimationController animation;
     // Start is called before the first frame update
@@ -28,45 +29,13 @@ public class EnemyFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-       
-        if (isAlive)
+        if (followPlayers)
         {
-            PlayerStats _playerstats = target.GetComponent<PlayerStats>();
-            if (_playerstats.verifyDown())
-            {
-                //usa uma lista auxiliar sem o player que morreu para definir um novo target
-                GameObject[] aux = new GameObject[players.Length - 1];
-                foreach (GameObject player in players)
-                {
-                    int i = 0;
-                    if (player != target)
-                    {
-                        aux[i] = player;
-                        i++;
-                    }
-                }
 
-                target = GetTarget(aux);
-            }
-            if (canWalk)
+            if (isAlive)
             {
-                enemy.isStopped = false;
-                enemy.SetDestination(target.transform.position);
-            }
-            else
-            {
-                enemy.isStopped = true;
-            }
-            
-            float distance = Vector3.Distance(target.transform.position, transform.position);
-            if (distance < 4f && canWalk)
-            {
-
-                animation.setAttack();
-                canWalk = false;
-                _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
-                Invoke("resetCanWalk", 1f);
+                //Vai pegar  os parametros de rotação do transform e vai adicionar 90 no eixo Y
+                PlayerStats _playerstats = target.GetComponent<PlayerStats>();
                 if (_playerstats.verifyDown())
                 {
                     //usa uma lista auxiliar sem o player que morreu para definir um novo target
@@ -83,14 +52,50 @@ public class EnemyFollow : MonoBehaviour
 
                     target = GetTarget(aux);
                 }
+
+                if (canWalk)
+                {
+                    enemy.isStopped = false;
+                    enemy.SetDestination(target.transform.position);
+                }
+                else
+                {
+                    enemy.isStopped = true;
+                }
+
+                float distance = Vector3.Distance(target.transform.position, transform.position);
+                if (distance < 4f && canWalk)
+                {
+
+                    animation.setAttack();
+                    canWalk = false;
+                    _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
+                    Invoke("resetCanWalk", 1f);
+                    if (_playerstats.verifyDown())
+                    {
+                        //usa uma lista auxiliar sem o player que morreu para definir um novo target
+                        GameObject[] aux = new GameObject[players.Length - 1];
+                        foreach (GameObject player in players)
+                        {
+                            int i = 0;
+                            if (player != target)
+                            {
+                                aux[i] = player;
+                                i++;
+                            }
+                        }
+
+                        target = GetTarget(aux);
+                    }
+                }
+
+
+
             }
-
-
-
-        }
-        else
-        {
-            enemy.isStopped = true;
+            else
+            {
+                enemy.isStopped = true;
+            }
         }
     }
 
@@ -123,6 +128,12 @@ public class EnemyFollow : MonoBehaviour
     public NavMeshAgent getEnemy()
     {
         return enemy;
+    }
+    
+    
+    public void setFollowPlayers(bool followPlayers)
+    {
+        this.followPlayers = followPlayers;
     }
 
 }
