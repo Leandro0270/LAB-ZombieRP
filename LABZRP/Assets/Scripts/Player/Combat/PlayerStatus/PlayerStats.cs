@@ -47,6 +47,9 @@ public class PlayerStats : MonoBehaviour
     private WeaponSystem _weaponSystem;
     private ItemHorderGenerator _itemHorderGenerator;
     private PlayerPoints _playerPoints;
+    
+    //Other components
+    private CharacterController _characterController;
 
 
 
@@ -100,7 +103,7 @@ public class PlayerStats : MonoBehaviour
         {
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
-            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 0.27f, transform.position.z +x);
+            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f, transform.position.z +x);
             if (_delayBloodTimer == 0)
             {
                 GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
@@ -117,12 +120,12 @@ public class PlayerStats : MonoBehaviour
 
         if (life < 1)
         {
-            GameObject _blood2 = Instantiate(blood2, transform.position, blood2.transform.rotation);
+            GameObject _blood2 = Instantiate(blood2, new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z), blood2.transform.rotation);
             Destroy(_blood2, 15f);
-            _isDown = true;
-            GetComponent<CapsuleCollider>().enabled = false;
+            _weaponSystem.SetIsIncapacitated(true);
+            _isDown = true; 
+            _characterController.enabled = false;
             GetComponent<BoxCollider>().enabled = true;
-            _weaponSystem.SetProntoparaAtirar(false);
             _camera.removePlayer(gameObject);
             _playerMovement.setCanMove(false);
             _playerRotation.setCanRotate(false);
@@ -138,8 +141,8 @@ public class PlayerStats : MonoBehaviour
     {
         if (_isDown && !_isDead)
         {
-            _weaponSystem.SetProntoparaAtirar(true);
-            GetComponent<CapsuleCollider>().enabled = true;
+            _weaponSystem.SetIsIncapacitated(false);
+            _characterController.enabled = true;
             GetComponent<BoxCollider>().enabled = false;
             _playerRotation.setCanRotate(true);
             _playerMovement.setCanMove(true);
@@ -150,9 +153,9 @@ public class PlayerStats : MonoBehaviour
             _weaponSystem.SetGunVisable(true);
             _healthBarUi.setColor(_characterColor);
             _healthBarUi.SetHealth((int)life);
-
         }
     }
+    
 
     public void PlayerDeath()
     {
@@ -178,6 +181,7 @@ public class PlayerStats : MonoBehaviour
         _playerMovement = GetComponent<PlayerMovement>();
         _playerRotation = GetComponent<PlayerRotation>();
         _playerPoints = GetComponent<PlayerPoints>();
+        _characterController = GetComponent<CharacterController>();
         _characterColor = _playerStatus.MainColor;
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
@@ -292,5 +296,24 @@ public class PlayerStats : MonoBehaviour
     public PlayerPoints getPlayerPoints()
     {
         return _playerPoints;
+    }
+    
+    
+    public void incapacitatePlayer()
+    {
+        _weaponSystem.SetIsIncapacitated(true);
+        _characterController.enabled = false;
+        _playerMovement.setCanMove(false);
+        _playerRotation.setCanRotate(false);
+        _weaponSystem.SetGunVisable(false);
+    }
+
+    public void capacitatePlayer()
+    {
+        _weaponSystem.SetIsIncapacitated(false);
+        _characterController.enabled = true;
+        _playerMovement.setCanMove(true);
+        _playerRotation.setCanRotate(true);
+        _weaponSystem.SetGunVisable(true);
     }
 }
