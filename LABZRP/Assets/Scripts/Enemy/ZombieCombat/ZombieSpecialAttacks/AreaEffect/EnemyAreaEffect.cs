@@ -27,10 +27,9 @@ public class EnemyAreaEffect : MonoBehaviour
     private float AreaEffectTime = 0f;
     private GameObject ParticlesAreaEffect;
 
-    private void Start()
+    private void Awake()
     {
         boxCollider = GetComponent<BoxCollider>();
-        boxCollider.size = new Vector3(radiusAreaEffect, 0, radiusAreaEffect);
     }
     private void Update()
     {
@@ -53,6 +52,7 @@ public class EnemyAreaEffect : MonoBehaviour
             ParticlesAreaEffect = enemyAreaEffect.ParticlesAreaEffect;
             isPlayerSpeedSlower = enemyAreaEffect.isPlayerSpeedSlower;
             PlayerSpeedSlower = enemyAreaEffect.PlayerSpeedSlower;
+            boxCollider.size = new Vector3(radiusAreaEffect, 0, radiusAreaEffect);
             Destroy(Instantiate(ParticlesAreaEffect, transform.position, transform.rotation), AreaEffectTime);
             setup = true;
         }
