@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Poison
   m_EditorClassIdentifier: 
   EffectIsPermanent: 0
-  areaEffectTime: 5
-  radiusAreaEffect: 8
+  areaEffectTime: 8
+  radiusAreaEffect: 15
   addEnemyDamage: 0
   EnemyDamage: 0
   addEnemySpeed: 0
@@ -23,9 +23,9 @@ MonoBehaviour:
   EnemyHealth: 0
   isDamagePlayerSplash: 1
   isDamagePlayerOverTime: 1
-  isPlayerSpeedSlower: 0
-  PlayerSpeedSlower: 0
-  ParticlesAreaEffect: {fileID: 6655085146247247102, guid: 1317739b81e00e04a8c71ff68ed9d622, type: 3}
+  isPlayerSpeedSlower: 1
+  PlayerSpeedSlower: 5
+  ParticlesAreaEffect: {fileID: 6655085146247247102, guid: 5ee97c23f43e9da4dbaa5e1957fc2887, type: 3}
   PlayerSplashDamage: 20
   PlayerOverTimeDamage: 5
-  TimeEffect: 0
+  TimeEffect: 10
