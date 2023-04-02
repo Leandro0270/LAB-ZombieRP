@@ -11,7 +11,6 @@ public class VendingMachine : MonoBehaviour
     public TextMeshPro ScreenPoints;
     public GameObject itemShow;
     private BoxCollider buyArea;
-    private bool isPlayerInArea = false;
     [SerializeField] private ScObItem[] itens;
     public GameObject itemHolder;
     private int randomItemIndex;
