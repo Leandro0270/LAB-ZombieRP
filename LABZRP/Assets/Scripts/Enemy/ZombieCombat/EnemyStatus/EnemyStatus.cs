@@ -19,6 +19,7 @@ public class EnemyStatus : MonoBehaviour
     private EnemyFollow _enemyFollow;
 
 
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -29,6 +30,7 @@ public class EnemyStatus : MonoBehaviour
         _life = totalLife;
         _speed = _status.speed;
         _damage = _status.damage;
+        isSpecial = _status.isSpecial;
     }
 
     // Update is called once per frame
@@ -91,6 +93,11 @@ public class EnemyStatus : MonoBehaviour
     {
         return _damage;
     }
+    
+    public EnemyFollow getEnemyFollow()
+    {
+        return _enemyFollow;
+    }
 
 
     public void ReceiveTemporaryDamage(float time, float damage)
@@ -141,4 +148,5 @@ public class EnemyStatus : MonoBehaviour
             _life = totalLife;
         }
     }
+    
 }
