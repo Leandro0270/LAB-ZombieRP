@@ -17,7 +17,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     [SerializeField] private float tempoEntreAtaques = 5f;
     private float tempoAtaqueAtual;
     [SerializeField] private float damage = 10f;
-    [SerializeField] private bool PlayerIsInRange = false;
+    private bool PlayerIsInRange = false;
     private PlayerStats playerStats;
     private bool canAttack;
     private bool downedPlayer;
@@ -53,6 +53,16 @@ public class SpecialZombiesAttacks : MonoBehaviour
         {
             playerStats = alvo.GetComponent<PlayerStats>();
         }
+        if (Vector3.Distance(transform.position, alvo.transform.position) < distanciaAtivacaoPoder)
+        {
+            PlayerIsInRange = true;
+        }
+        else
+        {
+            PlayerIsInRange = false;
+        }
+        
+        
         if(tempoAtaqueAtual>0)
             tempoAtaqueAtual -= Time.deltaTime;
         else
@@ -77,6 +87,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     if (!downedPlayer)
                     {
                         playerStats.incapacitatePlayer();
+                        playerStats.takeDamage(damage);
                         alvo.transform.SetParent(transform);
                         alvo.transform.localPosition = Vector3.zero;
                         downedPlayer = true;
@@ -108,9 +119,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
                             }
                             Vector3 posicaoFuga = transform.position;
                                 float maiorDistancia = 0f;
-
-                                // Substitua com a lógica para obter a lista de todos os jogadores no jogo.
-
                                 foreach (GameObject jogador in players)
                                 {
                                     if (jogador.transform != alvo)
@@ -131,7 +139,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
                                     }
                                 }
 
-                                // Mova o zumbi para a posição de fuga encontrada.
                                 navMeshAgent.SetDestination(posicaoFuga);
                             
                         }

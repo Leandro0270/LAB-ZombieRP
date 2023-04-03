@@ -16,7 +16,8 @@ public class HordeManager : MonoBehaviour
     private int zombiesAlive = 0;
     private float timeBetweenHordesUI;
     private MainGameManager GameManager;
-    public GameObject zombiePrefab;
+    public GameObject NormalZombiePrefab;
+    public GameObject[] SpecialZombiesPrefabs;
     private GameObject[] spawnPoints;
     private ItemHorderGenerator Itemgenerator;
     [SerializeField] private TextMeshProUGUI HorderText;
@@ -84,7 +85,7 @@ public class HordeManager : MonoBehaviour
                 //Pega um numero aleatorio entre 0 e o tamanho do array de spawnPoints
                 int spawnPointIndex = Random.Range(0, spawnPoints.Length);
                 //Instancia o prefab do zumbi na posição do spawnPoint
-                GameObject zombie = Instantiate(zombiePrefab, spawnPoints[spawnPointIndex].transform.position,
+                GameObject zombie = Instantiate(NormalZombiePrefab, spawnPoints[spawnPointIndex].transform.position,
                     spawnPoints[spawnPointIndex].transform.rotation);
                 GameManager.addEnemy(zombie);
                 //Incrementa a quantidade de zumbis vivos
