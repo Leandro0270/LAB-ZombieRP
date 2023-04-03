@@ -21,8 +21,8 @@ public class PlayerStats : MonoBehaviour
     //Player Specs
    
     private ScObPlayerStats _playerStatus;
-    private bool _isDown;
-    private bool _isDead;
+    private bool _isDown = false;
+    private bool _isDead = false;
     public float totalLife;
     public float life;
     private float _downLife = 100f;
@@ -33,6 +33,7 @@ public class PlayerStats : MonoBehaviour
     private bool _interacting;
     private bool _stopDeathLife = false;
     private bool _SetupColorComplete = false;
+    private bool _isIncapatitated = false;
     
     //UI
     private HealthBar_UI _healthBarUi;
@@ -299,8 +300,14 @@ public class PlayerStats : MonoBehaviour
     }
     
     
-    public void incapacitatePlayer()
+    public bool getIsIncapacitated()
     {
+        return _isIncapatitated;
+    }
+    
+    public void IncapacitatePlayer()
+    {
+        _isIncapatitated = true;
         _weaponSystem.SetIsIncapacitated(true);
         _characterController.enabled = false;
         _playerMovement.setCanMove(false);
@@ -308,8 +315,9 @@ public class PlayerStats : MonoBehaviour
         _weaponSystem.SetGunVisable(false);
     }
 
-    public void capacitatePlayer()
+    public void CapacitatePlayer()
     {
+        _isIncapatitated = false;
         _weaponSystem.SetIsIncapacitated(false);
         _characterController.enabled = true;
         _playerMovement.setCanMove(true);

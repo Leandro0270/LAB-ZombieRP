@@ -79,7 +79,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 1.59
-  m_Speed: 3.5
+  m_Speed: 12
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33ecd042622aebc4884016ad8b3b36df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 11400000, guid: c80a1977709c27e468f41b5749b94ce7, type: 2}
+  _status: {fileID: 11400000, guid: 9550c92a0d81798408f0d8e85d93c2d3, type: 2}
   blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
   _animator: {fileID: 28239589519732905}
@@ -151,7 +151,7 @@ MonoBehaviour:
   distanciaAtivacaoPoder: 4
   tempoEntreAtaques: 3
   damage: 10
-  tipoDePoder: 2
+  tipoDePoder: 1
 --- !u!1001 &8551395149691678766
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -15,6 +15,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     [SerializeField] private Transform pontoDeLançamento;
     [SerializeField] private float distanciaAtivacaoPoder = 10f;
     [SerializeField] private float tempoEntreAtaques = 5f;
+    private EnemyFollow enemyFollow;
     private float tempoAtaqueAtual;
     [SerializeField] private float damage = 10f;
     private bool PlayerIsInRange = false;
@@ -24,7 +25,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
     private enum SpecialType
     {
-        Normal,
         Arremesso,
         Frog,
         Booomer,
@@ -37,6 +37,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     
     private void Awake()
     {
+        enemyFollow = GetComponent<EnemyFollow>();
         players = GameObject.FindGameObjectsWithTag("Player");
         zumbi = GetComponent<EnemyStatus>();
         // Substitua com a lógica para obter a referência do jogador ou alvo.
@@ -71,22 +72,27 @@ public class SpecialZombiesAttacks : MonoBehaviour
         {
             switch (tipoDePoder)
             {
-                case SpecialType.Normal:
-                    break;
+                //COFFEE CLASS ================================================================
                 case SpecialType.Arremesso:
                     GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position, Quaternion.identity);
                     Rigidbody rb = projétil.GetComponent<Rigidbody>();
-
                     Vector3 trajetoria = CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position, 40);
                     rb.AddForce(trajetoria, ForceMode.VelocityChange);
                     canAttack = false;
                     tempoAtaqueAtual = tempoEntreAtaques;
-
+                    enemyFollow.AttackDelay(tempoEntreAtaques);
                     break;
+                
+                
+                
+                
+                
+               //FROG CLASS ============================================================================================================================================
+                
                 case SpecialType.Frog:
-                    if (!downedPlayer)
+                    if (!downedPlayer && !playerStats.getIsIncapacitated())
                     {
-                        playerStats.incapacitatePlayer();
+                        playerStats.IncapacitatePlayer();
                         playerStats.takeDamage(damage);
                         alvo.transform.SetParent(transform);
                         alvo.transform.localPosition = Vector3.zero;
@@ -97,12 +103,19 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     }
                     else
                     {
+                        navMeshAgent.speed = 3;
                         if (!zumbi.isDeadEnemy())
                         {
+                            if(canAttack){
+                                playerStats.takeDamage(damage);
+                                tempoAtaqueAtual = tempoEntreAtaques;
+                                canAttack = false;
+                            }
                             if(playerStats.verifyDown())
                             {
                                 alvo.transform.SetParent(null);
                                 downedPlayer = false;
+                                alvo.transform.position = new Vector3(alvo.transform.position.x, 59, alvo.transform.position.z);
                                 zumbi.getEnemyFollow().setFollowPlayers(true);
                                 GameObject[] aux = new GameObject[players.Length - 1];
                                 foreach (GameObject player in players)
@@ -145,18 +158,32 @@ public class SpecialZombiesAttacks : MonoBehaviour
                         else
                         {
                             alvo.transform.SetParent(null);
-                            playerStats.capacitatePlayer();
+                            alvo.transform.position = new Vector3(alvo.transform.position.x, 59, alvo.transform.position.z);
+                            playerStats.CapacitatePlayer();
                         }
                     }
-                    
-                    
                     break;
+                
+                
+                
+                //BOOOMER CLASS ================================================================
                 case SpecialType.Booomer:
                     break;
+                
+                
+                
+                
+                //HUNTER CLASS ================================================================
                 case SpecialType.Hunter:
                     break;
+                //SMOKER CLASS ================================================================
                 case SpecialType.Smoker:
                     break;
+                
+                
+                
+                
+                //Error ================================================================
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -177,6 +204,8 @@ public class SpecialZombiesAttacks : MonoBehaviour
                 minDist = dist;
             }
         }
+
+        playerStats = target.GetComponent<PlayerStats>();
         return target;
     }
     

@@ -56,7 +56,7 @@ void Start()
 
     //Para uso de componentes envolvendo fisicas (Nesse caso o RigidBody) é recomendado utilizar o fixed update
     void FixedUpdate(){
-        if(isGamepad){
+        if(isGamepad && _inputRotation != Vector3.zero){
             _inputRotation = _inputRotation.normalized * Time.deltaTime;
             Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(_inputRotation), 0.2f);
             if(_lateInputRotation != _inputRotation)
@@ -64,7 +64,8 @@ void Start()
                 if (!_status.verifyDown() && !_status.verifyDeath())
                     transform.rotation = newRotation;
             }
-        }else{
+        }
+        if(!isGamepad){
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _hit, 100, ground))
             {
                     //Nessa variavel está sendo feito a distância do player para onde o raycast está batendo

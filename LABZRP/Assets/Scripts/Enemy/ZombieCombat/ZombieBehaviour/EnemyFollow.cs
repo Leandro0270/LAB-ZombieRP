@@ -64,7 +64,7 @@ public class EnemyFollow : MonoBehaviour
                 }
 
                 float distance = Vector3.Distance(target.transform.position, transform.position);
-                if (distance < 4f && canWalk)
+                if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated())
                 {
 
                     animation.setAttack();
@@ -136,6 +136,12 @@ public class EnemyFollow : MonoBehaviour
         this.followPlayers = followPlayers;
     }
 
+
+    public void AttackDelay(float time)
+    {
+        canWalk = false;
+        Invoke("resetCanWalk", time);
+    }
 }
 
 
