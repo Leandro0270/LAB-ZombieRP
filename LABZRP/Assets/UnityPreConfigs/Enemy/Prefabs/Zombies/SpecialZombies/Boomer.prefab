@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: -1931779337439332616}
   m_Layer: 0
   m_Name: Boomer
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -152,6 +152,9 @@ MonoBehaviour:
   "pontoDeLan\xE7amento": {fileID: 0}
   distanciaAtivacaoPoder: 3
   tempoEntreAtaques: 5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   tipoDePoder: 2
 --- !u!1001 &8551395149691678766
 PrefabInstance:
