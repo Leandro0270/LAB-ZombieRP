@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AWS
   m_EditorClassIdentifier: 
   dano: 20
-  tempoEntreDisparos: 0.6
+  tempoEntreDisparos: 0.4
   tempoRecarga: 3
   dispersao: 0.48
   totalBalas: 300
@@ -21,3 +21,4 @@ MonoBehaviour:
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 1734295216003526792, guid: e28a136329cf66c468853bf91e179f16, type: 3}
+  isShotgun: 0

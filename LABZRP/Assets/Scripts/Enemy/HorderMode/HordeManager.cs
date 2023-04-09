@@ -22,6 +22,8 @@ public class HordeManager : MonoBehaviour
     private GameObject[] spawnPoints;
     private ItemHorderGenerator Itemgenerator;
     private Camera mainCamera;
+    [SerializeField] private float specialZombiePercentage = 25;
+    [SerializeField] private float specialZombiePercentageDecrement = 5;
     [SerializeField] private TextMeshProUGUI HorderText;
     public void Start()
     {
@@ -94,7 +96,10 @@ public class HordeManager : MonoBehaviour
             for (int i = 0; i < currentHordeZombies; i++)
             {
                 yield return new WaitForSeconds(spawnTime);
-                //Pega um numero aleatorio entre 0 e o tamanho do array de spawnPoints
+                specialZombiePercentage -= specialZombiePercentageDecrement;
+                if(specialZombiePercentage < 10f)
+                    specialZombiePercentage = 10f;
+                bool isSpecialZombie = RandomBoolWithPercentage(specialZombiePercentage);
                 int spawnPointIndex = Random.Range(0, visibleSpawnPoints.Count);
                 if (IsVisibleByCamera(visibleSpawnPoints[spawnPointIndex].transform, mainCamera))
                 {
@@ -102,14 +107,19 @@ public class HordeManager : MonoBehaviour
                     spawnPointIndex = Random.Range(0, visibleSpawnPoints.Count);
 
                 }
-                //Instancia o prefab do zumbi na posição do spawnPoint
-                GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
-                    visibleSpawnPoints[spawnPointIndex].transform.rotation);
-                GameManager.addEnemy(zombie);
-                //Incrementa a quantidade de zumbis vivos
+
+                if (isSpecialZombie && currentHorde > 3)
+                {
+                    int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
+                    GameObject zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex], visibleSpawnPoints[spawnPointIndex].transform.position,
+                        visibleSpawnPoints[spawnPointIndex].transform.rotation);
+                    GameManager.addEnemy(zombie);
+                }else{
+                    GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
+                        visibleSpawnPoints[spawnPointIndex].transform.rotation);
+                    GameManager.addEnemy(zombie);
+                }
                 incrementZombiesAlive();
-
-
             }
 
 
@@ -129,6 +139,12 @@ public class HordeManager : MonoBehaviour
             StartCoroutine(SpawnZombie());
         }
 
+        
+        public bool RandomBoolWithPercentage(float probability)
+        {
+            float randomValue = Random.Range(0f, 100f);
+            return randomValue <= probability;
+        }
 
     }
 

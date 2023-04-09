@@ -152,6 +152,7 @@ MonoBehaviour:
   CoffeProjectile: {fileID: 0}
   "pontoDeLan\xE7amento": {fileID: 0}
   distanciaAtivacaoPoder: 20
+  distanciaFuga: 20
   tempoEntrePoderes: 10
   tempoEntreAtaques: 3
   tipoDePoder: 3
@@ -224,6 +225,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: zumbis (2) Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 2987905810462827060, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: ff5a0568e0dc1a94f86a6b2c08d9549e, type: 2}
     - target: {fileID: 6047579641533930501, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
       propertyPath: m_Controller
       value: 
