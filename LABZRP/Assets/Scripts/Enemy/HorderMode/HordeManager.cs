@@ -35,7 +35,7 @@ public class HordeManager : MonoBehaviour
 
     void Update()
     {
-        if (currentHorde == nextHorde && zombiesAlive == 0)
+        if (currentHorde == nextHorde && zombiesAlive <= 0)
         {
             nextHorde++;
             currentHordeZombies += hordeIncrement;
