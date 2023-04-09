@@ -58,7 +58,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         zombieLife = zumbi.get_life();
         enemyFollow.setIsSpecial(true);
-
     }
 
 
@@ -143,7 +142,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                         downedPlayer = true;
                         alvo.GetComponent<CharacterController>().enabled = false;
 
-                        zumbi.getEnemyFollow().setFollowPlayers(false);
+                        enemyFollow.setFollowPlayers(false);
                     }
                     else
                     {
@@ -163,7 +162,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                                 downedPlayer = false;
                                 alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
                                     alvo.transform.position.z);
-                                zumbi.getEnemyFollow().setFollowPlayers(true);
+                                enemyFollow.setFollowPlayers(true);
                                 GameObject[] aux = new GameObject[players.Length - 1];
                                 foreach (GameObject player in players)
                                 {
@@ -212,12 +211,12 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     }
                     else
                     {
+                        posFinal = alvo.transform.position;
                         enemyFollow.setFollowPlayers(true);
                     }
 
                     if (Vector3.Distance(transform.position, posFinal) <= distanciaAtivacaoPoder)
                     {
-                        enemyFollow.setFollowPlayers(true);
                         Explode();
                     }
                 }
@@ -278,7 +277,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     {
                         if (PosicaoVisivel())
                         {
-                            enemyFollow.setFollowPlayers(false);
+                            enemyFollow.setIsStoped(true);
                             playerStats.IncapacitatePlayer();
                             downedPlayer = true;
                         }
@@ -295,7 +294,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                             playerStats.takeDamage(damage);
                             if (playerStats.verifyDown())
                             {
-                                enemyFollow.setFollowPlayers(true);
+                                enemyFollow.setIsStoped(false);
                                 downedPlayer = false;
                             }
 
