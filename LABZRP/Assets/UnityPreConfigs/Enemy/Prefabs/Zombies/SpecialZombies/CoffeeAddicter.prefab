@@ -49,7 +49,7 @@ GameObject:
   - component: {fileID: -1931779337439332616}
   m_Layer: 0
   m_Name: CoffeeAddicter
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,11 +178,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da379e64f1dbce7459c67ede0eecf530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Effect: {fileID: 0}
+  damage: 0
   CoffeProjectile: {fileID: 4425676826399356678, guid: d9f539051d8505943926436632efc380, type: 3}
   "pontoDeLan\xE7amento": {fileID: 8573665924553165007}
   distanciaAtivacaoPoder: 40
   tempoEntreAtaques: 5
-  damage: 0
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   tipoDePoder: 0
 --- !u!1001 &8551395149691678766
 PrefabInstance:
