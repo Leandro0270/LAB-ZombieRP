@@ -150,10 +150,11 @@ MonoBehaviour:
   damage: 10
   CoffeProjectile: {fileID: 0}
   "pontoDeLan\xE7amento": {fileID: 0}
-  distanciaAtivacaoPoder: 50
+  distanciaAtivacaoPoder: 30
   distanciaFuga: 20
   tempoEntrePoderes: 5
   tempoEntreAtaques: 3
+  delayLocknShoot: 3
   tipoDePoder: 4
 --- !u!1001 &8551395149691678766
 PrefabInstance:
