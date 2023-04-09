@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,10 +21,12 @@ public class HordeManager : MonoBehaviour
     public GameObject[] SpecialZombiesPrefabs;
     private GameObject[] spawnPoints;
     private ItemHorderGenerator Itemgenerator;
+    private Camera mainCamera;
     [SerializeField] private TextMeshProUGUI HorderText;
     public void Start()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<MainGameManager>();
+        mainCamera = GameManager.getMainCamera();
         HorderText.text = "Prepare for the First Horder";
         Itemgenerator = GetComponent<ItemHorderGenerator>();
         currentHordeZombies = firstHorde;
@@ -74,6 +77,15 @@ public class HordeManager : MonoBehaviour
         //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
         IEnumerator SpawnZombie()
         {
+            List<GameObject> visibleSpawnPoints = new List<GameObject>();
+
+            foreach (GameObject spawnPoint in spawnPoints)
+            {
+                if (!IsVisibleByCamera(spawnPoint.transform, mainCamera))
+                {
+                    visibleSpawnPoints.Add(spawnPoint);
+                }
+            }
 
             Itemgenerator.GenerateItem();
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
@@ -83,10 +95,16 @@ public class HordeManager : MonoBehaviour
             {
                 yield return new WaitForSeconds(spawnTime);
                 //Pega um numero aleatorio entre 0 e o tamanho do array de spawnPoints
-                int spawnPointIndex = Random.Range(0, spawnPoints.Length);
+                int spawnPointIndex = Random.Range(0, visibleSpawnPoints.Count);
+                if (IsVisibleByCamera(visibleSpawnPoints[spawnPointIndex].transform, mainCamera))
+                {
+                    visibleSpawnPoints.Remove(visibleSpawnPoints[spawnPointIndex]);
+                    spawnPointIndex = Random.Range(0, visibleSpawnPoints.Count);
+
+                }
                 //Instancia o prefab do zumbi na posição do spawnPoint
-                GameObject zombie = Instantiate(NormalZombiePrefab, spawnPoints[spawnPointIndex].transform.position,
-                    spawnPoints[spawnPointIndex].transform.rotation);
+                GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
+                    visibleSpawnPoints[spawnPointIndex].transform.rotation);
                 GameManager.addEnemy(zombie);
                 //Incrementa a quantidade de zumbis vivos
                 incrementZombiesAlive();
@@ -95,6 +113,13 @@ public class HordeManager : MonoBehaviour
             }
 
 
+        }
+        
+        private bool IsVisibleByCamera(Transform target, Camera cam)
+        {
+            Vector3 screenPoint = cam.WorldToViewportPoint(target.position);
+            bool isVisible = screenPoint.x >= 0 && screenPoint.x <= 1 && screenPoint.y >= 0 && screenPoint.y <= 1 && screenPoint.z > 0;
+            return isVisible;
         }
 
         //Função que adiciona um tempo entre as chamadas de spawnDeZumbis

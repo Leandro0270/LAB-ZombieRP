@@ -9,6 +9,7 @@ public class MainGameManager : MonoBehaviour
     [SerializeField] private List<GameObject> players;
     [SerializeField] private List<GameObject> enemies;
     [SerializeField] private List<GameObject> itens;
+    [SerializeField] private Camera mainCamera;
     
     
     
@@ -78,5 +79,11 @@ public class MainGameManager : MonoBehaviour
     public void removeEnemy(GameObject enemy)
     {
         enemies.Remove(enemy);
+    }
+    
+    
+    public Camera getMainCamera()
+    {
+        return mainCamera;
     }
 }
