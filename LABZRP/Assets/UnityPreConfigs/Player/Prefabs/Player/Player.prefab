@@ -75,11 +75,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayBlood: 1
+  delayBlood: 1.5
   blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   bloodSplash: {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
   blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  dispersaoSangue: 0.5
+  dispersaoSangue: 1
   totalLife: 0
   life: 0
   PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
