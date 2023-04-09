@@ -16,13 +16,13 @@ public class PlayerStats : MonoBehaviour
     public GameObject bloodSplash;
     public GameObject blood2;
     private PlayerAnimationManager _playerAnimationManager;
-    public float dispersaoSangue = 2;
+    public float dispersaoSangue = 4;
     
     //Player Specs
    
     private ScObPlayerStats _playerStatus;
-    private bool _isDown = false;
-    private bool _isDead = false;
+    private bool _isDown;
+    private bool _isDead;
     public float totalLife;
     public float life;
     private float _downLife = 100f;
@@ -105,20 +105,19 @@ public class PlayerStats : MonoBehaviour
     {
         if (!_isDown && !_isDead)
         {
+            life -= damage;
+            _healthBarUi.SetHealth((int)life);
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
             Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
                 transform.position.z + x);
-            if (_delayBloodTimer == 0)
-            {
+            if (_delayBloodTimer <= 0)
+            {                
+                _delayBloodTimer = delayBlood;
                 GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
                 Destroy(_blood1, 15f);
                 GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
                 Destroy(_bloodSplash, 2f);
-                _delayBloodTimer = delayBlood;
-
-                life -= damage;
-                _healthBarUi.SetHealth((int)life);
             }
 
             if (life < 1)
@@ -143,10 +142,11 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    public void revived()
+    public void Revived()
     {
         if (_isDown && !_isDead)
         {
+            _isIncapatitated = false;
             _weaponSystem.SetIsIncapacitated(false);
             _characterController.enabled = true;
             GetComponent<BoxCollider>().enabled = false;
@@ -160,6 +160,7 @@ public class PlayerStats : MonoBehaviour
             _healthBarUi.setColor(_characterColor);
             _healthBarUi.SetHealth((int)life);
         }
+        
     }
     
 
