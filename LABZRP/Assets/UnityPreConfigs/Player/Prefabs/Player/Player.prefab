@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4110660743282712491}
-  - component: {fileID: 4110660743282712485}
   - component: {fileID: 4110660743282712484}
   - component: {fileID: 4110660743282712487}
   - component: {fileID: 4110660743282712486}
@@ -45,20 +44,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &4110660743282712485
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4110660743282712483}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 1.17
-  m_Height: 3.9
-  m_Direction: 1
-  m_Center: {x: -0.01, y: 0, z: -0.08}
 --- !u!114 &4110660743282712484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,11 +75,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayBlood: 1
+  delayBlood: 1.5
   blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   bloodSplash: {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
   blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  dispersaoSangue: 0.5
+  dispersaoSangue: 1
   totalLife: 0
   life: 0
   PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
@@ -161,9 +146,9 @@ BoxCollider:
   m_GameObject: {fileID: 4110660743282712483}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
-  m_Size: {x: 1.6718702, y: 0.12946796, z: 1.8835505}
+  m_Size: {x: 2.73, y: 0.81, z: 2.95}
   m_Center: {x: -0.19, y: -1.55, z: -0.09062368}
 --- !u!65 &2231204110317931586
 BoxCollider:
@@ -174,10 +159,10 @@ BoxCollider:
   m_GameObject: {fileID: 4110660743282712483}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1.6718702, y: 0.12946796, z: 1.8835505}
-  m_Center: {x: -0.19, y: -1.55, z: -0.09062368}
+  m_Center: {x: -0.19, y: -2, z: -0.09062368}
 --- !u!114 &8166761122169303627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,7 +217,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: -0.06}
+  m_Center: {x: 0, y: -0.15, z: -0.06}
 --- !u!1 &4110660743618978061
 GameObject:
   m_ObjectHideFlags: 0
@@ -343,7 +328,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6353441003427387304}
   m_LocalRotation: {x: -0.5000001, y: -0.5, z: 0.50000006, w: 0.49999994}
-  m_LocalPosition: {x: -2.8270564, y: 0.9732404, z: 0.5}
+  m_LocalPosition: {x: -2.8270564, y: -0.77, z: 0.5}
   m_LocalScale: {x: 79.32001, y: 79.31999, z: 79.32}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -368,7 +353,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.35
+      value: -1.71
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
       propertyPath: m_LocalPosition.z

@@ -16,7 +16,7 @@ public class PlayerStats : MonoBehaviour
     public GameObject bloodSplash;
     public GameObject blood2;
     private PlayerAnimationManager _playerAnimationManager;
-    public float dispersaoSangue = 2;
+    public float dispersaoSangue = 4;
     
     //Player Specs
    
@@ -33,6 +33,10 @@ public class PlayerStats : MonoBehaviour
     private bool _interacting;
     private bool _stopDeathLife = false;
     private bool _SetupColorComplete = false;
+    private bool _isIncapatitated = false;
+    private bool _isSpeedSlowed = false;
+    private bool _isInArea = false;
+    
     
     //UI
     private HealthBar_UI _healthBarUi;
@@ -47,6 +51,9 @@ public class PlayerStats : MonoBehaviour
     private WeaponSystem _weaponSystem;
     private ItemHorderGenerator _itemHorderGenerator;
     private PlayerPoints _playerPoints;
+    
+    //Other components
+    private CharacterController _characterController;
 
 
 
@@ -98,48 +105,50 @@ public class PlayerStats : MonoBehaviour
     {
         if (!_isDown && !_isDead)
         {
+            life -= damage;
+            _healthBarUi.SetHealth((int)life);
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
-            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 0.27f, transform.position.z +x);
-            if (_delayBloodTimer == 0)
-            {
+            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
+                transform.position.z + x);
+            if (_delayBloodTimer <= 0)
+            {                
+                _delayBloodTimer = delayBlood;
                 GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
                 Destroy(_blood1, 15f);
                 GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
                 Destroy(_bloodSplash, 2f);
-                _delayBloodTimer = delayBlood;
-
             }
 
-            life -= damage;
-            _healthBarUi.SetHealth((int)life);
-        }
+            if (life < 1)
+            {
+                GameObject _blood2 = Instantiate(blood2,
+                    new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
+                    blood2.transform.rotation);
+                Destroy(_blood2, 15f);
+                _weaponSystem.SetIsIncapacitated(true);
+                _isDown = true;
+                _characterController.enabled = false;
+                GetComponent<BoxCollider>().enabled = true;
+                _camera.removePlayer(gameObject);
+                _playerMovement.setCanMove(false);
+                _playerRotation.setCanRotate(false);
+                _playerAnimationManager.setDowning();
+                _playerAnimationManager.setDown(true);
+                _weaponSystem.SetGunVisable(false);
+                _healthBarUi.setColor(Color.gray);
 
-        if (life < 1)
-        {
-            GameObject _blood2 = Instantiate(blood2, transform.position, blood2.transform.rotation);
-            Destroy(_blood2, 15f);
-            _isDown = true;
-            GetComponent<CapsuleCollider>().enabled = false;
-            GetComponent<BoxCollider>().enabled = true;
-            _weaponSystem.SetProntoparaAtirar(false);
-            _camera.removePlayer(gameObject);
-            _playerMovement.setCanMove(false);
-            _playerRotation.setCanRotate(false);
-            _playerAnimationManager.setDowning();
-            _playerAnimationManager.setDown(true);
-            _weaponSystem.SetGunVisable(false);
-            _healthBarUi.setColor(Color.gray);
-            
+            }
         }
     }
 
-    public void revived()
+    public void Revived()
     {
         if (_isDown && !_isDead)
         {
-            _weaponSystem.SetProntoparaAtirar(true);
-            GetComponent<CapsuleCollider>().enabled = true;
+            _isIncapatitated = false;
+            _weaponSystem.SetIsIncapacitated(false);
+            _characterController.enabled = true;
             GetComponent<BoxCollider>().enabled = false;
             _playerRotation.setCanRotate(true);
             _playerMovement.setCanMove(true);
@@ -150,9 +159,10 @@ public class PlayerStats : MonoBehaviour
             _weaponSystem.SetGunVisable(true);
             _healthBarUi.setColor(_characterColor);
             _healthBarUi.SetHealth((int)life);
-
         }
+        
     }
+    
 
     public void PlayerDeath()
     {
@@ -178,6 +188,7 @@ public class PlayerStats : MonoBehaviour
         _playerMovement = GetComponent<PlayerMovement>();
         _playerRotation = GetComponent<PlayerRotation>();
         _playerPoints = GetComponent<PlayerPoints>();
+        _characterController = GetComponent<CharacterController>();
         _characterColor = _playerStatus.MainColor;
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
@@ -232,17 +243,22 @@ public class PlayerStats : MonoBehaviour
     
     public void ReceiveTemporarySlow(float time, float speed)
     {
-        float updatedSpeed = _speed - speed;
-        float baseSpeed = _speed;
-        _speed = updatedSpeed;
-        _playerMovement.setSpeed(updatedSpeed);
-        StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+        if (!_isSpeedSlowed)
+        {
+            _isSpeedSlowed = true;
+            float updatedSpeed = _speed - speed;
+            float baseSpeed = _speed;
+            _speed = updatedSpeed;
+            _playerMovement.setSpeed(updatedSpeed);
+            StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+        }
     }
     private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
     {
         yield return new WaitForSeconds(time);
         _speed = baseSpeed;
-    _playerMovement.setSpeed(baseSpeed);
+        _isSpeedSlowed = false;
+        _playerMovement.setSpeed(baseSpeed);
     }
 
     public void updateSpeedMovement()
@@ -292,5 +308,37 @@ public class PlayerStats : MonoBehaviour
     public PlayerPoints getPlayerPoints()
     {
         return _playerPoints;
+    }
+    
+    
+    public bool getIsIncapacitated()
+    {
+        return _isIncapatitated;
+    }
+    
+    public void IncapacitatePlayer()
+    {
+        _isIncapatitated = true;
+        _weaponSystem.SetIsIncapacitated(true);
+        _characterController.enabled = false;
+        _playerMovement.setCanMove(false);
+        _playerRotation.setCanRotate(false);
+        _weaponSystem.SetGunVisable(false);
+    }
+
+    public void CapacitatePlayer()
+    {
+        _isIncapatitated = false;
+        _weaponSystem.SetIsIncapacitated(false);
+        _characterController.enabled = true;
+        _playerMovement.setCanMove(true);
+        _playerRotation.setCanRotate(true);
+        _weaponSystem.SetGunVisable(true);
+    }
+    
+    
+    public bool getIsInArea()
+    {
+        return _isInArea;
     }
 }

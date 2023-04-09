@@ -51,7 +51,7 @@ public class ReviveScript : MonoBehaviour
         {
              bool pressing = ctx.GetComponent<PlayerStats>().getInteracting();
 
-            if (pressing && _playerStats.verifyDown())
+            if (pressing && _playerStats.verifyDown() && !_playerStats.verifyDeath())
             {
                 _isReviving = true;
                 instantiateRevivalUI();
@@ -63,7 +63,7 @@ public class ReviveScript : MonoBehaviour
                 {
                     _isReviving = false;
                     Destroy(_RevivalUIInstance.gameObject);
-                    _playerStats.revived();
+                    _playerStats.Revived();
                 }
             }
             

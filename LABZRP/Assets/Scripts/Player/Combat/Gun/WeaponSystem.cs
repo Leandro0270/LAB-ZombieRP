@@ -20,9 +20,9 @@ public class WeaponSystem : MonoBehaviour
         private bool _isShotgun;
 
         //ações
-        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto;
-        private int NormalZombiesKilled;
-        private int SpecialZombiesKilled;
+        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado;
+        private int NormalZombiesKilled = 0;
+        private int SpecialZombiesKilled = 0;
 
 
         //Referencia
@@ -62,7 +62,7 @@ public class WeaponSystem : MonoBehaviour
                 
 
 
-                if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0)
+                if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0 & !_incapactitado)
                 {
                         if (_balasRestantes >= _balasPorDisparo)
                         {
@@ -314,6 +314,12 @@ public class WeaponSystem : MonoBehaviour
         public int GetBalasPente()
         {
                 return _balasRestantes;
+        }
+        
+        
+        public void SetIsIncapacitated(bool aux)
+        {
+                _incapactitado = aux;
         }
         
         public void SetGunVisable(bool isGunVisable)

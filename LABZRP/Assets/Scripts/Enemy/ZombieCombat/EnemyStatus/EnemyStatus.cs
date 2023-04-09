@@ -17,6 +17,8 @@ public class EnemyStatus : MonoBehaviour
     private bool isSpecial = false;
     [SerializeField] private ZombieAnimationController _animator;
     private EnemyFollow _enemyFollow;
+    private SpecialZombiesAttacks _specialZombiesAttacks;
+
 
 
     // Start is called before the first frame update
@@ -25,10 +27,12 @@ public class EnemyStatus : MonoBehaviour
         //Armazena um objeto que estiver com a tag horderManager na variavel hordermManager
         _enemyFollow = GetComponent<EnemyFollow>();
         hordeManager = GameObject.FindGameObjectWithTag("HorderManager");
+        _specialZombiesAttacks = GetComponent<SpecialZombiesAttacks>();
         totalLife = _status.health;
         _life = totalLife;
         _speed = _status.speed;
         _damage = _status.damage;
+        isSpecial = _status.isSpecial;
     }
 
     // Update is called once per frame
@@ -41,6 +45,10 @@ public class EnemyStatus : MonoBehaviour
     public void takeDamage(float damage)
     {
         _life -= damage;
+        if (_specialZombiesAttacks)
+        {
+            _specialZombiesAttacks.setLife(_life);
+        }
         //instancia o objeto blood1 na posição do inimigo
         GameObject NewBloodParticle = Instantiate(blood1, new Vector3(transform.position.x, 57, transform.position.z),
             blood1.transform.rotation);
@@ -90,6 +98,11 @@ public class EnemyStatus : MonoBehaviour
     public float getDamage()
     {
         return _damage;
+    }
+    
+    public EnemyFollow getEnemyFollow()
+    {
+        return _enemyFollow;
     }
 
 
@@ -141,4 +154,5 @@ public class EnemyStatus : MonoBehaviour
             _life = totalLife;
         }
     }
+    
 }

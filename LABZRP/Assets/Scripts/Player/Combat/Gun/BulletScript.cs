@@ -55,17 +55,9 @@ public class BulletScript : MonoBehaviour
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
         if (_status != null)
         {
-
             if (!_status.isDeadEnemy())
             {
-
-                if (_status.getIsSpecial())
-                {
-                    PlayerShooter.addKilledSpecialZombie();
-                }
-                else
-                {
-                    destroyBullet();
+                destroyBullet();
                     GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
                         objetoDeColisao.transform.rotation);
                     Destroy(NewBloodParticle, 4f);
@@ -75,12 +67,15 @@ public class BulletScript : MonoBehaviour
                     {
                         {
                             _status.killEnemy();
-                            PlayerShooter.addKilledNormalZombie();
+                            if(_status.getIsSpecial())
+                                PlayerShooter.addKilledSpecialZombie();
+                            else
+                                PlayerShooter.addKilledNormalZombie();
                         }
                     }
                 }
             }
-        }
+        
 
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
