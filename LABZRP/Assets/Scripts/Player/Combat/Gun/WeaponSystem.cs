@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -226,7 +227,7 @@ public class WeaponSystem : MonoBehaviour
                 _tempoRecarga = _specsArma.tempoRecarga;
                 _segurarGatilho = _specsArma.segurarGatilho;
                 _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
-                _prontoParaAtirar = true;
+                StartCoroutine(waitToEnableGun(2));
                 _meleePronto = true;
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
                        armaSpawn.transform.rotation);
@@ -341,6 +342,13 @@ public class WeaponSystem : MonoBehaviour
         {
                 _bulletsUI = bullets;
                 _bulletsUI.initializeHud(_tamanhoPente, _totalBalas, _isShotgun);
+        }
+
+        public IEnumerator waitToEnableGun(float atraso)
+        {
+                yield return new WaitForSeconds(atraso);
+
+                _prontoParaAtirar = true;
         }
         //================================================================================================
 

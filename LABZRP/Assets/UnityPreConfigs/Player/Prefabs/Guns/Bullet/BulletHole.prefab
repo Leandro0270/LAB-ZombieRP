@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 6.84, y: 0, z: 0}
 --- !u!114 &8600824901738334934
 MonoBehaviour:
@@ -52,6 +52,6 @@ MonoBehaviour:
   m_UVScale: {x: 1, y: 1}
   m_UVBias: {x: 0, y: 0}
   m_ScaleMode: 0
-  m_Offset: {x: 0, y: 0, z: 0.5}
-  m_Size: {x: 0.5, y: 0.5, z: 1}
+  m_Offset: {x: 0, y: 0, z: 1}
+  m_Size: {x: 0.5, y: 0.5, z: 2}
   m_FadeFactor: 1

@@ -23,6 +23,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     [SerializeField] private float distanciaFuga = 20f;
     [SerializeField] private float tempoEntrePoderes = 5f;
     [SerializeField] private float tempoEntreAtaques = 2f;
+    [SerializeField] private float delayLocknShoot = 2f;
 
     private EnemyFollow enemyFollow;
     private float tempoPoderesAtual;
@@ -39,7 +40,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
         Arremesso,
         Frog,
         Booomer,
-        Hunter,
+        Jumper,
         Hooker
     }
 
@@ -107,17 +108,10 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     {
                         enemyFollow.setIsStoped(true);
                         enemyFollow.setFollowPlayers(false);
-                        if (canSpecialAttack && !zumbi.isDeadEnemy())
+                        if (canSpecialAttack && !zumbi.isDeadEnemy() & auxBool)
                         {
-                            GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
-                                Quaternion.identity);
-                            Rigidbody rb = projétil.GetComponent<Rigidbody>();
-                            Vector3 trajetoria =
-                                CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position,
-                                    40);
-                            rb.AddForce(trajetoria, ForceMode.VelocityChange);
-                            canSpecialAttack = false;
-                            tempoPoderesAtual = tempoEntrePoderes;
+                            auxBool = false;
+                            StartCoroutine(StopBeforeSpecialAttack());
                         }
                     }
                     else
@@ -227,7 +221,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
 
             //HUNTER CLASS ================================================================
-            case SpecialType.Hunter:
+            case SpecialType.Jumper:
 
                 if (!zumbi.isDeadEnemy())
                 {
@@ -237,7 +231,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                         if (PlayerIsInRange)
                         {
                             enemyFollow.enabled = false;
-                            PularNoJogador();
+                            StartCoroutine(StopBeforeSpecialAttack());
                         }
                     }
 
@@ -277,9 +271,9 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     {
                         if (PosicaoVisivel())
                         {
+                            enemyFollow.setFollowPlayers(false);
                             enemyFollow.setIsStoped(true);
-                            playerStats.IncapacitatePlayer();
-                            downedPlayer = true;
+                            StartCoroutine(StopBeforeSpecialAttack());
                         }
                     }
 
@@ -289,6 +283,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     if (zombieLife > 0)
                     {
                         PuxarJogador(0.2f);
+                        
                         if (canSpecialAttack)
                         {
                             playerStats.takeDamage(damage);
@@ -390,7 +385,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
         return velocidade;
     }
-
     private void PularNoJogador()
     {
         rb.mass = 0;
@@ -435,8 +429,10 @@ public class SpecialZombiesAttacks : MonoBehaviour
     }
 
 
+
     private void PuxarJogador(float velocidadePuxar)
     {
+        
         float distanciaJogador = Vector3.Distance(transform.position, alvo.transform.position);
         if (distanciaJogador > 4f)
             alvo.transform.position = Vector3.Lerp(alvo.transform.position,
@@ -451,7 +447,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
         int layerMask = ~LayerMask.GetMask("Enemy");
         if (Physics.Raycast(transform.position, direcao, out hit, distanciaAtivacaoPoder, layerMask))
         {
-            Debug.DrawRay(transform.position, direcao * hit.distance, Color.green);
             if (hit.collider.gameObject == alvo)
             {
                 return true;
@@ -486,7 +481,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     {
         switch (tipoDePoder)
         {
-            case SpecialType.Hunter:
+            case SpecialType.Jumper:
                 if (auxBool)
                 {
 
@@ -497,6 +492,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     }
                     else
                     {
+                        rb.mass = 4;
                         StartCoroutine(ReativarNavMeshAgentComAtraso(1f));
                     }
 
@@ -510,13 +506,53 @@ public class SpecialZombiesAttacks : MonoBehaviour
     private IEnumerator ReativarNavMeshAgentComAtraso(float atraso)
     {
         yield return new WaitForSeconds(atraso);
-        rb.mass = 4;
         rb.isKinematic = true;
         auxBool = false;
         navMeshAgent.enabled = true;
         enemyFollow.enabled = true;
         tempoPoderesAtual = tempoEntrePoderes;
         canSpecialAttack = false;
+    }
+    
+    private IEnumerator StopBeforeSpecialAttack()
+    {
+        yield return new WaitForSeconds(delayLocknShoot);
+        switch (tipoDePoder)
+        {
+            case SpecialType.Arremesso:
+                GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
+                    Quaternion.identity);
+                Rigidbody rb = projétil.GetComponent<Rigidbody>();
+                Vector3 trajetoria =
+                    CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position,
+                        40);
+                rb.AddForce(trajetoria, ForceMode.VelocityChange);
+                tempoPoderesAtual = tempoEntrePoderes;
+                canSpecialAttack = false;
+                auxBool = true;
+                break;
+            
+            
+            case SpecialType.Hooker:
+                if (PlayerIsInRange)
+                {
+                    downedPlayer = true;
+                    playerStats.IncapacitatePlayer(); 
+                }
+                else
+                {
+                    enemyFollow.setFollowPlayers(true);
+                    enemyFollow.setIsStoped(false);
+                }
+                
+                break;
+            
+            case SpecialType.Jumper:
+                PularNoJogador();
+                break;
+        }
+        
+        
     }
 
 
