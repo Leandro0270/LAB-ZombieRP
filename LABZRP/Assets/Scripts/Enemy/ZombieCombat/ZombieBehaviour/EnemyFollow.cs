@@ -13,6 +13,7 @@ public class EnemyFollow : MonoBehaviour
     private bool canWalk = true;
     private bool isAlive = true;
     private bool followPlayers = true;
+    private bool isSpecial = false;
 
     public ZombieAnimationController animation;
     // Start is called before the first frame update
@@ -36,7 +37,7 @@ public class EnemyFollow : MonoBehaviour
             {
                 //Vai pegar  os parametros de rotação do transform e vai adicionar 90 no eixo Y
                 PlayerStats _playerstats = target.GetComponent<PlayerStats>();
-                if (_playerstats.verifyDown())
+                if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
                 {
                     //usa uma lista auxiliar sem o player que morreu para definir um novo target
                     GameObject[] aux = new GameObject[players.Length - 1];
@@ -133,7 +134,12 @@ public class EnemyFollow : MonoBehaviour
     
     public void setFollowPlayers(bool followPlayers)
     {
-        this.followPlayers = followPlayers;
+        canWalk = followPlayers;
+    }
+    
+    public void setIsStoped(bool isStoped)
+    {
+        enemy.isStopped = isStoped;
     }
 
 
@@ -141,6 +147,15 @@ public class EnemyFollow : MonoBehaviour
     {
         canWalk = false;
         Invoke("resetCanWalk", time);
+    }
+    
+    public void setTarget(GameObject target)
+    {
+        this.target = target;
+    }
+    public void setIsSpecial(bool isSpecial)
+    {
+        this.isSpecial = isSpecial;
     }
 }
 
