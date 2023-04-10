@@ -21,6 +21,7 @@ public class PlayerStats : MonoBehaviour
     //Player Specs
    
     private ScObPlayerStats _playerStatus;
+    private bool _isAiming;
     private bool _isDown;
     private bool _isDead;
     public float totalLife;
@@ -261,6 +262,19 @@ public class PlayerStats : MonoBehaviour
         _playerMovement.setSpeed(baseSpeed);
     }
 
+    public void aimSlow(float newSlow, bool auxBool)
+    {
+        if (auxBool){
+            _isAiming = auxBool;
+            _playerMovement.setSpeed(newSlow);
+        }
+        else{
+            _isAiming = auxBool;
+            _playerMovement.setSpeed(_speed);
+        }
+
+}
+
     public void updateSpeedMovement()
     {
         _playerMovement.setSpeed(_speed);
@@ -314,6 +328,10 @@ public class PlayerStats : MonoBehaviour
     public bool getIsIncapacitated()
     {
         return _isIncapatitated;
+    }
+    public PlayerMovement getPlayerMovement()
+    {
+        return _playerMovement;
     }
     
     public void IncapacitatePlayer()

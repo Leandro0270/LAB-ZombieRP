@@ -21,3 +21,10 @@ MonoBehaviour:
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 3092928721543730202, guid: 0fec2f9ffb62d09468f640f18589ca16, type: 3}
+  isShotgun: 0
+  isSniper: 0
+  range: 50
+  speedBullet: 50
+  hitableEnemies: 1
+  reducaoDispersaoMirando: 40
+  slowWhileAimingPercent: 5
