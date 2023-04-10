@@ -24,9 +24,7 @@ public class LaserSight : MonoBehaviour
         //
         lineRenderer = gameObject.AddComponent<LineRenderer> ();
         lineRenderer.material = materialLaser;
-        lineRenderer.SetColors (corLaser, corLaser);
         lineRenderer.SetWidth (LarguraInicial, LarguraFinal);
-        lineRenderer.SetVertexCount (2);
         posicLuz = new Vector3(0, 0, LarguraFinal);
     }
 

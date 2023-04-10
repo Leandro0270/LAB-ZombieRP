@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: AWS
   m_EditorClassIdentifier: 
   dano: 20
-  tempoEntreDisparos: 0.4
-  tempoRecarga: 3
-  dispersao: 0.48
+  tempoEntreDisparos: 0.2
+  tempoRecarga: 5
+  dispersao: 0.5
   totalBalas: 300
   tamanhoPente: 56
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 1734295216003526792, guid: e28a136329cf66c468853bf91e179f16, type: 3}
   isShotgun: 0
+  isSniper: 0
+  range: 50
+  speedBullet: 100
+  hitableEnemies: 1
+  reducaoDispersaoMirando: 50
+  slowWhileAimingPercent: 40

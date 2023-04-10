@@ -59,6 +59,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
         navMeshAgent = GetComponent<NavMeshAgent>();
         zombieLife = zumbi.get_life();
         enemyFollow.setIsSpecial(true);
+
     }
 
 
@@ -99,27 +100,39 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
             //COFFEE CLASS ================================================================
             case SpecialType.Arremesso:
-                if (!PlayerIsInRange)
+                if (!zumbi.isDeadEnemy())
                 {
-                    enemyFollow.setIsStoped(false);
-                    enemyFollow.setFollowPlayers(true);
-                }else{
-                    if (Vector3.Distance(transform.position, alvo.transform.position) > distanciaFuga)
+                    if (!PlayerIsInRange)
                     {
-                        enemyFollow.setIsStoped(true);
-                        enemyFollow.setFollowPlayers(false);
-                        if (canSpecialAttack && !zumbi.isDeadEnemy() & auxBool)
-                        {
-                            auxBool = false;
-                            StartCoroutine(StopBeforeSpecialAttack());
-                        }
+                        enemyFollow.setIsStoped(false);
+                        enemyFollow.setFollowPlayers(true);
                     }
                     else
                     {
-                        enemyFollow.setIsStoped(false);
-                        navMeshAgent.SetDestination(posicaoFuga());
+                        if (Vector3.Distance(transform.position, alvo.transform.position) > distanciaFuga)
+                        {
+                            enemyFollow.setIsStoped(true);
+                            enemyFollow.setFollowPlayers(false);
+                            if (canSpecialAttack && !zumbi.isDeadEnemy())
+                            {
+                                tempoPoderesAtual = tempoEntrePoderes;
+                                canSpecialAttack = false;
+                                StartCoroutine(StopBeforeSpecialAttack());
+                            }
+                        }
+                        else
+                        {
+                            enemyFollow.setIsStoped(false);
+                            navMeshAgent.SetDestination(posicaoFuga());
+                        }
                     }
                 }
+                else
+                {
+                    enemyFollow.setIsStoped(true);
+                    enemyFollow.setFollowPlayers(false);
+                }
+
                 break;
 
             //FROG CLASS ============================================================================================================================================
@@ -189,6 +202,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
             //BOOOMER CLASS ================================================================
             case SpecialType.Booomer:
+                enemyFollow.setIsStoped(false);
                 if (zombieLife <= 0)
                 {
                     Explode();
@@ -201,6 +215,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     {
                         posFinal = pontoMedio;
                         enemyFollow.setFollowPlayers(false);
+                        
                         navMeshAgent.SetDestination(pontoMedio);
                     }
                     else
@@ -529,7 +544,6 @@ public class SpecialZombiesAttacks : MonoBehaviour
                 rb.AddForce(trajetoria, ForceMode.VelocityChange);
                 tempoPoderesAtual = tempoEntrePoderes;
                 canSpecialAttack = false;
-                auxBool = true;
                 break;
             
             
