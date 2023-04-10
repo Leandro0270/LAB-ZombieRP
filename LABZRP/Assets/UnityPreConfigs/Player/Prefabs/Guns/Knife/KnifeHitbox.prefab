@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 655831150207542014}
   m_Layer: 0
   m_Name: KnifeHitbox
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -77,5 +77,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BulletHole: {fileID: 5816881631203203802, guid: 1730c0f53f0585540a1e6cee3c81235d, type: 3}
   bloodParticle: {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
-  distance: 2
-  speedBullet: 20
+  distancia: 0
+  velocidadeBala: 20
+  hitableEnemies: 1

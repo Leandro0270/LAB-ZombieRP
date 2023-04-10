@@ -15,6 +15,7 @@ public class PlayerInputHandler : MonoBehaviour
     private CustomizePlayerInGame _customize;
     public float delay = 2f;
     private float delayTimer = 0f;
+
     private void Awake()
     {
         _move = GetComponent<PlayerMovement>();
@@ -32,7 +33,7 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Update()
     {
-        if(delayTimer > 0)
+        if (delayTimer > 0)
         {
             delayTimer -= Time.deltaTime;
         }
@@ -44,13 +45,13 @@ public class PlayerInputHandler : MonoBehaviour
         _playerConfig.Input.onActionTriggered += Input_onActionTriggered;
         if (_status != null)
             _status.setPlayerStats(pc.playerStats);
-        if(_attack != null)
+        if (_attack != null)
             _attack.SetGunStatus(pc.playerStats.startGun);
-        if(_customize != null)
+        if (_customize != null)
             _customize.SetSkin(pc.playerCustom);
-            //Pega o dispositivo que o jogador está usando
-        if(_rotate != null)
-            if(_playerConfig.Input.devices[0].device is Gamepad)
+        //Pega o dispositivo que o jogador está usando
+        if (_rotate != null)
+            if (_playerConfig.Input.devices[0].device is Gamepad)
                 _rotate.SetGamepadValidation(true);
 
     }
@@ -71,21 +72,26 @@ public class PlayerInputHandler : MonoBehaviour
         {
             OnReload();
         }
-        
+
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
-            if(delayTimer <= 0)
+            if (delayTimer <= 0)
             {
                 OnMelee();
-                delayTimer= delay;
+                delayTimer = delay;
             }
-                
+
         }
 
         if (obj.action.name == _controls.Gameplay.ShootHold.name)
         {
-            
+
             OnShootPress(obj);
+        }
+
+        if (obj.action.name == _controls.Gameplay.Aim.name)
+        {
+            OnAimPress(obj);
         }
 
         if (obj.action.name == _controls.Gameplay.Select.name)
@@ -102,8 +108,8 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
-    
-    
+
+
 
     public void OnMove(CallbackContext context)
     {
@@ -118,12 +124,12 @@ public class PlayerInputHandler : MonoBehaviour
         if (_rotate != null)
         {
 
-            if(ctx.ReadValue<Vector2>() != new Vector2(0,0))
-                     _rotate.setRotationInput(ctx.ReadValue<Vector2>());
+            if (ctx.ReadValue<Vector2>() != new Vector2(0, 0))
+                _rotate.setRotationInput(ctx.ReadValue<Vector2>());
         }
 
-        
-        
+
+
     }
 
     public void OnReload()
@@ -140,11 +146,16 @@ public class PlayerInputHandler : MonoBehaviour
     {
         _attack.AuxShootPress(ctx);
     }
-    
+
     public void OnSelect(bool value)
     {
         _status.setInteracting(value);
     }
-    
-    
+
+    public void OnAimPress(CallbackContext ctx)
+    {
+        _attack.AuxAimPress(ctx);
+    }
+
+
 }

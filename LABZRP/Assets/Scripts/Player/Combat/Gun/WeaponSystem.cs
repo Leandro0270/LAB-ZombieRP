@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
+
 public class WeaponSystem : MonoBehaviour
 {
         private ScObGunSpecs _specsArma;
@@ -14,19 +15,21 @@ public class WeaponSystem : MonoBehaviour
         //Status das armas
         private float _danoMelee;
         private int _dano;
-        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao;
+        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent;
         private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
+        private int _hitableEnemies;
         private bool _segurarGatilho;
         private int _balasRestantes, _disparosAEfetuar;
-        private bool _isShotgun;
+        private bool _isShotgun, _isSniper;
 
         //ações
-        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado;
+        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando;
         private int NormalZombiesKilled = 0;
         private int SpecialZombiesKilled = 0;
 
 
         //Referencia
+        public GameObject miraLaser;
         public Transform canoDaArma;
         public BulletScript MeleeHitBox;
         public BulletScript _bala;
@@ -117,6 +120,10 @@ public class WeaponSystem : MonoBehaviour
                         BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                         bala.SetDamage(_dano);
                         bala.setShooter(this);
+                        bala.setDistancia(_distancia);
+                        bala.setVelocidadeBalas(_velocidadeBala);
+                        bala.setHitableEnemies(_hitableEnemies);
+                        
                         _balasRestantes--;
                         _disparosAEfetuar--;
                         _bulletsUI.setBalasPente(_balasRestantes);
@@ -136,8 +143,11 @@ public class WeaponSystem : MonoBehaviour
                                 Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
                                 //Spawn da bala
                                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
+                                bala.setDistancia(_distancia);
+                                bala.setVelocidadeBalas(_velocidadeBala);
                                 bala.SetDamage(_dano);
                                 bala.setShooter(this);
+                                bala.setHitableEnemies(_hitableEnemies);
                                 
                         }
                         _balasRestantes -= _balasPorDisparo;
@@ -220,18 +230,30 @@ public class WeaponSystem : MonoBehaviour
                         _maxBalas = _specsArma.totalBalas;
                         _totalBalas = _maxBalas;
                 }
-
+                _isSniper = _specsArma.isSniper;
+                _distancia = _specsArma.range;
+                _velocidadeBala = _specsArma.speedBullet;
+                _hitableEnemies = _specsArma.hitableEnemies;
+                _slowWhileAimingPercent = (_specsArma.slowWhileAimingPercent/100);
                 _dano = _specsArma.dano;
                 _dispersao = _specsArma.dispersao;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
                 _tempoRecarga = _specsArma.tempoRecarga;
                 _segurarGatilho = _specsArma.segurarGatilho;
                 _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
+                _reducaoDispersaoMirando = _specsArma.reducaoDispersaoMirando;
                 StartCoroutine(waitToEnableGun(2));
                 _meleePronto = true;
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
                        armaSpawn.transform.rotation);
                 armaStart.transform.parent = armaSpawn.transform;
+        }
+        
+        public IEnumerator waitToEnableGun(float atraso)
+        {
+                yield return new WaitForSeconds(atraso);
+
+                _prontoParaAtirar = true;
         }
         
 
@@ -270,7 +292,33 @@ public class WeaponSystem : MonoBehaviour
                                 break;
                 }
         }
-        
+
+        public void AuxAimPress(InputAction.CallbackContext ctx)
+        {
+                if (!_playerStats.verifyDown() && !_playerStats.getIsIncapacitated())
+                {
+                        switch (ctx.phase)
+                        {
+                                case InputActionPhase.Started:
+                                        float velocidadeAtual = _playerStats.getSpeed();
+                                        float velocidadeNova = velocidadeAtual * _slowWhileAimingPercent;
+                                        _playerStats.aimSlow(velocidadeNova, true);
+                                        _dispersao *= (_reducaoDispersaoMirando / 100);
+                                        miraLaser.SetActive(true);
+                                        _mirando = true;
+                                        break;
+                                case InputActionPhase.Canceled:
+                                        _playerStats.aimSlow(0, false);
+                                        miraLaser.SetActive(false);
+                                        _dispersao *= (100 / _reducaoDispersaoMirando);
+                                        _mirando = false;
+                                        break;
+                        }
+
+                }
+        }
+
+
         //================================================================================================
         //Map interaction
         
@@ -344,11 +392,9 @@ public class WeaponSystem : MonoBehaviour
                 _bulletsUI.initializeHud(_tamanhoPente, _totalBalas, _isShotgun);
         }
 
-        public IEnumerator waitToEnableGun(float atraso)
+        public bool GetIsSniper()
         {
-                yield return new WaitForSeconds(atraso);
-
-                _prontoParaAtirar = true;
+                return _isSniper;
         }
         //================================================================================================
 

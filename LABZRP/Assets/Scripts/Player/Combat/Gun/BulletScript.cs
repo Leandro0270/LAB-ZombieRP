@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
 public class BulletScript : MonoBehaviour
@@ -13,14 +14,19 @@ public class BulletScript : MonoBehaviour
     public GameObject bloodParticle;
     private Rigidbody _rb;
     private float damage;
-    public float distance;
-    public float speedBullet = 20f;
+    public float distancia;
+    public float velocidadeBala = 20f;
+    public int hitableEnemies = 1;
+    private int enemiesHitted = 0;
 
+    
+    
 
-    private void Awake()
+    private void Start()
     {
         _rb = GetComponent<Rigidbody>();
         StartCoroutine(waiter());
+        
     }
 
 
@@ -28,20 +34,22 @@ public class BulletScript : MonoBehaviour
     {
 
         //Nessa variavel está sendo feito o calculo da rotação necessária para o player utilizando o lerp para suavizar
-        _rb.MovePosition(_rb.position + transform.forward * (speedBullet * Time.deltaTime));
+        _rb.MovePosition(_rb.position + transform.forward * (velocidadeBala * Time.deltaTime));
 
 
     }
 
     IEnumerator waiter()
     {
-        float tempo = distance / speedBullet;
+        float tempo = distancia / velocidadeBala;
         yield return new WaitForSeconds(tempo);
         Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider objetoDeColisao)
     {
+        //Verifica se o objeto colidido tem a tag "WALL"
+
         if (objetoDeColisao.gameObject.CompareTag("WALL"))
         {
             GameObject NewBulletHole = Instantiate(BulletHole, objetoDeColisao.ClosestPointOnBounds(transform.position),
@@ -57,38 +65,67 @@ public class BulletScript : MonoBehaviour
         {
             if (!_status.isDeadEnemy())
             {
-                destroyBullet();
-                    GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
-                        objetoDeColisao.transform.rotation);
-                    Destroy(NewBloodParticle, 4f);
-                    _status.takeDamage(damage);
-                    Destroy(gameObject, 1f);
-                    if (_status.get_life() < 1)
-                    {
+                
+                        enemiesHitted++;
+                        _status.takeDamage(damage);
+                        GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
+                            objetoDeColisao.transform.rotation);
+                        Destroy(NewBloodParticle, 4f);
+                        if (_status.get_life() < 1)
                         {
-                            _status.killEnemy();
-                            if(_status.getIsSpecial())
-                                PlayerShooter.addKilledSpecialZombie();
-                            else
-                                PlayerShooter.addKilledNormalZombie();
+                            {
+                                _status.killEnemy();
+                                if(_status.getIsSpecial())
+                                    PlayerShooter.addKilledSpecialZombie();
+                                else
+                                    PlayerShooter.addKilledNormalZombie();
+                            }
                         }
-                    }
-                }
+                        if (enemiesHitted < hitableEnemies)
+                        {
+                            enemiesHitted++;
+                        }
+                        else
+                        {
+                            destroyBullet();
+                            Destroy(gameObject);
+                        }
+                        
             }
+        }
         
 
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
-            destroyBullet();
             status.takeDamage(damage * 0.5f);
-            Destroy(gameObject);
+            if (enemiesHitted< hitableEnemies)
+            {
+                enemiesHitted++;
+            }
+            else
+            {
+                destroyBullet();
+                Destroy(gameObject);
+            }
+            
 
         }
-        //Verifica se o objeto colidido tem a tag "WALL"
+        
 
     }
-
+    public void setDistancia(float distancia)
+    {
+        this.distancia = distancia;
+    }
+    public void setVelocidadeBalas(float velocidadeBala)
+    {
+        this.velocidadeBala = velocidadeBala;
+    }
+    public void setHitableEnemies(int hitableEnemies)
+    {
+        this.hitableEnemies = hitableEnemies;
+    }
     public void SetDamage(float damage)
     {
         this.damage = damage;
@@ -104,7 +141,6 @@ public class BulletScript : MonoBehaviour
     {
         isMelee = melee;
     }
-
 
     private void destroyBullet()
     {

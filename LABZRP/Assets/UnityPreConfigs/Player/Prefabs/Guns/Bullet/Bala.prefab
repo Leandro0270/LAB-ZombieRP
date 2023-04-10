@@ -16,9 +16,9 @@ GameObject:
   - component: {fileID: 2344096171901005769}
   - component: {fileID: 7305771011970772335}
   - component: {fileID: -1064830645140989802}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Bala
-  m_TagString: Untagged
+  m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,8 +132,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BulletHole: {fileID: 5816881631203203802, guid: 1730c0f53f0585540a1e6cee3c81235d, type: 3}
   bloodParticle: {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
-  distance: 50
-  speedBullet: 80
+  distancia: 0
+  velocidadeBala: 20
+  hitableEnemies: 1
 --- !u!108 &7305771011970772335
 Light:
   m_ObjectHideFlags: 0
@@ -227,6 +228,10 @@ PrefabInstance:
     - target: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
       propertyPath: m_Name
       value: MuzzleFlashEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4000011227296186, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
       propertyPath: m_RootOrder

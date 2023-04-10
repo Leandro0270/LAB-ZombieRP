@@ -56,6 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61c2b5747bd284b9610fc74dc5d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  miraLaser: {fileID: 4787241468040720977}
   canoDaArma: {fileID: 1809394511760243526}
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
@@ -249,6 +250,55 @@ Transform:
   m_Father: {fileID: 2837557343510285008}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &4787241468040720977
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5595388170336756655}
+  - component: {fileID: 1277881797571327863}
+  m_Layer: 0
+  m_Name: laserSight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &5595388170336756655
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787241468040720977}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1809394511760243526}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1277881797571327863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4787241468040720977}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fd3c99f17b4c2843ac6666f28bcc95b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  corLaser: {r: 1, g: 0, b: 0, a: 1}
+  DistanciaDoLaser: 100
+  LarguraInicial: 0.02
+  LarguraFinal: 0.1
+  materialLaser: {fileID: 2100000, guid: 7c555533bbb4c0d47bfe5ead92496d69, type: 2}
 --- !u!1 &5597692463332652274
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +381,8 @@ Transform:
   m_LocalPosition: {x: -2.8270564, y: -0.77, z: 0.5}
   m_LocalScale: {x: 79.32001, y: 79.31999, z: 79.32}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5595388170336756655}
   m_Father: {fileID: 4110660743282712491}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}

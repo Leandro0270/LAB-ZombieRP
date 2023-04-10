@@ -16,8 +16,6 @@ public class PlayerMovement : MonoBehaviour
     private PlayerAnimationManager _animationManager;
     private Vector3 _inputMovimento;
     private bool _canMove = true;
-
-    //!!! O atributo speed será modificado em breve para comportar modificações por scriptObject
     private float _speed;
 
     void Start()
@@ -67,4 +65,5 @@ public class PlayerMovement : MonoBehaviour
     {
         _speed = valor;
     }
+    
 }
