@@ -44,10 +44,6 @@ public class WeaponSystem : MonoBehaviour
         public Slider reloadSlider;
         private Slider _reloadSliderInstance;
 
-        //Debug
-        public ScObGunSpecs novaArma;
-        public bool changeGUN = false;
-
 //======================================================================================================
 //Unity base functions
         private void Start()

@@ -15,12 +15,13 @@ MonoBehaviour:
   dano: 30
   tempoEntreDisparos: 0.3
   tempoRecarga: 2
-  dispersao: 0.48
+  dispersao: 8
   totalBalas: 200
   tamanhoPente: 30
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 5153951103588041634, guid: db1e82434c65801498b566f6f7a1958e, type: 3}
+  modelo3dVendingMachine: {fileID: 5153951103588041634, guid: 15fc8c83c1983764f822cd8daf407b9c, type: 3}
   isShotgun: 0
   isSniper: 0
   range: 100
@@ -28,3 +29,4 @@ MonoBehaviour:
   hitableEnemies: 1
   reducaoDispersaoMirando: 24.7
   slowWhileAimingPercent: 60
+  Price: 100
