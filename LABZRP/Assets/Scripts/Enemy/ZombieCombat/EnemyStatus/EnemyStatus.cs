@@ -48,19 +48,30 @@ public class EnemyStatus : MonoBehaviour
 
     }
 
-    public void takeDamage(float damage)
+    public bool takeDamage(float damage)
     {
         _life -= damage;
         if (_specialZombiesAttacks)
         {
             _specialZombiesAttacks.setLife(_life);
         }
+
         //instancia o objeto blood1 na posição do inimigo
         GameObject NewBloodParticle = Instantiate(blood1, new Vector3(transform.position.x, 57, transform.position.z),
             blood1.transform.rotation);
         //destroi o objeto blood1 depois de 4 segundos
         Destroy(NewBloodParticle, 8f);
-    }
+
+        if (_life <= 0)
+        {
+            killEnemy();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+}
 
     public void killEnemy()
     {
@@ -93,7 +104,7 @@ public class EnemyStatus : MonoBehaviour
 
     public float get_life()
     {
-        return _life;
+        return _status.health;
     }
 
     public bool isDeadEnemy()
@@ -159,6 +170,15 @@ public class EnemyStatus : MonoBehaviour
         {
             _life = totalLife;
         }
+    }
+    
+    public void setTotalLife(float life)
+    {
+        totalLife = life;
+    }
+    public void setCurrentLife(float life)
+    {
+        _life = life;
     }
     
     public SpecialZombiesAttacks getSpecialZombieAttack()

@@ -19,6 +19,9 @@ public class HordeManager : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager GameManager;
     //Horde Parameters==========================================================
+    [SerializeField] private bool isHorderMode = true;
+    [SerializeField] private bool haveBaseZombieLifeIncrement = true;
+    [SerializeField] private float baseZombieLifeIncrement = 0.5f;
     [SerializeField] private float spawnTime = 2f;
     [SerializeField] private float spawnTimeDecrement = 0.2f;
     [SerializeField] private float timeBetweenHordes = 5f;
@@ -26,9 +29,12 @@ public class HordeManager : MonoBehaviour
     [SerializeField] private int hordeIncrement = 6;
     [SerializeField] private float specialZombiePercentage = 25;
     [SerializeField] private float specialZombiePercentageDecrement = 5;
+    [SerializeField] private bool isLastHordeMode = false;
     [SerializeField] private float lastHorde = 15;
     [SerializeField] private float timeBetweenZombiesOnLastHorde = 5f;
     //Intern Variables=================================================================
+    private float killedZombiesInHorde = 0;
+    private float currentZombieLife = 0;
     private int currentHordeZombies = 0;
     private int currentHorde = 0;
     private int nextHorde = 1;
@@ -41,6 +47,8 @@ public class HordeManager : MonoBehaviour
         HorderText.text = "Prepare for the First Horder";
         Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
         currentHordeZombies = firstHordeZombies;
+        if(haveBaseZombieLifeIncrement)
+            currentZombieLife = NormalZombiePrefab.GetComponent<EnemyStatus>().get_life();
         //Pega os objetos que possuem a tag SpawnPoint
         StartCoroutine(HorderBreakManager());
         
@@ -60,13 +68,20 @@ public class HordeManager : MonoBehaviour
     //Função que decrementa a quantidade de zumbis vivos
         public void decrementZombiesAlive()
         {
+            Debug.Log("Before Zombies Alive: " + zombiesAlive);
             zombiesAlive--;
-            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + zombiesAlive;
+            killedZombiesInHorde++;
+            Debug.Log("Current Zombies Alive: " + zombiesAlive);
+            Debug.Log("Current Horde: " + currentHorde);
+            Debug.Log("Current Horde Zombies: " + currentHordeZombies);
+            Debug.Log("killedZombiesInHorde: " + killedZombiesInHorde);
+            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if (zombiesAlive == 0)
             {
                 currentHorde++;
                 if (currentHorde == nextHorde && zombiesAlive <= 0)
                 {
+                    killedZombiesInHorde = 0;
                     nextHorde++;
                     currentHordeZombies += hordeIncrement;
                     if (spawnTime > 0.4f)
@@ -75,13 +90,16 @@ public class HordeManager : MonoBehaviour
                     StartCoroutine(HorderBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
                 }
-                
-                if(currentHorde == lastHorde)
-                {
-                    isBossZombieAlive = true;
-                    spawnTime = timeBetweenZombiesOnLastHorde;
-                    currentHordeZombies = 200;
 
+                if (isLastHordeMode)
+                {
+                    if (currentHorde == lastHorde)
+                    {
+                        isBossZombieAlive = true;
+                        spawnTime = timeBetweenZombiesOnLastHorde;
+                        currentHordeZombies = 200;
+
+                    }
                 }
             }
         }
@@ -105,6 +123,11 @@ public class HordeManager : MonoBehaviour
                 {
                     visibleSpawnPoints.Add(spawnPoint);
                 }
+            }
+
+            if (haveBaseZombieLifeIncrement && currentHorde > 0)
+            {
+                currentZombieLife += (currentZombieLife* baseZombieLifeIncrement);
             }
             
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
@@ -139,6 +162,13 @@ public class HordeManager : MonoBehaviour
                 }else{
                     GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
                         visibleSpawnPoints[spawnPointIndex].transform.rotation);
+                    if (haveBaseZombieLifeIncrement)
+                    {
+                        EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                        ZombieStatus.setTotalLife(currentZombieLife);
+                        ZombieStatus.setCurrentLife(currentZombieLife);
+                    }
+
                     GameManager.addEnemy(zombie);
                 }
                 incrementZombiesAlive();

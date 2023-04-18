@@ -70,22 +70,20 @@ public class BulletScript : MonoBehaviour
         {
             if (!_status.isDeadEnemy())
             {
-                
-                        enemiesHitted++;
-                        _status.takeDamage(damage);
+                enemiesHitted++;
+                        
                         GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
                             objetoDeColisao.transform.rotation);
                         Destroy(NewBloodParticle, 4f);
-                        if (_status.get_life() < 1)
+                        if (_status.takeDamage(damage))
                         {
-                            _status.killEnemy();
-                                if (_status.getIsSpecial())
-                                {
+                            if (_status.getIsSpecial())
+                            {
                                     int points = _status.getPoints();
                                     PlayerShooter.addKilledSpecialZombie(points);
-                                }
-                                else
-                                    PlayerShooter.addKilledNormalZombie();
+                            }
+                            else
+                                PlayerShooter.addKilledNormalZombie();
                         }
                         else
                         {
