@@ -21,10 +21,14 @@ MonoBehaviour:
   balasPorDisparo: 6
   segurarGatilho: 0
   modelo3d: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}
+  modelo3dVendingMachine: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}
   isShotgun: 1
   isSniper: 0
   range: 50
   speedBullet: 100
+  haveKnockback: 1
+  knockbackForce: 4
   hitableEnemies: 1
   reducaoDispersaoMirando: 30
   slowWhileAimingPercent: 60
+  Price: 100

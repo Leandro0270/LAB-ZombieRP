@@ -10,5 +10,6 @@ public class ScObSpecialZombies : ScriptableObject
     public float health;
     public float speed;
     public float damage;
+    public int points;
 
 }

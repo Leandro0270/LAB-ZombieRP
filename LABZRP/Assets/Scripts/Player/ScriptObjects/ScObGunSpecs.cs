@@ -11,13 +11,19 @@ public class ScObGunSpecs : ScriptableObject
     public int totalBalas, tamanhoPente, balasPorDisparo;
     public bool segurarGatilho;
     public GameObject modelo3d;
+    public GameObject modelo3dVendingMachine;
     public bool isShotgun;
     public bool isSniper;
     public float range;
     public float speedBullet;
-    public int hitableEnemies;
+    public bool haveKnockback;
+    public float knockbackForce;
+    [Range(1f, 10f)]
+    public int hitableEnemies = 1;
     [Range(1f, 100f)]
-    public float reducaoDispersaoMirando;
+    public float reducaoDispersaoMirando = 1f;
     [Range(1f, 100f)]
-    public float slowWhileAimingPercent;
+    public float slowWhileAimingPercent = 1f;
+    public int Price = 100;
+
 }

@@ -2,54 +2,52 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class HordeManager : MonoBehaviour
 {
-    public float timeBetweenHordes = 5f;
-    public int firstHorde = 3;
-    public int hordeIncrement = 6;
+    //GameObjects===============================================================
+    [SerializeField] private GameObject NormalZombiePrefab;
+    [SerializeField] private GameObject[] SpecialZombiesPrefabs;
+    [SerializeField] private GameObject[] spawnPoints;
+    [SerializeField] private GameObject FinalBosses;
+    
+    //Components================================================================
+    [SerializeField] private TextMeshProUGUI HorderText;
+    [SerializeField] private VendingMachineHorderGenerator Itemgenerator;
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private MainGameManager GameManager;
+    //Horde Parameters==========================================================
+    [SerializeField] private float spawnTime = 2f;
+    [SerializeField] private float spawnTimeDecrement = 0.2f;
+    [SerializeField] private float timeBetweenHordes = 5f;
+    [SerializeField] private int firstHordeZombies = 3;
+    [SerializeField] private int hordeIncrement = 6;
+    [SerializeField] private float specialZombiePercentage = 25;
+    [SerializeField] private float specialZombiePercentageDecrement = 5;
+    [SerializeField] private float lastHorde = 15;
+    [SerializeField] private float timeBetweenZombiesOnLastHorde = 5f;
+    //Intern Variables=================================================================
     private int currentHordeZombies = 0;
     private int currentHorde = 0;
     private int nextHorde = 1;
-    public float spawnTime = 2f;
-    public float spawnTimeDecrement = 0.2f;
     private int zombiesAlive = 0;
     private float timeBetweenHordesUI;
-    private MainGameManager GameManager;
-    public GameObject NormalZombiePrefab;
-    public GameObject[] SpecialZombiesPrefabs;
-    private GameObject[] spawnPoints;
-    private ItemHorderGenerator Itemgenerator;
-    private Camera mainCamera;
-    [SerializeField] private float specialZombiePercentage = 25;
-    [SerializeField] private float specialZombiePercentageDecrement = 5;
-    [SerializeField] private TextMeshProUGUI HorderText;
+    private bool isBossZombieAlive = false;
+    
     public void Start()
-    {
-        GameManager = GameObject.Find("GameManager").GetComponent<MainGameManager>();
-        mainCamera = GameManager.getMainCamera();
+    { mainCamera = GameManager.getMainCamera();
         HorderText.text = "Prepare for the First Horder";
-        Itemgenerator = GetComponent<ItemHorderGenerator>();
-        currentHordeZombies = firstHorde;
+        Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
+        currentHordeZombies = firstHordeZombies;
         //Pega os objetos que possuem a tag SpawnPoint
-        spawnPoints = GameObject.FindGameObjectsWithTag("SpawnPoint");
         StartCoroutine(HorderBreakManager());
         
     }
 
     void Update()
     {
-        if (currentHorde == nextHorde && zombiesAlive <= 0)
-        {
-            nextHorde++;
-            currentHordeZombies += hordeIncrement;
-            if (spawnTime > 0.4f)
-                spawnTime -= spawnTimeDecrement;
-            StartCoroutine(HorderBreakManager());
-            timeBetweenHordesUI = timeBetweenHordes;
-        }
-
         if (timeBetweenHordesUI > 0)
         {
             timeBetweenHordesUI -= Time.deltaTime;
@@ -67,6 +65,24 @@ public class HordeManager : MonoBehaviour
             if (zombiesAlive == 0)
             {
                 currentHorde++;
+                if (currentHorde == nextHorde && zombiesAlive <= 0)
+                {
+                    nextHorde++;
+                    currentHordeZombies += hordeIncrement;
+                    if (spawnTime > 0.4f)
+                        spawnTime -= spawnTimeDecrement;
+                    Itemgenerator.setIsOnHorderCooldown(true);
+                    StartCoroutine(HorderBreakManager());
+                    timeBetweenHordesUI = timeBetweenHordes;
+                }
+                
+                if(currentHorde == lastHorde)
+                {
+                    isBossZombieAlive = true;
+                    spawnTime = timeBetweenZombiesOnLastHorde;
+                    currentHordeZombies = 200;
+
+                }
             }
         }
 
@@ -79,6 +95,8 @@ public class HordeManager : MonoBehaviour
         //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
         IEnumerator SpawnZombie()
         {
+            Itemgenerator.setIsOnHorderCooldown(false);
+            Itemgenerator.verifySpawnVendingMachine(currentHorde+1);
             List<GameObject> visibleSpawnPoints = new List<GameObject>();
 
             foreach (GameObject spawnPoint in spawnPoints)
@@ -88,10 +106,14 @@ public class HordeManager : MonoBehaviour
                     visibleSpawnPoints.Add(spawnPoint);
                 }
             }
-
-            Itemgenerator.GenerateItem();
+            
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
-
+            if(isBossZombieAlive)
+            {
+                GameObject bossZombie = Instantiate(FinalBosses, visibleSpawnPoints[0].transform.position,
+                    visibleSpawnPoints[0].transform.rotation);
+                GameManager.addEnemy(bossZombie);
+            }
             //inicia um loop que ira rodar conforme a variavel spawnCount, e ira rodar conforme o tempo que foi passado na variavel spawnTime
             for (int i = 0; i < currentHordeZombies; i++)
             {

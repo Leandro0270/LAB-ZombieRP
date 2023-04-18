@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: "ZumbiPadr\xE3o"
   m_EditorClassIdentifier: 
   health: 30
-  speed: 5
+  speed: 8
   damage: 20
-  isSpecial: 1
+  isSpecial: 0

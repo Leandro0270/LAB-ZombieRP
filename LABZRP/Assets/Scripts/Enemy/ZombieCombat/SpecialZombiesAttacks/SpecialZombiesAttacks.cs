@@ -24,6 +24,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     [SerializeField] private float tempoEntrePoderes = 5f;
     [SerializeField] private float tempoEntreAtaques = 2f;
     [SerializeField] private float delayLocknShoot = 2f;
+    [SerializeField] private int points = 40;
 
     private EnemyFollow enemyFollow;
     private float tempoPoderesAtual;
@@ -41,7 +42,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
         Frog,
         Booomer,
         Jumper,
-        Hooker
+        Fisher
     }
 
     [SerializeField] private SpecialType tipoDePoder;
@@ -142,7 +143,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                 {
                     if (!downedPlayer && !playerStats.getIsIncapacitated())
                     {
-                        playerStats.IncapacitatePlayer();
+                        playerStats.IncapacitatePlayer(gameObject);
                         playerStats.takeDamage(damage);
                         alvo.transform.SetParent(transform);
                         alvo.transform.localPosition = Vector3.zero;
@@ -279,7 +280,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
                 break;
             //SMOKER CLASS ================================================================
-            case SpecialType.Hooker:
+            case SpecialType.Fisher:
                 if (!downedPlayer)
                 {
                     if (!playerStats.getIsIncapacitated())
@@ -503,7 +504,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     if (objetoDeColisao.gameObject == alvo)
                     {
                         downedPlayer = true;
-                        playerStats.IncapacitatePlayer();
+                        playerStats.IncapacitatePlayer(gameObject);
                     }
                     else
                     {
@@ -532,41 +533,43 @@ public class SpecialZombiesAttacks : MonoBehaviour
     private IEnumerator StopBeforeSpecialAttack()
     {
         yield return new WaitForSeconds(delayLocknShoot);
-        switch (tipoDePoder)
+        if (zumbi.isDeadEnemy() == false)
         {
-            case SpecialType.Arremesso:
-                GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
-                    Quaternion.identity);
-                Rigidbody rb = projétil.GetComponent<Rigidbody>();
-                Vector3 trajetoria =
-                    CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position,
-                        40);
-                rb.AddForce(trajetoria, ForceMode.VelocityChange);
-                tempoPoderesAtual = tempoEntrePoderes;
-                canSpecialAttack = false;
-                break;
-            
-            
-            case SpecialType.Hooker:
-                if (PlayerIsInRange)
-                {
-                    downedPlayer = true;
-                    playerStats.IncapacitatePlayer(); 
-                }
-                else
-                {
-                    enemyFollow.setFollowPlayers(true);
-                    enemyFollow.setIsStoped(false);
-                }
-                
-                break;
-            
-            case SpecialType.Jumper:
-                PularNoJogador();
-                break;
+            switch (tipoDePoder)
+            {
+                case SpecialType.Arremesso:
+                    GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
+                        Quaternion.identity);
+                    Rigidbody rb = projétil.GetComponent<Rigidbody>();
+                    Vector3 trajetoria =
+                        CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position,
+                            40);
+                    rb.AddForce(trajetoria, ForceMode.VelocityChange);
+                    tempoPoderesAtual = tempoEntrePoderes;
+                    canSpecialAttack = false;
+                    break;
+
+
+                case SpecialType.Fisher:
+                    if (PlayerIsInRange)
+                    {
+                        downedPlayer = true;
+                        playerStats.IncapacitatePlayer(gameObject);
+                    }
+                    else
+                    {
+                        enemyFollow.setFollowPlayers(true);
+                        enemyFollow.setIsStoped(false);
+                    }
+
+                    break;
+
+                case SpecialType.Jumper:
+                    PularNoJogador();
+                    break;
+            }
         }
-        
-        
+
     }
 
 
@@ -574,6 +577,11 @@ public class SpecialZombiesAttacks : MonoBehaviour
     public void setLife(float life)
     {
         zombieLife = life;
+    }
+
+    public int getPoints()
+    {
+        return points;
     }
 
 }

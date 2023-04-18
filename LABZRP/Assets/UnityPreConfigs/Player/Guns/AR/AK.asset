@@ -12,19 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: AK
   m_EditorClassIdentifier: 
-  dano: 30
+  dano: 15
   tempoEntreDisparos: 0.3
   tempoRecarga: 2
-  dispersao: 0.48
+  dispersao: 8
   totalBalas: 200
   tamanhoPente: 30
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 5153951103588041634, guid: db1e82434c65801498b566f6f7a1958e, type: 3}
+  modelo3dVendingMachine: {fileID: 5153951103588041634, guid: 15fc8c83c1983764f822cd8daf407b9c, type: 3}
   isShotgun: 0
   isSniper: 0
   range: 100
   speedBullet: 80
+  haveKnockback: 1
+  knockbackForce: 15
   hitableEnemies: 1
   reducaoDispersaoMirando: 24.7
   slowWhileAimingPercent: 60
+  Price: 100

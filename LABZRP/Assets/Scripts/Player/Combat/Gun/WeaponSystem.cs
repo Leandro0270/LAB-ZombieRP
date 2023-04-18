@@ -15,10 +15,10 @@ public class WeaponSystem : MonoBehaviour
         //Status das armas
         private float _danoMelee;
         private int _dano;
-        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent;
+        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback;
         private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
         private int _hitableEnemies;
-        private bool _segurarGatilho;
+        private bool _segurarGatilho, _haveKnockback;
         private int _balasRestantes, _disparosAEfetuar;
         private bool _isShotgun, _isSniper;
 
@@ -43,10 +43,6 @@ public class WeaponSystem : MonoBehaviour
         private BULLETS_UI _bulletsUI;
         public Slider reloadSlider;
         private Slider _reloadSliderInstance;
-
-        //Debug
-        public ScObGunSpecs novaArma;
-        public bool changeGUN = false;
 
 //======================================================================================================
 //Unity base functions
@@ -101,6 +97,7 @@ public class WeaponSystem : MonoBehaviour
                 BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
                 hitboxMelee.SetDamage(_danoMelee);
                 hitboxMelee.setMelee(true);
+                hitboxMelee.setShooter(this);
                 _playerAnimationManager.setAttack();
                 Invoke("ResetarMelee", _tempoEntreMelee);
 
@@ -121,6 +118,8 @@ public class WeaponSystem : MonoBehaviour
                         bala.SetDamage(_dano);
                         bala.setShooter(this);
                         bala.setDistancia(_distancia);
+                        bala.setIsKnockback(_haveKnockback);
+                        bala.setKnockbackForce(_ForcaKnockback);
                         bala.setVelocidadeBalas(_velocidadeBala);
                         bala.setHitableEnemies(_hitableEnemies);
                         
@@ -235,6 +234,8 @@ public class WeaponSystem : MonoBehaviour
                 _velocidadeBala = _specsArma.speedBullet;
                 _hitableEnemies = _specsArma.hitableEnemies;
                 _slowWhileAimingPercent = (_specsArma.slowWhileAimingPercent/100);
+                _haveKnockback = _specsArma.haveKnockback;
+                _ForcaKnockback = _specsArma.knockbackForce;
                 _dano = _specsArma.dano;
                 _dispersao = _specsArma.dispersao;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
@@ -247,6 +248,8 @@ public class WeaponSystem : MonoBehaviour
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
                        armaSpawn.transform.rotation);
                 armaStart.transform.parent = armaSpawn.transform;
+                _bulletsUI.setBalasPente(_balasRestantes);
+                _bulletsUI.setBalasTotal(_totalBalas);
         }
         
         public IEnumerator waitToEnableGun(float atraso)
@@ -337,12 +340,13 @@ public class WeaponSystem : MonoBehaviour
 
         public void addKilledNormalZombie()
         {
-                _playerPoints.addPoints();
+                _playerPoints.addPointsNormalZombieKilled();
                 NormalZombiesKilled++;
         }
 
-        public void addKilledSpecialZombie()
+        public void addKilledSpecialZombie(int points)
         {
+                _playerPoints.addPointsSpecialZombiesKilled(points);
                 SpecialZombiesKilled++;
         }
         public int GetAtualAmmo()

@@ -37,6 +37,7 @@ public class PlayerStats : MonoBehaviour
     private bool _isIncapatitated = false;
     private bool _isSpeedSlowed = false;
     private bool _isInArea = false;
+    private GameObject EnemyInCapacitator;
     
     
     //UI
@@ -50,7 +51,7 @@ public class PlayerStats : MonoBehaviour
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
     private WeaponSystem _weaponSystem;
-    private ItemHorderGenerator _itemHorderGenerator;
+    private VendingMachineHorderGenerator _vendingMachineHorderGenerator;
     private PlayerPoints _playerPoints;
     
     //Other components
@@ -74,11 +75,13 @@ public class PlayerStats : MonoBehaviour
 
         if(!_SetupColorComplete)
         {
-            if (_healthBarUi.getColor() != _characterColor)
-            {
-                
-                _healthBarUi.setColor(_characterColor);
-                _SetupColorComplete = true;
+            if(_healthBarUi){
+                if (_healthBarUi.getColor() != _characterColor)
+                {
+                    
+                    _healthBarUi.setColor(_characterColor);
+                    _SetupColorComplete = true;
+                }
             }
         }
         if (_isDown && !_isDead && !_stopDeathLife)
@@ -98,6 +101,16 @@ public class PlayerStats : MonoBehaviour
                 _healthBarUi.setColor(Color.gray);
         if(_delayBloodTimer > 0)
             _delayBloodTimer -= Time.deltaTime;
+        if (_isIncapatitated)
+        {
+            if (!_isDown)
+            {
+                if (EnemyInCapacitator != null || EnemyInCapacitator.GetComponent<EnemyStatus>().isDeadEnemy())
+                {
+                    CapacitatePlayer();
+                }
+            } 
+        }
     }
 
 //======================================================================================================
@@ -168,7 +181,7 @@ public class PlayerStats : MonoBehaviour
     public void PlayerDeath()
     {
         
-        _itemHorderGenerator.removePlayer(gameObject);
+        _vendingMachineHorderGenerator.removePlayer(gameObject);
         _isDead = true;
         
     }
@@ -197,8 +210,8 @@ public class PlayerStats : MonoBehaviour
         _revivalSpeed = _playerStatus.revivalSpeed;
         _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
         _meleeDamage = _playerStatus.meleeDamage;
-        _itemHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ItemHorderGenerator>();
-        _itemHorderGenerator.addPlayer(gameObject);
+        _vendingMachineHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<VendingMachineHorderGenerator>();
+        _vendingMachineHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
         _camera.addPlayer(gameObject);
         _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
@@ -334,8 +347,9 @@ public class PlayerStats : MonoBehaviour
         return _playerMovement;
     }
     
-    public void IncapacitatePlayer()
-    {
+    public void IncapacitatePlayer(GameObject enemy)
+    { 
+        EnemyInCapacitator = enemy;
         _isIncapatitated = true;
         _weaponSystem.SetIsIncapacitated(true);
         _characterController.enabled = false;
@@ -346,6 +360,7 @@ public class PlayerStats : MonoBehaviour
 
     public void CapacitatePlayer()
     {
+        
         _isIncapatitated = false;
         _weaponSystem.SetIsIncapacitated(false);
         _characterController.enabled = true;
@@ -358,5 +373,10 @@ public class PlayerStats : MonoBehaviour
     public bool getIsInArea()
     {
         return _isInArea;
+    }
+    
+    public WeaponSystem getWeaponSystem()
+    {
+        return _weaponSystem;
     }
 }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MP5A2
   m_EditorClassIdentifier: 
-  dano: 15
+  dano: 10
   tempoEntreDisparos: 0.1
   tempoRecarga: 1
   dispersao: 0.6
@@ -21,10 +21,14 @@ MonoBehaviour:
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 3092928721543730202, guid: 0fec2f9ffb62d09468f640f18589ca16, type: 3}
+  modelo3dVendingMachine: {fileID: 3092928721543730202, guid: 0fec2f9ffb62d09468f640f18589ca16, type: 3}
   isShotgun: 0
   isSniper: 0
   range: 50
   speedBullet: 100
+  haveKnockback: 1
+  knockbackForce: 5
   hitableEnemies: 1
   reducaoDispersaoMirando: 23
   slowWhileAimingPercent: 80
+  Price: 100
