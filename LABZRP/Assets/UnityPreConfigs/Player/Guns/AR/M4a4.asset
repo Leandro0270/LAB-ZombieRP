@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: M4a4
   m_EditorClassIdentifier: 
-  dano: 0
-  tempoEntreDisparos: 0
-  tempoRecarga: 0
-  dispersao: 0
-  totalBalas: 0
-  tamanhoPente: 0
-  balasPorDisparo: 0
+  dano: 8
+  tempoEntreDisparos: 0.9
+  tempoRecarga: 2
+  dispersao: 8
+  totalBalas: 250
+  tamanhoPente: 30
+  balasPorDisparo: 3
   segurarGatilho: 0
   modelo3d: {fileID: 0}
   modelo3dVendingMachine: {fileID: 0}
