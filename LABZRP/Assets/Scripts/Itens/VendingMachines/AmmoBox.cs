@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class AmmoBox : MonoBehaviour
@@ -21,6 +22,7 @@ public class AmmoBox : MonoBehaviour
     {
         closedPosition = lid.transform.localPosition;
         closedRotation = lid.transform.localEulerAngles;
+        priceText.GetComponent<TextMeshPro>().SetText("$"+price);
     }
 
     private void OnTriggerEnter(Collider other)
