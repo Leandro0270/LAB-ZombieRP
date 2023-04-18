@@ -18,6 +18,7 @@ public class EnemyStatus : MonoBehaviour
     [SerializeField] private ZombieAnimationController _animator;
     private EnemyFollow _enemyFollow;
     private SpecialZombiesAttacks _specialZombiesAttacks;
+    private int points;
 
 
 
@@ -40,6 +41,11 @@ public class EnemyStatus : MonoBehaviour
     private void Start()
     {
         _enemyFollow.getEnemy().speed = _speed;
+        if(isSpecial)
+            points = _specialZombiesAttacks.getPoints();
+        else
+            points = 10;
+
     }
 
     public void takeDamage(float damage)
@@ -153,6 +159,15 @@ public class EnemyStatus : MonoBehaviour
         {
             _life = totalLife;
         }
+    }
+    
+    public SpecialZombiesAttacks getSpecialZombieAttack()
+    {
+        return _specialZombiesAttacks;
+    }
+    public int getPoints()
+    {
+        return points;
     }
     
 }

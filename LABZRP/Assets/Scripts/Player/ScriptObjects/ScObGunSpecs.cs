@@ -16,6 +16,8 @@ public class ScObGunSpecs : ScriptableObject
     public bool isSniper;
     public float range;
     public float speedBullet;
+    public bool haveKnockback;
+    public float knockbackForce;
     [Range(1f, 10f)]
     public int hitableEnemies = 1;
     [Range(1f, 100f)]
@@ -23,5 +25,5 @@ public class ScObGunSpecs : ScriptableObject
     [Range(1f, 100f)]
     public float slowWhileAimingPercent = 1f;
     public int Price = 100;
-    
+
 }

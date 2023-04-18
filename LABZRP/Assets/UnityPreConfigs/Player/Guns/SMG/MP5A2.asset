@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MP5A2
   m_EditorClassIdentifier: 
-  dano: 15
+  dano: 10
   tempoEntreDisparos: 0.1
   tempoRecarga: 1
   dispersao: 0.6
@@ -26,6 +26,8 @@ MonoBehaviour:
   isSniper: 0
   range: 50
   speedBullet: 100
+  haveKnockback: 1
+  knockbackForce: 5
   hitableEnemies: 1
   reducaoDispersaoMirando: 23
   slowWhileAimingPercent: 80

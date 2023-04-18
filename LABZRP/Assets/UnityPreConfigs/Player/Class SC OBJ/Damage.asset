@@ -16,7 +16,7 @@ MonoBehaviour:
   speed: 10
   revivalSpeed: 10
   timeBeteweenMelee: 2
-  meleeDamage: 20
+  meleeDamage: 8
   startGun: {fileID: 11400000, guid: 1823e422b2f58b044aacc33e68ff6e02, type: 2}
   MainColor: {r: 0.6792453, g: 0.27233893, b: 0.27233893, a: 1}
   PlayerIndicator: {fileID: 2100000, guid: 79d7a5a89369f6a468dc0a912e327073, type: 2}

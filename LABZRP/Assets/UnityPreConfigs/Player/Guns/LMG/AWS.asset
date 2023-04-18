@@ -26,6 +26,8 @@ MonoBehaviour:
   isSniper: 0
   range: 50
   speedBullet: 100
+  haveKnockback: 1
+  knockbackForce: 12
   hitableEnemies: 1
   reducaoDispersaoMirando: 50
   slowWhileAimingPercent: 40

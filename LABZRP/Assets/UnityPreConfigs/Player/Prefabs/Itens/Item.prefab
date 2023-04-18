@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6231086205359747090}
   - component: {fileID: 6231086205359747085}
-  - component: {fileID: 6231086205359747084}
   - component: {fileID: 4801422697681108123}
   m_Layer: 0
   m_Name: Item
@@ -47,21 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemScOB: {fileID: 0}
---- !u!114 &6231086205359747084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6231086205359747087}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8189e847e63f1014f9dc2f8dbc1fc09b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  degreesPerSecond: 15
-  amplitude: 0.5
-  frequency: 1
 --- !u!65 &4801422697681108123
 BoxCollider:
   m_ObjectHideFlags: 0

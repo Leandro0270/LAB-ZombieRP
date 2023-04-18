@@ -27,7 +27,6 @@ public class VendingMachine : MonoBehaviour
     private GameObject ItemShowHolder;
     public GameObject itemHolder;
     public GameObject itemShow;
-
     private GameObject StartItem;
     public TextMeshPro ScreenPoints;
 
@@ -44,31 +43,54 @@ public class VendingMachine : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        PlayerStats playerStats = other.GetComponent<PlayerStats>();
-        if (playerStats)
+        if (isOnHordeCooldown)
         {
-            if (playerStats.getInteracting())
+            PlayerStats playerStats = other.GetComponent<PlayerStats>();
+            if (playerStats)
             {
-                if (playerStats.getPlayerPoints().getPoints() >= itens[randomItemIndex].Price && !isOnCooldown)
+                if (playerStats.getInteracting())
                 {
-                    isOnCooldown = true;
-                    itemSpawn(other.gameObject);
-                    playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
-                    Destroy(StartItem);
-                    Destroy(ItemShowHolder);
-                    StartCoroutine(VendingMachineItemCoolDown());
-                    ScreenPoints.text = " ";
+                    int pontosPlayerAtual = playerStats.getPlayerPoints().getPoints();
+                    if (itemType == 0)
+                    {
+                        if (pontosPlayerAtual >= itens[randomItemIndex].Price && !isOnCooldown)
+                        {
+                            isOnCooldown = true;
+                            itemSpawn(other.gameObject);
+                            playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
+                            Destroy(StartItem);
+                            Destroy(ItemShowHolder);
+                            StartCoroutine(VendingMachineItemCoolDown());
+                            ScreenPoints.text = " ";
 
+                        }
+                    }
+                    else if (itemType == 1)
+                    {
+                        if (pontosPlayerAtual >= guns[randomItemIndex].Price && !isOnCooldown)
+                        {
+                            isOnCooldown = true;
+                            itemSpawn(other.gameObject);
+                            playerStats.getPlayerPoints().removePoints(guns[randomItemIndex].Price);
+                            Destroy(StartItem);
+                            Destroy(ItemShowHolder);
+                            StartCoroutine(VendingMachineItemCoolDown());
+                            ScreenPoints.text = " ";
+
+                        }
+                    }
                 }
             }
         }
-
+        else
+        {
+            return;
+        }
     }
 
     private void itemSpawn(GameObject playerBuyer)
     {
-        if (isOnHordeCooldown)
-        {
+
             if (itemType == 0)
             {
                 GameObject item = Instantiate(itemHolder, gameObject.transform.position, transform.rotation);
@@ -79,12 +101,8 @@ public class VendingMachine : MonoBehaviour
             {
                 playerBuyer.GetComponent<WeaponSystem>().ChangeGun(guns[randomItemIndex]);
             }
-        }
-        else
-        {
-            return;
-        }
     }
+    
 
     private void setRandomItem()
     {
@@ -98,6 +116,8 @@ public class VendingMachine : MonoBehaviour
             ScreenPoints.text = itens[randomItemIndex].Price.ToString();
             StartItem = Instantiate(itens[randomItemIndex].modelo3d, ItemShowHolder.transform.position,
                 rotation);
+            //Coloca o start item como filho do objeto itemshowholder
+            StartItem.transform.parent = ItemShowHolder.transform;
             ScreenPoints.text = itens[randomItemIndex].Price.ToString();
 
         }
@@ -107,15 +127,10 @@ public class VendingMachine : MonoBehaviour
             ScreenPoints.text = guns[randomItemIndex].Price.ToString();
             StartItem = Instantiate(guns[randomItemIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
                 rotation);
+            StartItem.transform.parent = ItemShowHolder.transform;
             ScreenPoints.text = guns[randomItemIndex].Price.ToString();
 
         }
-        
-        
-        ItemShowHolder = Instantiate(itemShow,
-            new Vector3(position.x, (position.y + 7), position.z - 1),
-            rotation);
-        StartItem.transform.parent = ItemShowHolder.transform;
     }
     
     IEnumerator VendingMachineItemCoolDown()
@@ -124,6 +139,12 @@ public class VendingMachine : MonoBehaviour
         isOnCooldown = false;
         setRandomItem();
         
+    }
+    
+    
+    public void setIsOnHorderCooldown(bool isOnHordeCooldown)
+    {
+        this.isOnHordeCooldown = isOnHordeCooldown;
     }
 
 }

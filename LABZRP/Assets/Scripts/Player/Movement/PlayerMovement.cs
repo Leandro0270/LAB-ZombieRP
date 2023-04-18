@@ -33,7 +33,6 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    //Para uso de componentes envolvendo fisicas (Nesse caso o RigidBody) é recomendado utilizar o fixed update
     void FixedUpdate()
     {
         if (_speed == 0)

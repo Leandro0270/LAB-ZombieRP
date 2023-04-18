@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class HordeManager : MonoBehaviour
@@ -14,14 +15,14 @@ public class HordeManager : MonoBehaviour
     
     //Components================================================================
     [SerializeField] private TextMeshProUGUI HorderText;
-    [SerializeField] private ItemHorderGenerator Itemgenerator;
+    [SerializeField] private VendingMachineHorderGenerator Itemgenerator;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager GameManager;
     //Horde Parameters==========================================================
     [SerializeField] private float spawnTime = 2f;
     [SerializeField] private float spawnTimeDecrement = 0.2f;
     [SerializeField] private float timeBetweenHordes = 5f;
-    [SerializeField] private int firstHorde = 3;
+    [SerializeField] private int firstHordeZombies = 3;
     [SerializeField] private int hordeIncrement = 6;
     [SerializeField] private float specialZombiePercentage = 25;
     [SerializeField] private float specialZombiePercentageDecrement = 5;
@@ -38,8 +39,8 @@ public class HordeManager : MonoBehaviour
     public void Start()
     { mainCamera = GameManager.getMainCamera();
         HorderText.text = "Prepare for the First Horder";
-        Itemgenerator = GetComponent<ItemHorderGenerator>();
-        currentHordeZombies = firstHorde;
+        Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
+        currentHordeZombies = firstHordeZombies;
         //Pega os objetos que possuem a tag SpawnPoint
         StartCoroutine(HorderBreakManager());
         
@@ -70,6 +71,7 @@ public class HordeManager : MonoBehaviour
                     currentHordeZombies += hordeIncrement;
                     if (spawnTime > 0.4f)
                         spawnTime -= spawnTimeDecrement;
+                    Itemgenerator.setIsOnHorderCooldown(true);
                     StartCoroutine(HorderBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
                 }
@@ -93,6 +95,8 @@ public class HordeManager : MonoBehaviour
         //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
         IEnumerator SpawnZombie()
         {
+            Itemgenerator.setIsOnHorderCooldown(false);
+            Itemgenerator.verifySpawnVendingMachine(currentHorde+1);
             List<GameObject> visibleSpawnPoints = new List<GameObject>();
 
             foreach (GameObject spawnPoint in spawnPoints)
@@ -102,8 +106,7 @@ public class HordeManager : MonoBehaviour
                     visibleSpawnPoints.Add(spawnPoint);
                 }
             }
-
-            Itemgenerator.GenerateItem();
+            
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
             if(isBossZombieAlive)
             {

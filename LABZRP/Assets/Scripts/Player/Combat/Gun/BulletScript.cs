@@ -8,7 +8,9 @@ using Object = UnityEngine.Object;
 
 public class BulletScript : MonoBehaviour
 {
-    private bool isMelee = false;
+    [SerializeField] private bool haveKnockback = false;
+    [SerializeField] private float knockbackForce = 10f;
+    [SerializeField] private bool isMelee = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     public GameObject bloodParticle;
@@ -49,15 +51,18 @@ public class BulletScript : MonoBehaviour
     void OnTriggerEnter(Collider objetoDeColisao)
     {
         //Verifica se o objeto colidido tem a tag "WALL"
-
-        if (objetoDeColisao.gameObject.CompareTag("WALL"))
+        if (!isMelee)
         {
-            GameObject NewBulletHole = Instantiate(BulletHole, objetoDeColisao.ClosestPointOnBounds(transform.position),
-                transform.rotation);
-            Destroy(NewBulletHole, 20f);
-            destroyBullet();
-            Destroy(gameObject);
+            if (objetoDeColisao.gameObject.CompareTag("WALL"))
+            {
+                GameObject NewBulletHole = Instantiate(BulletHole,
+                    objetoDeColisao.ClosestPointOnBounds(transform.position),
+                    transform.rotation);
+                Destroy(NewBulletHole, 20f);
+                destroyBullet();
+                Destroy(gameObject);
 
+            }
         }
 
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
@@ -73,12 +78,21 @@ public class BulletScript : MonoBehaviour
                         Destroy(NewBloodParticle, 4f);
                         if (_status.get_life() < 1)
                         {
-                            {
-                                _status.killEnemy();
-                                if(_status.getIsSpecial())
-                                    PlayerShooter.addKilledSpecialZombie();
+                            _status.killEnemy();
+                                if (_status.getIsSpecial())
+                                {
+                                    int points = _status.getPoints();
+                                    PlayerShooter.addKilledSpecialZombie(points);
+                                }
                                 else
                                     PlayerShooter.addKilledNormalZombie();
+                        }
+                        else
+                        {
+                            if (haveKnockback)
+                            {
+                                Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
+                                rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
                             }
                         }
                         if (enemiesHitted < hitableEnemies)
@@ -88,7 +102,7 @@ public class BulletScript : MonoBehaviour
                         else
                         {
                             destroyBullet();
-                            Destroy(gameObject);
+                            Destroy(gameObject,2f);
                         }
                         
             }
@@ -113,6 +127,16 @@ public class BulletScript : MonoBehaviour
         }
         
 
+    }
+    
+    public void setIsKnockback(bool knockback)
+    {
+        haveKnockback = knockback;
+    }
+    
+    public void setKnockbackForce(float knockbackForce)
+    {
+        this.knockbackForce = knockbackForce;
     }
     public void setDistancia(float distancia)
     {
