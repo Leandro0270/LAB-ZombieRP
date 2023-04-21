@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b4c1d233a0f31041bbac9711dbb20e1, type: 3}
+  m_Name: Stun
+  m_EditorClassIdentifier: 
+  throwableType: 2
+  throwablePrefab3DModel: {fileID: 1436712184682533955, guid: cb72b606b0c0bb54bb263aba921fce33, type: 3}
+  visualEffect: {fileID: 100010, guid: 94819784f48e7c040acd8ca15362edda, type: 3}
+  throwablePrefabVendingMachine3DModel: {fileID: 1436712184682533955, guid: cb72b606b0c0bb54bb263aba921fce33, type: 3}
+  explodeOnImpact: 0
+  affectEnemies: 1
+  affectAllies: 1
+  isDamage: 0
+  radius: 8
+  isSlowDown: 0
+  isHeal: 0
+  isStun: 1
+  isBurn: 0
+  affectCamera: 0
+  attractEnemies: 0
+  attactionRadius: 0
+  cameraShakeAmount: 0
+  cameraShakeDuration: 0
+  timeToExplode: 4
+  damage: 0
+  slowDown: 0
+  slowDownDuration: 0
+  health: 0
+  stunDuration: 4
+  burnDuration: 0
+  effectDuration: 1
+  maxDistance: 20

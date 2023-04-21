@@ -13,6 +13,7 @@ public class PlayerInputHandler : MonoBehaviour
     private WeaponSystem _attack;
     private PlayerStats _status;
     private CustomizePlayerInGame _customize;
+    private ThrowablePlayerStats _throwableStats;
     public float delay = 2f;
     private float delayTimer = 0f;
 
@@ -24,6 +25,7 @@ public class PlayerInputHandler : MonoBehaviour
         _status = GetComponent<PlayerStats>();
         _customize = GetComponent<CustomizePlayerInGame>();
         _controls = new PlayerController();
+        _throwableStats = GetComponent<ThrowablePlayerStats>();
     }
 
     private void Start()
@@ -94,6 +96,11 @@ public class PlayerInputHandler : MonoBehaviour
             OnAimPress(obj);
         }
 
+        if (obj.action.name == _controls.Gameplay.ChangeThrowable.name)
+        {
+            onChangeThrowable();
+        }
+
         if (obj.action.name == _controls.Gameplay.Select.name)
         {
             switch (obj.phase)
@@ -106,12 +113,32 @@ public class PlayerInputHandler : MonoBehaviour
                     break;
             }
         }
+
+        if (obj.action.name == _controls.Gameplay.Throwable.name)
+        {
+            switch (obj.phase)
+            {
+                case InputActionPhase.Started:
+                    onAimThrowable(true);
+                    break;
+                case InputActionPhase.Canceled:
+                    onAimThrowable(false);
+                    break;
+            }
+
+        }
+        
+        if (obj.action.name == _controls.Gameplay.CancelAction.name)
+        {
+
+            cancelActions();
+        }
     }
 
 
 
 
-    public void OnMove(CallbackContext context)
+    private void OnMove(CallbackContext context)
     {
         if (_move != null)
         {
@@ -119,7 +146,7 @@ public class PlayerInputHandler : MonoBehaviour
         }
     }
 
-    public void OnJoinRotation(CallbackContext ctx)
+    private void OnJoinRotation(CallbackContext ctx)
     {
         if (_rotate != null)
         {
@@ -127,35 +154,46 @@ public class PlayerInputHandler : MonoBehaviour
             if (ctx.ReadValue<Vector2>() != new Vector2(0, 0))
                 _rotate.setRotationInput(ctx.ReadValue<Vector2>());
         }
-
-
-
     }
 
-    public void OnReload()
+    private void OnReload()
     {
         _attack.AuxReload();
     }
 
-    public void OnMelee()
+    private void OnMelee()
     {
         _attack.AuxMelee();
     }
 
-    public void OnShootPress(CallbackContext ctx)
+    private void OnShootPress(CallbackContext ctx)
     {
         _attack.AuxShootPress(ctx);
     }
 
-    public void OnSelect(bool value)
+    private void OnSelect(bool value)
     {
         _status.setInteracting(value);
     }
 
-    public void OnAimPress(CallbackContext ctx)
+    private void OnAimPress(CallbackContext ctx)
     {
         _attack.AuxAimPress(ctx);
     }
 
+    private void onAimThrowable(bool isAiming)
+    {
+        _throwableStats.setAiming(isAiming);
+    }
+    
+    private void onChangeThrowable()
+    {
+        _throwableStats.changeToNextItem();
+    }
+
+    private void cancelActions()
+    {
+        _throwableStats.cancelThrowAction();
+    }
 
 }

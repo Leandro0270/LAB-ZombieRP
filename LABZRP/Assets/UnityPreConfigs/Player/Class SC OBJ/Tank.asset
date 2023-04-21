@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46db3ca41a83bf47b5f15102bb5b8de, type: 3}
   m_Name: Tank
   m_EditorClassIdentifier: 
+  maxThrowableCapacity: 2
+  maxAuxiliaryCapacity: 0
+  maxGunCapacity: 0
   health: 160
   speed: 8
   revivalSpeed: 15
@@ -20,3 +23,4 @@ MonoBehaviour:
   startGun: {fileID: 11400000, guid: 597a5ff67bc1a344d897ef4936f1d1d5, type: 2}
   MainColor: {r: 0.7924528, g: 0.47430065, b: 0.19063722, a: 1}
   PlayerIndicator: {fileID: 2100000, guid: ddfed5d81054a0c4b90dee917f580ab5, type: 2}
+  burnDamagePerSecond: 5

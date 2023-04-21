@@ -7,6 +7,7 @@ public class EnemyStatus : MonoBehaviour
 {
     public ScObEnemyStats _status;
     private GameObject hordeManager;
+    public GameObject FireDamage;
     public GameObject blood1;
     public GameObject blood2;
     private bool isDead = false;
@@ -19,6 +20,13 @@ public class EnemyStatus : MonoBehaviour
     private EnemyFollow _enemyFollow;
     private SpecialZombiesAttacks _specialZombiesAttacks;
     private int points;
+    
+    
+    private bool burnTickDamage = true;
+    private float burnTickTime = 0;
+    private bool isBurning = false;
+    private float timeBurning = 0;
+    private bool _isSpeedSlowed = false;
 
 
 
@@ -46,6 +54,33 @@ public class EnemyStatus : MonoBehaviour
         else
             points = 10;
 
+    }
+
+
+    private void Update()
+    {
+        if (isBurning)
+        {
+            if (burnTickDamage && !isDead)
+            {
+                takeDamage(_status.burnDamagePerSecond);
+                burnTickTime = 0;
+                burnTickDamage = false;
+            }
+            else
+            {
+                burnTickTime += Time.deltaTime;
+                if(burnTickTime >= 1)
+                    burnTickDamage = true;
+            }
+            
+            timeBurning -= Time.deltaTime;
+            if (timeBurning <= 0)
+            {
+                isBurning = false;
+                FireDamage.SetActive(false);
+            }
+        }
     }
 
     public bool takeDamage(float damage)
@@ -86,16 +121,61 @@ public class EnemyStatus : MonoBehaviour
         _animator.triggerDown();
         GetComponent<EnemyFollow>().setIsAlive(false);
         hordeManager.GetComponent<HordeManager>().decrementZombiesAlive();
-        StartCoroutine(waiter());
+        StartCoroutine(waiterToDestroy());
 
     }
 
-    IEnumerator waiter()
+    
+    
+    public void setNewDestination(Vector3 destination)
+    {
+        _enemyFollow.setFollowPlayers(false);
+        _enemyFollow.setNewDestination(destination);
+    }
+    
+    public void StunEnemy(float time)
+    {
+        _enemyFollow.setIsStoped(true);
+        _enemyFollow.setFollowPlayers(false);
+        _enemyFollow.setCanWalk(false);
+        StartCoroutine(resetStun(time));
+    }
+    
+    public void burnEnemy(float time)
+    {
+        isBurning = true;
+        timeBurning = time;
+        FireDamage.SetActive(true);
+
+    }
+
+    private IEnumerator resetStun(float time)
+    {
+        yield return new WaitForSeconds(time);
+        _enemyFollow.setCanWalk(true);
+        _enemyFollow.setIsStoped(false);
+        _enemyFollow.setFollowPlayers(true);
+    }
+    IEnumerator waiterToDestroy()
     {
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
     }
 
+    public void ReceiveTemporarySlow(float time, float speed)
+    {
+        if (!_isSpeedSlowed)
+        {
+            _isSpeedSlowed = true;
+            float updatedSpeed = _speed - speed;
+            float baseSpeed = _speed;
+            _speed = updatedSpeed;
+            _enemyFollow.setSpeed(updatedSpeed);
+            StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+        }
+    }
+    
+    
 
     public bool getIsSpecial()
     {
@@ -142,14 +222,14 @@ public class EnemyStatus : MonoBehaviour
     {
         float updatedSpeed = _speed + speed;
         float baseSpeed = _speed;
-        _enemyFollow.getEnemy().speed = updatedSpeed;
+        _enemyFollow.setSpeed(updatedSpeed);
         StartCoroutine(resetTemporarySpeed(time, baseSpeed));
     }
     private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
     {
           yield return new WaitForSeconds(time);
             _speed = baseSpeed;
-            _enemyFollow.getEnemy().speed = _speed;
+            _enemyFollow.setSpeed(baseSpeed);
     }
     
     public void PermanentDamage(float damage)

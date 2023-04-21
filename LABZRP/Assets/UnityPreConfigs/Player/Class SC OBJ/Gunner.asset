@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46db3ca41a83bf47b5f15102bb5b8de, type: 3}
   m_Name: Gunner
   m_EditorClassIdentifier: 
+  maxThrowableCapacity: 2
+  maxAuxiliaryCapacity: 0
+  maxGunCapacity: 0
   health: 120
   speed: 10
   revivalSpeed: 15
@@ -20,3 +23,4 @@ MonoBehaviour:
   startGun: {fileID: 11400000, guid: c4684c4bbc6a654458383aa43d451e4c, type: 2}
   MainColor: {r: 0.4272493, g: 0.6886792, b: 0.40606087, a: 1}
   PlayerIndicator: {fileID: 2100000, guid: 4887c700084bd5a45a5a9dd34ef3a375, type: 2}
+  burnDamagePerSecond: 5
