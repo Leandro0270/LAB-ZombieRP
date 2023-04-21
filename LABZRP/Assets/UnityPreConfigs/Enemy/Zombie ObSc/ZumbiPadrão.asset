@@ -16,3 +16,4 @@ MonoBehaviour:
   speed: 8
   damage: 20
   isSpecial: 0
+  burnDamagePerSecond: 10

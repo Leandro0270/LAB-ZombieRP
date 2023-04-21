@@ -382,25 +382,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
         return posicaoFuga;
     }
-    private Vector3 CalculaTrajetoriaParabolica(Vector3 origem, Vector3 destino, float alturaMaxima)
-    {
-        Vector3 direcao = destino - origem;
-        float distHorizontal = Mathf.Sqrt(direcao.x * direcao.x + direcao.z * direcao.z);
-        float distVertical = destino.y - origem.y;
 
-        float alturaAdicional = Mathf.Clamp(alturaMaxima, 0f, alturaMaxima - distVertical);
-
-        float t = Mathf.Sqrt(-2 * alturaAdicional / Physics.gravity.y);
-        float velocidadeVertical = -Physics.gravity.y * t;
-
-        t += Mathf.Sqrt(2 * (distVertical - alturaAdicional) / Physics.gravity.y);
-        float velocidadeHorizontal = distHorizontal / t;
-
-        Vector3 velocidade = new Vector3(direcao.x / distHorizontal * velocidadeHorizontal, velocidadeVertical,
-            direcao.z / distHorizontal * velocidadeHorizontal);
-
-        return velocidade;
-    }
     private void PularNoJogador()
     {
         rb.mass = 0;
@@ -516,6 +498,26 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
                 break;
         }
+    }
+    
+    private Vector3 CalculaTrajetoriaParabolica(Vector3 origem, Vector3 destino, float alturaMaxima)
+    {
+        Vector3 direcao = destino - origem;
+        float distHorizontal = Mathf.Sqrt(direcao.x * direcao.x + direcao.z * direcao.z);
+        float distVertical = destino.y - origem.y;
+
+        float alturaAdicional = Mathf.Clamp(alturaMaxima, 0f, alturaMaxima - distVertical);
+
+        float t = Mathf.Sqrt(-2 * alturaAdicional / Physics.gravity.y);
+        float velocidadeVertical = -Physics.gravity.y * t;
+
+        t += Mathf.Sqrt(2 * (distVertical - alturaAdicional) / Physics.gravity.y);
+        float velocidadeHorizontal = distHorizontal / t;
+
+        Vector3 velocidade = new Vector3(direcao.x / distHorizontal * velocidadeHorizontal, velocidadeVertical,
+            direcao.z / distHorizontal * velocidadeHorizontal);
+
+        return velocidade;
     }
 
 

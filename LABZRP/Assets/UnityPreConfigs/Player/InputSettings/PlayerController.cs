@@ -98,6 +98,51 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": ""Hold(duration=2)"",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Throwable"",
+                    ""type"": ""Button"",
+                    ""id"": ""1d6f5e4e-eca7-418f-ad0b-b182f0906f7f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Consumable"",
+                    ""type"": ""Button"",
+                    ""id"": ""aa39b058-79d2-42cf-95f4-587c8489f5eb"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CancelAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""70f44a46-9764-4186-b508-1961c10171ce"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeThrowable"",
+                    ""type"": ""Button"",
+                    ""id"": ""bd0b68c3-670c-4bed-8fae-a0edfb8aa7d4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangeConsumable"",
+                    ""type"": ""Button"",
+                    ""id"": ""2c7cc709-ff30-45bc-897a-72023a8c9e5a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -340,6 +385,116 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Aim"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ec3b7c6-3a0d-420c-888b-3ab6336244ed"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Throwable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cac9cb5d-0b2c-4217-92e2-d6fc95f29101"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Throwable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d245e339-beac-4a69-be09-a2ec8002450e"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Consumable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cdc8fb64-a3b2-4be9-a919-8f5fdc79d95d"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Consumable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e4630a48-e402-46bc-a969-695a459f2988"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""CancelAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9a0835c7-0d74-46d8-9f72-26b2046bc636"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""CancelAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""60df9519-1738-474e-bbe3-41b44507855b"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""ChangeThrowable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""81f9e15e-0c59-4659-9244-03aad5fc7480"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeThrowable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""262c6280-c74a-4213-8ced-7e3b73ac3657"",
+                    ""path"": ""<Keyboard>/y"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeConsumable"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f984392-4405-452b-9522-1714aeea221b"",
+                    ""path"": ""<Gamepad>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangeConsumable"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -630,6 +785,11 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Gameplay_Select = m_Gameplay.FindAction("Select", throwIfNotFound: true);
         m_Gameplay_Pause = m_Gameplay.FindAction("Pause", throwIfNotFound: true);
         m_Gameplay_Aim = m_Gameplay.FindAction("Aim", throwIfNotFound: true);
+        m_Gameplay_Throwable = m_Gameplay.FindAction("Throwable", throwIfNotFound: true);
+        m_Gameplay_Consumable = m_Gameplay.FindAction("Consumable", throwIfNotFound: true);
+        m_Gameplay_CancelAction = m_Gameplay.FindAction("CancelAction", throwIfNotFound: true);
+        m_Gameplay_ChangeThrowable = m_Gameplay.FindAction("ChangeThrowable", throwIfNotFound: true);
+        m_Gameplay_ChangeConsumable = m_Gameplay.FindAction("ChangeConsumable", throwIfNotFound: true);
         // Menu
         m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
         m_Menu_Select = m_Menu.FindAction("Select", throwIfNotFound: true);
@@ -702,6 +862,11 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_Select;
     private readonly InputAction m_Gameplay_Pause;
     private readonly InputAction m_Gameplay_Aim;
+    private readonly InputAction m_Gameplay_Throwable;
+    private readonly InputAction m_Gameplay_Consumable;
+    private readonly InputAction m_Gameplay_CancelAction;
+    private readonly InputAction m_Gameplay_ChangeThrowable;
+    private readonly InputAction m_Gameplay_ChangeConsumable;
     public struct GameplayActions
     {
         private @PlayerController m_Wrapper;
@@ -714,6 +879,11 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Select => m_Wrapper.m_Gameplay_Select;
         public InputAction @Pause => m_Wrapper.m_Gameplay_Pause;
         public InputAction @Aim => m_Wrapper.m_Gameplay_Aim;
+        public InputAction @Throwable => m_Wrapper.m_Gameplay_Throwable;
+        public InputAction @Consumable => m_Wrapper.m_Gameplay_Consumable;
+        public InputAction @CancelAction => m_Wrapper.m_Gameplay_CancelAction;
+        public InputAction @ChangeThrowable => m_Wrapper.m_Gameplay_ChangeThrowable;
+        public InputAction @ChangeConsumable => m_Wrapper.m_Gameplay_ChangeConsumable;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -747,6 +917,21 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Aim.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
                 @Aim.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
                 @Aim.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnAim;
+                @Throwable.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowable;
+                @Throwable.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowable;
+                @Throwable.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThrowable;
+                @Consumable.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnConsumable;
+                @Consumable.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnConsumable;
+                @Consumable.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnConsumable;
+                @CancelAction.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancelAction;
+                @CancelAction.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancelAction;
+                @CancelAction.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnCancelAction;
+                @ChangeThrowable.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeThrowable;
+                @ChangeThrowable.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeThrowable;
+                @ChangeThrowable.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeThrowable;
+                @ChangeConsumable.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeConsumable;
+                @ChangeConsumable.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeConsumable;
+                @ChangeConsumable.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnChangeConsumable;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -775,6 +960,21 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Aim.started += instance.OnAim;
                 @Aim.performed += instance.OnAim;
                 @Aim.canceled += instance.OnAim;
+                @Throwable.started += instance.OnThrowable;
+                @Throwable.performed += instance.OnThrowable;
+                @Throwable.canceled += instance.OnThrowable;
+                @Consumable.started += instance.OnConsumable;
+                @Consumable.performed += instance.OnConsumable;
+                @Consumable.canceled += instance.OnConsumable;
+                @CancelAction.started += instance.OnCancelAction;
+                @CancelAction.performed += instance.OnCancelAction;
+                @CancelAction.canceled += instance.OnCancelAction;
+                @ChangeThrowable.started += instance.OnChangeThrowable;
+                @ChangeThrowable.performed += instance.OnChangeThrowable;
+                @ChangeThrowable.canceled += instance.OnChangeThrowable;
+                @ChangeConsumable.started += instance.OnChangeConsumable;
+                @ChangeConsumable.performed += instance.OnChangeConsumable;
+                @ChangeConsumable.canceled += instance.OnChangeConsumable;
             }
         }
     }
@@ -856,6 +1056,11 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnAim(InputAction.CallbackContext context);
+        void OnThrowable(InputAction.CallbackContext context);
+        void OnConsumable(InputAction.CallbackContext context);
+        void OnCancelAction(InputAction.CallbackContext context);
+        void OnChangeThrowable(InputAction.CallbackContext context);
+        void OnChangeConsumable(InputAction.CallbackContext context);
     }
     public interface IMenuActions
     {

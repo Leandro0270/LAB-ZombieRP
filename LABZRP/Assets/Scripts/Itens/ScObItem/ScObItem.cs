@@ -8,5 +8,6 @@ public class ScObItem : ScriptableObject
     public float life;
     public int Balas;
     public GameObject modelo3d;
+    public ScObThrowableSpecs throwable;
     public int Price;
 }

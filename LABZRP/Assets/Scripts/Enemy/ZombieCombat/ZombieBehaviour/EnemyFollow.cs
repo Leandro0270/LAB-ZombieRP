@@ -115,6 +115,10 @@ public class EnemyFollow : MonoBehaviour
         return target;
     }
 
+    public void setCanWalk(bool canWalk)
+    {
+        this.canWalk = canWalk;
+    }
 
     private void resetCanWalk()
     {
@@ -156,6 +160,19 @@ public class EnemyFollow : MonoBehaviour
     public void setIsSpecial(bool isSpecial)
     {
         this.isSpecial = isSpecial;
+    }
+    
+    
+    
+    
+    public void setSpeed(float speed)
+    {
+        enemy.speed = speed;
+    }
+    
+    public void setNewDestination(Vector3 destination)
+    {
+        enemy.SetDestination(destination);
     }
 }
 

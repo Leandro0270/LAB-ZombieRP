@@ -16,12 +16,15 @@ public class PlayerStats : MonoBehaviour
     public GameObject bloodSplash;
     public GameObject blood2;
     private PlayerAnimationManager _playerAnimationManager;
+    public GameObject fireEffect;
     public float dispersaoSangue = 4;
     
     //Player Specs
    
     private ScObPlayerStats _playerStatus;
     private bool _isAiming;
+    private bool _isBurning;
+    private bool _isStunned;
     private bool _isDown;
     private bool _isDead;
     public float totalLife;
@@ -36,7 +39,12 @@ public class PlayerStats : MonoBehaviour
     private bool _SetupColorComplete = false;
     private bool _isIncapatitated = false;
     private bool _isSpeedSlowed = false;
-    private bool _isInArea = false;
+    private int _maxThrowableItens;
+    private int _maxAuxiliaryItens;
+    private int _maxGunItens;
+    private bool _burnTickDamage = true;
+    private float _burnTickTime = 0;
+    private float _timeBurning = 0;
     private GameObject EnemyInCapacitator;
     
     
@@ -53,6 +61,7 @@ public class PlayerStats : MonoBehaviour
     private WeaponSystem _weaponSystem;
     private VendingMachineHorderGenerator _vendingMachineHorderGenerator;
     private PlayerPoints _playerPoints;
+    private ThrowablePlayerStats _throwablePlayerStats;
     
     //Other components
     private CharacterController _characterController;
@@ -111,6 +120,28 @@ public class PlayerStats : MonoBehaviour
                 }
             } 
         }
+        if (_isBurning)
+        {
+            if (_burnTickDamage)
+            {
+                takeDamage(_playerStatus.burnDamagePerSecond);
+                _burnTickTime = 0;
+                _burnTickDamage = false;
+            }
+            else
+            {
+                _burnTickTime += Time.deltaTime;
+                if(_burnTickTime >= 1)
+                    _burnTickDamage = true;
+            }
+            
+            _timeBurning -= Time.deltaTime;
+            if (_timeBurning <= 0)
+            {
+                fireEffect.SetActive(false);
+                _isBurning = false;
+            }
+        }
     }
 
 //======================================================================================================
@@ -120,6 +151,7 @@ public class PlayerStats : MonoBehaviour
         if (!_isDown && !_isDead)
         {
             life -= damage;
+            ReceiveTemporarySlow(1f, 7);
             _healthBarUi.SetHealth((int)life);
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
@@ -203,6 +235,10 @@ public class PlayerStats : MonoBehaviour
         _playerRotation = GetComponent<PlayerRotation>();
         _playerPoints = GetComponent<PlayerPoints>();
         _characterController = GetComponent<CharacterController>();
+        _throwablePlayerStats = GetComponent<ThrowablePlayerStats>();
+        _maxThrowableItens = _playerStatus.maxThrowableCapacity;
+        _maxGunItens = _playerStatus.maxGunCapacity;
+        _maxAuxiliaryItens = _playerStatus.maxAuxiliaryCapacity;
         _characterColor = _playerStatus.MainColor;
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
@@ -222,13 +258,31 @@ public class PlayerStats : MonoBehaviour
         playerUiConfig.transform.parent = findCanvaHud.transform;
         playerUiConfig.setPlayer(this.gameObject);
         _playerIndicator.material = _playerStatus.PlayerIndicator;
+        _throwablePlayerStats.setMaxCapacity(_maxThrowableItens);
     }
-    
+
+
+    public void BurnPlayer(float time)
+    {
+       
+            _isBurning = true;
+            fireEffect.SetActive(true);
+            _timeBurning = time;
+        
+    }
     
     //================================================================================================
     //Getters and Setters
     
+    public ThrowablePlayerStats getThrowablePlayerStats()
+    {
+        return _throwablePlayerStats;
+    }
     
+    public bool addItemThrowable(ScObThrowableSpecs throwable)
+    {
+        return _throwablePlayerStats.addThrowable(throwable);
+    }
     public void sethealthBarUi(HealthBar_UI healthBarUi)
     {
         _healthBarUi = healthBarUi;
@@ -370,11 +424,27 @@ public class PlayerStats : MonoBehaviour
     }
     
     
-    public bool getIsInArea()
+    public void StunPlayer(float time)
     {
-        return _isInArea;
+        _isStunned = true;
+        _playerMovement.setCanMove(false);
+        _playerRotation.setCanRotate(false);
+        _weaponSystem.SetIsIncapacitated(true);
+        _weaponSystem.SetGunVisable(false);
+        StartCoroutine(StunPlayerCounting(time));
     }
     
+    
+    private IEnumerator StunPlayerCounting(float time)
+    {
+        yield return new WaitForSeconds(time);
+        _isStunned = false;
+        _playerMovement.setCanMove(true);
+        _playerRotation.setCanRotate(true);
+        _weaponSystem.SetIsIncapacitated(true);
+        _weaponSystem.SetGunVisable(true);
+    }
+
     public WeaponSystem getWeaponSystem()
     {
         return _weaponSystem;

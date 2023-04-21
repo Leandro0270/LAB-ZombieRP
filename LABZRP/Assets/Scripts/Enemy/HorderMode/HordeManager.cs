@@ -68,13 +68,8 @@ public class HordeManager : MonoBehaviour
     //Função que decrementa a quantidade de zumbis vivos
         public void decrementZombiesAlive()
         {
-            Debug.Log("Before Zombies Alive: " + zombiesAlive);
             zombiesAlive--;
             killedZombiesInHorde++;
-            Debug.Log("Current Zombies Alive: " + zombiesAlive);
-            Debug.Log("Current Horde: " + currentHorde);
-            Debug.Log("Current Horde Zombies: " + currentHordeZombies);
-            Debug.Log("killedZombiesInHorde: " + killedZombiesInHorde);
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if (zombiesAlive == 0)
             {
