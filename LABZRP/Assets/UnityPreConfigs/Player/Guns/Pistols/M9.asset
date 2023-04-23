@@ -31,4 +31,8 @@ MonoBehaviour:
   hitableEnemies: 1
   reducaoDispersaoMirando: 100
   slowWhileAimingPercent: 80
+  haveCriticalChance: 1
+  criticalChanceIncrementalPerBullet: 5
+  criticalDamagePercentage: 0.5
+  criticalBaseChancePercentage: 5
   Price: 100

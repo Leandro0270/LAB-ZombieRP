@@ -20,7 +20,7 @@ public class BulletScript : MonoBehaviour
     public float velocidadeBala = 20f;
     public int hitableEnemies = 1;
     private int enemiesHitted = 0;
-
+    private bool isCritical = false;
     
     
 
@@ -71,37 +71,39 @@ public class BulletScript : MonoBehaviour
             if (!_status.isDeadEnemy())
             {
                 enemiesHitted++;
-                        
-                        GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
-                            objetoDeColisao.transform.rotation);
-                        Destroy(NewBloodParticle, 4f);
-                        if (_status.takeDamage(damage))
-                        {
-                            if (_status.getIsSpecial())
-                            {
-                                    int points = _status.getPoints();
-                                    PlayerShooter.addKilledSpecialZombie(points);
-                            }
-                            else
-                                PlayerShooter.addKilledNormalZombie();
-                        }
-                        else
-                        {
-                            if (haveKnockback)
-                            {
-                                Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
-                                rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
-                            }
-                        }
-                        if (enemiesHitted < hitableEnemies)
-                        {
-                            enemiesHitted++;
-                        }
-                        else
-                        {
-                            destroyBullet();
-                            Destroy(gameObject,2f);
-                        }
+                if (isCritical)
+                {
+                    Debug.Log("Critico!");
+                }
+                GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
+                Destroy(NewBloodParticle, 4f);
+                if (_status.takeDamage(damage))
+                {
+                    if (_status.getIsSpecial())
+                    {
+                        int points = _status.getPoints();
+                        PlayerShooter.addKilledSpecialZombie(points);
+                    }
+                    else
+                        PlayerShooter.addKilledNormalZombie();
+                }
+                else
+                {
+                    if (haveKnockback)
+                    {
+                        Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
+                        rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
+                    }
+                }
+                if (enemiesHitted < hitableEnemies)
+                {
+                    enemiesHitted++;
+                }
+                else
+                {
+                    destroyBullet();
+                    Destroy(gameObject,2f);
+                }
                         
             }
         }
@@ -164,6 +166,11 @@ public class BulletScript : MonoBehaviour
         isMelee = melee;
     }
 
+    
+    public void setIsCritical(bool critical)
+    {
+        isCritical = critical;
+    }
     private void destroyBullet()
     {
         Destroy(gameObject.GetComponent<MeshFilter>());
