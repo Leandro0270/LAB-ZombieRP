@@ -14,6 +14,7 @@ public class EnemyFollow : MonoBehaviour
     private bool isAlive = true;
     private bool followPlayers = true;
     private bool isSpecial = false;
+    private bool canAttack = true;
 
     public ZombieAnimationController animation;
     // Start is called before the first frame update
@@ -65,7 +66,7 @@ public class EnemyFollow : MonoBehaviour
                 }
 
                 float distance = Vector3.Distance(target.transform.position, transform.position);
-                if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated())
+                if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated() && canAttack)
                 {
 
                     animation.setAttack();
@@ -99,7 +100,7 @@ public class EnemyFollow : MonoBehaviour
             }
         }
     }
-
+    
     GameObject GetTarget (GameObject[] players){
         GameObject target = null;
         float minDist = Mathf.Infinity;
@@ -162,7 +163,10 @@ public class EnemyFollow : MonoBehaviour
         this.isSpecial = isSpecial;
     }
     
-    
+    public void setCanAttack(bool canAttack)
+    {
+        this.canAttack = canAttack;
+    }
     
     
     public void setSpeed(float speed)
@@ -173,6 +177,14 @@ public class EnemyFollow : MonoBehaviour
     public void setNewDestination(Vector3 destination)
     {
         enemy.SetDestination(destination);
+    }
+
+    public void setNearPlayerDestination()
+    {
+        target = GetTarget(players);
+        enemy.SetDestination(target.transform.position);
+
+        
     }
 }
 

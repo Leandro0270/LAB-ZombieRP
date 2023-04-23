@@ -52,7 +52,10 @@ public class ThrowableItem : MonoBehaviour
                 {
                     if (hitCollider.gameObject.CompareTag("Enemy"))
                     {
-                        hitCollider.gameObject.GetComponent<EnemyFollow>().setNewDestination(transform.position);
+                        EnemyFollow enemyFollow = hitCollider.gameObject.GetComponent<EnemyFollow>();
+                        enemyFollow.setNewDestination(transform.position);
+                        enemyFollow.setCanAttack(false);
+                        StartCoroutine(resetEnemyTarget(enemyFollow));
                     }
                 }
             }
@@ -84,6 +87,13 @@ public class ThrowableItem : MonoBehaviour
 
         }
 
+    
+        public IEnumerator resetEnemyTarget(EnemyFollow enemyFollow)
+        {
+            yield return new WaitForSeconds(_effectDuration+1);
+            enemyFollow.setCanAttack(true);
+            enemyFollow.setNearPlayerDestination();
+        }
 
         public void setThrowableSpecs(ScObThrowableSpecs throwableSpecs)
         {

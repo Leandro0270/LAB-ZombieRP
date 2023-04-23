@@ -15,13 +15,13 @@ public class WeaponSystem : MonoBehaviour
         //Status das armas
         private float _danoMelee;
         private int _dano;
-        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback;
+        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback, _criticalChanceIncrementalPerBullet, _criticalDamagePercentage, _criticalBaseChancePercentage, _currentCriticalChance;
         private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
         private int _hitableEnemies;
         private bool _segurarGatilho, _haveKnockback;
         private int _balasRestantes, _disparosAEfetuar;
-        private bool _isShotgun, _isSniper;
-
+        private bool _isShotgun, _isSniper, _haveCriticalChance;
+        
         //ações
         private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando;
         private int NormalZombiesKilled = 0;
@@ -105,6 +105,24 @@ public class WeaponSystem : MonoBehaviour
 
         private void Atirar()
         {
+                float currentDamage = _dano;
+                bool isCritical = false;
+                if (_haveCriticalChance)
+                {
+                        float random = Random.Range(0, 100);
+                        if (random <= _currentCriticalChance)
+                        {
+                                currentDamage = _dano + (_criticalDamagePercentage * _dano);
+                                isCritical = true;
+                                _currentCriticalChance = _criticalBaseChancePercentage;
+                        }
+                        else
+                        {
+                                _currentCriticalChance += _criticalChanceIncrementalPerBullet;
+                                currentDamage = _dano;
+                        }
+                }
+
                 _prontoParaAtirar = false;
                 if (!_isShotgun)
                 {
@@ -115,13 +133,14 @@ public class WeaponSystem : MonoBehaviour
 
                         //Spawn da bala
                         BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
-                        bala.SetDamage(_dano);
+                        bala.SetDamage(currentDamage);
                         bala.setShooter(this);
                         bala.setDistancia(_distancia);
                         bala.setIsKnockback(_haveKnockback);
                         bala.setKnockbackForce(_ForcaKnockback);
                         bala.setVelocidadeBalas(_velocidadeBala);
                         bala.setHitableEnemies(_hitableEnemies);
+                        bala.setIsCritical(isCritical);
                         
                         _balasRestantes--;
                         _disparosAEfetuar--;
@@ -144,9 +163,11 @@ public class WeaponSystem : MonoBehaviour
                                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                                 bala.setDistancia(_distancia);
                                 bala.setVelocidadeBalas(_velocidadeBala);
-                                bala.SetDamage(_dano);
+                                bala.SetDamage(currentDamage);
                                 bala.setShooter(this);
                                 bala.setHitableEnemies(_hitableEnemies);
+                                bala.setIsCritical(isCritical);
+
                                 
                         }
                         _balasRestantes -= _balasPorDisparo;
@@ -243,6 +264,10 @@ public class WeaponSystem : MonoBehaviour
                 _segurarGatilho = _specsArma.segurarGatilho;
                 _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
                 _reducaoDispersaoMirando = _specsArma.reducaoDispersaoMirando;
+                _haveCriticalChance = _specsArma.haveCriticalChance;
+                _criticalDamagePercentage = _specsArma.criticalDamagePercentage;
+                _criticalChanceIncrementalPerBullet = _specsArma.criticalChanceIncrementalPerBullet;
+                _criticalBaseChancePercentage = _specsArma.criticalBaseChancePercentage;
                 StartCoroutine(waitToEnableGun(2));
                 _meleePronto = true;
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
