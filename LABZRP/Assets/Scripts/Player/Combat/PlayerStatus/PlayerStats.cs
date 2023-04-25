@@ -46,14 +46,14 @@ public class PlayerStats : MonoBehaviour
     private float _burnTickTime = 0;
     private float _timeBurning = 0;
     private GameObject EnemyInCapacitator;
-    
-    
+    //======================================================================================================
     //UI
     private HealthBar_UI _healthBarUi;
     public GameObject PlayerUI;
     private Color _characterColor;
-
+    //======================================================================================================
     //Script components
+    [SerializeField] private MainGameManager _mainGameManager;
     public DecalProjector _playerIndicator;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
@@ -62,7 +62,13 @@ public class PlayerStats : MonoBehaviour
     private VendingMachineHorderGenerator _vendingMachineHorderGenerator;
     private PlayerPoints _playerPoints;
     private ThrowablePlayerStats _throwablePlayerStats;
-    
+    //======================================================================================================
+    //ChallengeManager Variables
+    private bool _challengeInProgress;
+    private ChallengeManager _challengeManager;
+    //NoHitChallenge===============================================
+    private bool _noHitChallenge;
+    //======================================================================================================
     //Other components
     private CharacterController _characterController;
 
@@ -150,6 +156,10 @@ public class PlayerStats : MonoBehaviour
     {
         if (!_isDown && !_isDead)
         {
+            if (_challengeInProgress)
+            {
+                _challengeManager.setTakedHit(true);
+            }
             life -= damage;
             ReceiveTemporarySlow(1f, 7);
             _healthBarUi.SetHealth((int)life);
@@ -168,6 +178,7 @@ public class PlayerStats : MonoBehaviour
 
             if (life < 1)
             {
+                _mainGameManager.removeDownedPlayer(gameObject);
                 GameObject _blood2 = Instantiate(blood2,
                     new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
                     blood2.transform.rotation);
@@ -192,6 +203,7 @@ public class PlayerStats : MonoBehaviour
     {
         if (_isDown && !_isDead)
         {
+            _mainGameManager.addDownedPlayer(gameObject);
             _isIncapatitated = false;
             _weaponSystem.SetIsIncapacitated(false);
             _characterController.enabled = true;
@@ -247,6 +259,8 @@ public class PlayerStats : MonoBehaviour
         _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
         _meleeDamage = _playerStatus.meleeDamage;
         _vendingMachineHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<VendingMachineHorderGenerator>();
+        _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
+
         _vendingMachineHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
         _camera.addPlayer(gameObject);
@@ -444,9 +458,18 @@ public class PlayerStats : MonoBehaviour
         _weaponSystem.SetIsIncapacitated(true);
         _weaponSystem.SetGunVisable(true);
     }
+    public void setIsNoHitChallenge(bool value)
+    {
+        _noHitChallenge = value;
+    }
 
     public WeaponSystem getWeaponSystem()
     {
         return _weaponSystem;
+    }
+    
+    public ChallengeManager getChallengeManager()
+    {
+        return _challengeManager;
     }
 }

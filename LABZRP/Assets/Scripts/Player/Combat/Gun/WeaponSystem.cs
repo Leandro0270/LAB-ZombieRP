@@ -11,6 +11,7 @@ public class WeaponSystem : MonoBehaviour
         private ScObGunSpecs _specsArma;
         private PlayerStats _playerStats;
         private PlayerPoints _playerPoints;
+        private ChallengeManager _challengeManager;
 
         //Status das armas
         private float _danoMelee;
@@ -23,9 +24,12 @@ public class WeaponSystem : MonoBehaviour
         private bool _isShotgun, _isSniper, _haveCriticalChance;
         
         //ações
-        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando;
+        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando, _hitted, _hittedWithMelee,_hittedWithAim;
         private int NormalZombiesKilled = 0;
         private int SpecialZombiesKilled = 0;
+        private int KilledWithAim = 0;
+        private int KilledWithMelee = 0;
+        private int missedShots = 0;
 
 
         //Referencia
@@ -43,7 +47,16 @@ public class WeaponSystem : MonoBehaviour
         private BULLETS_UI _bulletsUI;
         public Slider reloadSlider;
         private Slider _reloadSliderInstance;
-
+        //Challenges specs
+        private bool _isChallengeActive;
+        private bool _isSharpshooterChallengeActive;
+        private bool _isMeleeChallengeActive;
+        private bool _isKillInTimeChallengeActive;
+        private bool _isKillInAreaChallengeActive;
+        private bool _isKillWithAimChallengeActive;
+        private bool _isInArea;
+        private bool _missedShot;
+        
 //======================================================================================================
 //Unity base functions
         private void Start()
@@ -53,6 +66,7 @@ public class WeaponSystem : MonoBehaviour
                 _danoMelee = _playerStats.getMeleeDamage();
                 _playerPoints = GetComponent<PlayerPoints>();
                 _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
+                _challengeManager = _playerStats.getChallengeManager();
                 ApplyGunSpecs();
 
         }
@@ -367,12 +381,27 @@ public class WeaponSystem : MonoBehaviour
         {
                 _playerPoints.addPointsNormalZombieKilled();
                 NormalZombiesKilled++;
+                
         }
 
         public void addKilledSpecialZombie(int points)
         {
                 _playerPoints.addPointsSpecialZombiesKilled(points);
                 SpecialZombiesKilled++;
+                if (_isChallengeActive)
+                {
+                        if (_isKillInAreaChallengeActive)
+                        {
+                                if (_isInArea)
+                                        _challengeManager.addZombieKilled();
+                        }
+
+                        if (_isKillInTimeChallengeActive)
+                        {
+                                _challengeManager.addZombieKilled();
+                        }
+
+                }
         }
         public int GetAtualAmmo()
         {
@@ -425,6 +454,46 @@ public class WeaponSystem : MonoBehaviour
         {
                 return _isSniper;
         }
+
+
+
+        public void addKilledZombieWithAim()
+        {
+                KilledWithAim++;
+                if (_isChallengeActive)
+                {
+                        if (_isKillWithAimChallengeActive)
+                        { 
+                                _challengeManager.addZombieKilled();
+                        }
+                }
+        }
+        
+        
+        public void addKilledZombieWithMelee()
+        {
+                KilledWithMelee++;
+                if (_isChallengeActive)
+                {
+                        if (_isMeleeChallengeActive)
+                        {
+                                _challengeManager.addZombieKilled();
+                        }
+                }
+        }
+        
+        public void missedShot()
+        {
+                missedShots++;
+                if (_isChallengeActive)
+                {
+                        if (_isSharpshooterChallengeActive)
+                        {
+                                _challengeManager.addZombieKilled();
+                        }
+                }
+        }
+
         //================================================================================================
 
 }

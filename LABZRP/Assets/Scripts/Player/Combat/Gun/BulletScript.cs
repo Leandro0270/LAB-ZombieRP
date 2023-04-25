@@ -21,7 +21,7 @@ public class BulletScript : MonoBehaviour
     public int hitableEnemies = 1;
     private int enemiesHitted = 0;
     private bool isCritical = false;
-    
+    private bool _isAiming = false;
     
 
     private void Start()
@@ -45,27 +45,27 @@ public class BulletScript : MonoBehaviour
     {
         float tempo = distancia / velocidadeBala;
         yield return new WaitForSeconds(tempo);
+        PlayerShooter.missedShot();
         Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider objetoDeColisao)
     {
-        //Verifica se o objeto colidido tem a tag "WALL"
-        if (!isMelee)
+        if (objetoDeColisao.gameObject.CompareTag("WALL"))
         {
-            if (objetoDeColisao.gameObject.CompareTag("WALL"))
-            {
                 GameObject NewBulletHole = Instantiate(BulletHole,
                     objetoDeColisao.ClosestPointOnBounds(transform.position),
                     transform.rotation);
                 Destroy(NewBulletHole, 20f);
                 destroyBullet();
                 Destroy(gameObject);
-
-            }
+            
         }
-
+        
+        
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
+        
+        
         if (_status != null)
         {
             if (!_status.isDeadEnemy())
@@ -75,10 +75,17 @@ public class BulletScript : MonoBehaviour
                 {
                     Debug.Log("Critico!");
                 }
+                
                 GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
                 Destroy(NewBloodParticle, 4f);
+                
+                //A função takeDamage retorna true se o zumbi morreu
                 if (_status.takeDamage(damage))
                 {
+                    if(_isAiming)
+                        PlayerShooter.addKilledZombieWithAim();
+                    if(isMelee)
+                        PlayerShooter.addKilledZombieWithMelee();
                     if (_status.getIsSpecial())
                     {
                         int points = _status.getPoints();
@@ -86,6 +93,8 @@ public class BulletScript : MonoBehaviour
                     }
                     else
                         PlayerShooter.addKilledNormalZombie();
+                    
+
                 }
                 else
                 {
@@ -106,6 +115,10 @@ public class BulletScript : MonoBehaviour
                 }
                         
             }
+        }
+        else
+        {
+            PlayerShooter.missedShot();
         }
         
 
@@ -165,7 +178,10 @@ public class BulletScript : MonoBehaviour
     {
         isMelee = melee;
     }
-
+    public void setIsAiming(bool aiming)
+    {
+        _isAiming = aiming;
+    }
     
     public void setIsCritical(bool critical)
     {

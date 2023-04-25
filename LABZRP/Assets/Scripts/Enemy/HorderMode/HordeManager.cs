@@ -41,7 +41,10 @@ public class HordeManager : MonoBehaviour
     private int zombiesAlive = 0;
     private float timeBetweenHordesUI;
     private bool isBossZombieAlive = false;
-    
+    //Special events Variables==========================================================
+    private bool isSpecialEvent = false;
+    private bool isExplosiveZombieEvent = false;
+    //=================================================================
     public void Start()
     { mainCamera = GameManager.getMainCamera();
         HorderText.text = "Prepare for the First Horder";
@@ -66,10 +69,11 @@ public class HordeManager : MonoBehaviour
 }
 
     //Função que decrementa a quantidade de zumbis vivos
-        public void decrementZombiesAlive()
+        public void decrementZombiesAlive(GameObject zombie)
         {
             zombiesAlive--;
             killedZombiesInHorde++;
+            GameManager.removeEnemy(zombie);
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if (zombiesAlive == 0)
             {
@@ -148,14 +152,14 @@ public class HordeManager : MonoBehaviour
 
                 }
 
+                GameObject zombie;
                 if (isSpecialZombie && currentHorde > 3)
                 {
                     int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
-                    GameObject zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex], visibleSpawnPoints[spawnPointIndex].transform.position,
+                    zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex], visibleSpawnPoints[spawnPointIndex].transform.position,
                         visibleSpawnPoints[spawnPointIndex].transform.rotation);
-                    GameManager.addEnemy(zombie);
                 }else{
-                    GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
+                    zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
                         visibleSpawnPoints[spawnPointIndex].transform.rotation);
                     if (haveBaseZombieLifeIncrement)
                     {
@@ -164,8 +168,16 @@ public class HordeManager : MonoBehaviour
                         ZombieStatus.setCurrentLife(currentZombieLife);
                     }
 
-                    GameManager.addEnemy(zombie);
+                    
+
                 }
+                
+                if (isExplosiveZombieEvent)
+                { 
+                    EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                    ZombieStatus.setExplosiveZombieEvent(true);
+                }
+                GameManager.addEnemy(zombie);
                 incrementZombiesAlive();
             }
 
@@ -191,6 +203,18 @@ public class HordeManager : MonoBehaviour
         {
             float randomValue = Random.Range(0f, 100f);
             return randomValue <= probability;
+        }
+        
+        
+        
+        public void setSpecialEvent(bool isSpecialEvent)
+        {
+            this.isSpecialEvent = isSpecialEvent;
+        }
+        
+        public void setExplosiveZombieEvent(bool isExplosiveZombieEvent)
+        {
+            this.isExplosiveZombieEvent = isExplosiveZombieEvent;
         }
 
     }

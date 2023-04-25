@@ -21,21 +21,25 @@ public class EnemyStatus : MonoBehaviour
     private SpecialZombiesAttacks _specialZombiesAttacks;
     private int points;
     
-    
     private bool burnTickDamage = true;
     private float burnTickTime = 0;
     private bool isBurning = false;
     private float timeBurning = 0;
     private bool _isSpeedSlowed = false;
-
+    
+    
+    
+    //Special events
+    //Explosive enemies===============================================
+    [SerializeField] private GameObject[] explosivesPrefabs;
+    [SerializeField] private GameObject explosiveDeathEffect;
+    private bool isOnExplosiveEvents = false;
 
 
     // Start is called before the first frame update
     void Awake()
     {
-        //Armazena um objeto que estiver com a tag horderManager na variavel hordermManager
         _enemyFollow = GetComponent<EnemyFollow>();
-        hordeManager = GameObject.FindGameObjectWithTag("HorderManager");
         _specialZombiesAttacks = GetComponent<SpecialZombiesAttacks>();
         totalLife = _status.health;
         _life = totalLife;
@@ -110,21 +114,38 @@ public class EnemyStatus : MonoBehaviour
 
     public void killEnemy()
     {
-        Destroy(GetComponent<CapsuleCollider>());
-        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeEnemy(gameObject);
-        GetComponent<BoxCollider>().enabled = true;
-        isDead = true;
-        GameObject NewBloodParticle = Instantiate(blood2, new Vector3(transform.position.x, 57, transform.position.z),
-            blood2.transform.rotation);
-        Destroy(NewBloodParticle, 8f);
-        _animator.setTarget(false);
-        _animator.triggerDown();
-        GetComponent<EnemyFollow>().setIsAlive(false);
-        hordeManager.GetComponent<HordeManager>().decrementZombiesAlive();
-        StartCoroutine(waiterToDestroy());
+        if (isOnExplosiveEvents)
+        {
+            Destroy(GetComponent<CapsuleCollider>());
+            GetComponent<BoxCollider>().enabled = true;
+            isDead = true;
+            GetComponent<EnemyFollow>().setIsAlive(false);
+            hordeManager.GetComponent<HordeManager>().decrementZombiesAlive(gameObject);
+            GameObject randomExplosive = explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
+            var position = transform.position;
+            Instantiate(randomExplosive, position, Quaternion.identity);
+            GameObject effectInstantiate = Instantiate(explosiveDeathEffect, position, Quaternion.identity);
+            Destroy(effectInstantiate, 2f);
+            Destroy(gameObject);
+        }
+        else
+        {
+
+            Destroy(GetComponent<CapsuleCollider>());
+            GetComponent<BoxCollider>().enabled = true;
+            isDead = true;
+            GameObject NewBloodParticle = Instantiate(blood2,
+                new Vector3(transform.position.x, 57, transform.position.z),
+                blood2.transform.rotation);
+            Destroy(NewBloodParticle, 8f);
+            _animator.setTarget(false);
+            _animator.triggerDown();
+            GetComponent<EnemyFollow>().setIsAlive(false);
+            hordeManager.GetComponent<HordeManager>().decrementZombiesAlive(gameObject);
+            StartCoroutine(waiterToDestroy());
+        }
 
     }
-
     
     
     public void setNewDestination(Vector3 destination)
@@ -268,6 +289,16 @@ public class EnemyStatus : MonoBehaviour
     public int getPoints()
     {
         return points;
+    }
+    
+    public void setHordeManager(GameObject hordeManager)
+    {
+        this.hordeManager = hordeManager;
+    }
+    
+    public void setExplosiveZombieEvent(bool isOnExplosiveEvents)
+    {
+        this.isOnExplosiveEvents = isOnExplosiveEvents;
     }
     
 }

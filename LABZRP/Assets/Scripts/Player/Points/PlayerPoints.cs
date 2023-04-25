@@ -39,5 +39,11 @@ public class PlayerPoints : MonoBehaviour
     {
         this.isMultiplierActive = isMultiplierActive;
     }
+    
+    
+    public void addChallengePoints(int points)
+    {
+        this.points += points;
+    }
 
 }
