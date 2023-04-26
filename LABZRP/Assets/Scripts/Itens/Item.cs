@@ -23,68 +23,71 @@ public class Item : MonoBehaviour
     void OnTriggerEnter(Collider objetoDeColisao)
     {
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
-        if(ItemScOB.throwable == null){
-            WeaponSystem playerAmmo = objetoDeColisao.GetComponent<WeaponSystem>();
-            if (ItemScOB.Balas > 0)
+        if (status)
+        {
+            if (ItemScOB.throwable == null)
             {
-                if (ItemScOB.life > 0)
-                {
-                    if (playerAmmo != null && status != null)
-                    {
-                        if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas() ||
-                            status.GetLife() < status.GetTotalLife())
-                        {
-                            playerAmmo.ReceiveAmmo(ItemScOB.Balas);
-                            status.ReceiveHeal(ItemScOB.life);
-                            //acha o game object pela tag
-                            GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                            Destroy(gameObject);
-                        }
-                    }
-                }
-            }
-
-            if (ItemScOB.Balas == 0)
-            {
-                if (ItemScOB.life > 0)
-                {
-                    if (status != null)
-                    {
-                        if (status.GetLife() < status.GetTotalLife())
-                        {
-                            status.ReceiveHeal(ItemScOB.life);
-                            GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                            Destroy(gameObject);
-                        }
-                    }
-                }
-            }
-
-            if (ItemScOB.life == 0)
-            {
+                WeaponSystem playerAmmo = objetoDeColisao.GetComponent<WeaponSystem>();
                 if (ItemScOB.Balas > 0)
                 {
-                    if (playerAmmo != null)
+                    if (ItemScOB.life > 0)
                     {
-                        if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas())
+                        if (playerAmmo != null && status != null)
                         {
-                            playerAmmo.ReceiveAmmo(ItemScOB.Balas);
-                            GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                            Destroy(gameObject);
+                            if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas() ||
+                                status.GetLife() < status.GetTotalLife())
+                            {
+                                playerAmmo.ReceiveAmmo(ItemScOB.Balas);
+                                status.ReceiveHeal(ItemScOB.life);
+                                //acha o game object pela tag
+                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                Destroy(gameObject);
+                            }
+                        }
+                    }
+                }
+
+                if (ItemScOB.Balas == 0)
+                {
+                    if (ItemScOB.life > 0)
+                    {
+                        if (status != null)
+                        {
+                            if (status.GetLife() < status.GetTotalLife())
+                            {
+                                status.ReceiveHeal(ItemScOB.life);
+                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                Destroy(gameObject);
+                            }
+                        }
+                    }
+                }
+
+                if (ItemScOB.life == 0)
+                {
+                    if (ItemScOB.Balas > 0)
+                    {
+                        if (playerAmmo != null)
+                        {
+                            if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas())
+                            {
+                                playerAmmo.ReceiveAmmo(ItemScOB.Balas);
+                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                Destroy(gameObject);
+                            }
                         }
                     }
                 }
             }
-        }
-        else
-        {
-            if (status.addItemThrowable(ItemScOB.throwable))
+            else
             {
-                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                Destroy(gameObject);
+                if (status.addItemThrowable(ItemScOB.throwable))
+                {
+                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                    Destroy(gameObject);
+                }
             }
         }
-
     }
 
     public void setItem(ScObItem item)

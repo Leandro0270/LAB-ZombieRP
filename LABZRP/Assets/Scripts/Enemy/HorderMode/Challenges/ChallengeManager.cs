@@ -13,12 +13,13 @@ public class ChallengeManager : MonoBehaviour
     private bool challengeFailed = false; // Flag para indicar se um desafio foi falhado.
 
     //ChallengeMachine
-    [SerializeField] private ChallengeMachine challengeMachine;
+    [SerializeField] private List<ChallengeMachine> challengeMachines;
+    private ChallengeMachine _startedChallengeMachine;
 
 
     //GENERAL VARIABLES
     private float challengeTime;
-    private GameObject[] players;
+    private List<GameObject> players;
     private String challengeName;
     private String challengeDescription;
     private int challengeReward;
@@ -79,13 +80,20 @@ public class ChallengeManager : MonoBehaviour
     private bool _missedShot = false;
 
 
-
-    
-    
-    
-    public void StartChallenge(ScObChallengesSpecs challenge)
+    private void Start()
     {
-        if (challengeInProgress || challengeCompleted || challengeFailed) return;
+        players = new List<GameObject>();
+        challengeMachines = new List<ChallengeMachine>();
+    }
+
+    public bool StartChallenge(ScObChallengesSpecs challenge, ChallengeMachine challengeMachinee)
+    {
+        if (challengeInProgress || challengeCompleted || challengeFailed) return false;
+        _startedChallengeMachine = challengeMachinee;
+        if (players.Count == 0)
+        {
+            players = mainGameManager.getPlayers();
+        }
         challengeTime = challenge.ChallengeTime;
         activeChallenge = challenge;
         challengeInProgress = true;
@@ -94,6 +102,12 @@ public class ChallengeManager : MonoBehaviour
         challengeReward = activeChallenge.ChallengeReward;
         challengeDifficulty = activeChallenge.ChallengeDifficulty;
         _zombiesToKill = activeChallenge.zombiesToKill;
+        foreach (var challengeMachine in challengeMachines)
+        {
+            challengeMachine.setIsActivated(false);
+        }
+        
+        return true;
     }
 
     public void StartExplosiveEnemiesChallenge()
@@ -346,5 +360,15 @@ public class ChallengeManager : MonoBehaviour
     public void missedShot()
     {
         _missedShot = true;
+    }
+    
+    public void addChallengeMachine(ChallengeMachine challengeMachine)
+    {
+        challengeMachines.Add(challengeMachine);
+    }
+    
+    public void removeChallengeMachine(ChallengeMachine challengeMachine)
+    {
+        challengeMachines.Remove(challengeMachine);
     }
 }

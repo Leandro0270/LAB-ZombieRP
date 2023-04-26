@@ -12,6 +12,7 @@ public class WeaponSystem : MonoBehaviour
         private PlayerStats _playerStats;
         private PlayerPoints _playerPoints;
         private ChallengeManager _challengeManager;
+        [SerializeField] private ThrowablePlayerStats _throwablePlayerStats;
 
         //Status das armas
         private float _danoMelee;
@@ -216,6 +217,8 @@ public class WeaponSystem : MonoBehaviour
 //Aux Functions
         private void ReloadTerminado()
         {
+                _throwablePlayerStats.setCanceledThrow(false);
+
                 if (_totalBalas >= _tamanhoPente)
                 {
                         _totalBalas -= _tamanhoPente - _balasRestantes;
@@ -242,6 +245,7 @@ public class WeaponSystem : MonoBehaviour
 
         private void ResetarMelee()
         {
+                _throwablePlayerStats.setCanceledThrow(false);
                 _meleePronto = true;
         }
 
@@ -305,12 +309,19 @@ public class WeaponSystem : MonoBehaviour
         public void AuxMelee()
         {
                 if (!_atirando && _meleePronto && !_recarregando && _prontoParaAtirar)
+                {
                         melee();
+                        _throwablePlayerStats.setCanceledThrow(true);
+
+                }
         }
         public void AuxReload()
         {
                 if (_balasRestantes < _tamanhoPente && !_recarregando && !_attMelee)
+                {
                         Recarregar();
+                        _throwablePlayerStats.setCanceledThrow(true);
+                }
         }
         
         public void AuxShootPress(InputAction.CallbackContext ctx)
@@ -319,18 +330,25 @@ public class WeaponSystem : MonoBehaviour
                 {
                         case InputActionPhase.Performed:
                                 if (_segurarGatilho)
+                                {
                                         _atirando = true;
+                                        _throwablePlayerStats.setCanceledThrow(true);
+                                }
                                 else
                                 {
+                                        _throwablePlayerStats.setCanceledThrow(false);
                                         _atirando = false;
                                 }
 
                                 break;
                         case InputActionPhase.Started:
                                 _atirando = true;
+                                _throwablePlayerStats.setCanceledThrow(true);
                                 break;
                         case InputActionPhase.Canceled:
                                 _atirando = false;
+                                _throwablePlayerStats.setCanceledThrow(false);
+
                                 break;
                 }
         }
@@ -348,11 +366,13 @@ public class WeaponSystem : MonoBehaviour
                                         _dispersao *= (_reducaoDispersaoMirando / 100);
                                         miraLaser.SetActive(true);
                                         _mirando = true;
+                                        _throwablePlayerStats.setCanceledThrow(true);
                                         break;
                                 case InputActionPhase.Canceled:
                                         _playerStats.aimSlow(0, false);
                                         miraLaser.SetActive(false);
                                         _dispersao *= (100 / _reducaoDispersaoMirando);
+                                        _throwablePlayerStats.setCanceledThrow(false);
                                         _mirando = false;
                                         break;
                         }

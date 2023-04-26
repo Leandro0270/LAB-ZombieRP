@@ -46,6 +46,7 @@ public class PlayerStats : MonoBehaviour
     private float _burnTickTime = 0;
     private float _timeBurning = 0;
     private GameObject EnemyInCapacitator;
+    
     //======================================================================================================
     //UI
     private HealthBar_UI _healthBarUi;
@@ -82,6 +83,8 @@ public class PlayerStats : MonoBehaviour
     private void Start()
     {
         _InitializePlayerSpecs();
+        _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
+
     }
     
 
@@ -161,7 +164,6 @@ public class PlayerStats : MonoBehaviour
                 _challengeManager.setTakedHit(true);
             }
             life -= damage;
-            ReceiveTemporarySlow(1f, 7);
             _healthBarUi.SetHealth((int)life);
             float y = Random.Range(-dispersaoSangue, dispersaoSangue);
             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
@@ -178,7 +180,7 @@ public class PlayerStats : MonoBehaviour
 
             if (life < 1)
             {
-                _mainGameManager.removeDownedPlayer(gameObject);
+                _mainGameManager.removeDownedPlayer(this.gameObject);
                 GameObject _blood2 = Instantiate(blood2,
                     new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
                     blood2.transform.rotation);
@@ -471,5 +473,10 @@ public class PlayerStats : MonoBehaviour
     public ChallengeManager getChallengeManager()
     {
         return _challengeManager;
+    }
+    
+    public void setMainGameManager(MainGameManager gameManager)
+    {
+        _mainGameManager = gameManager;
     }
 }

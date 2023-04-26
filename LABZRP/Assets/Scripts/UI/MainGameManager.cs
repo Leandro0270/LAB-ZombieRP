@@ -43,6 +43,7 @@ public class MainGameManager : MonoBehaviour
         downedPlayers.Add(player);
     }
     
+    
     public void addDownedPlayer(GameObject player)
     {
         alivePlayers.Add(player);

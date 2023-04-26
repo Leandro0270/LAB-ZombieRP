@@ -73,7 +73,6 @@ public class HordeManager : MonoBehaviour
         {
             zombiesAlive--;
             killedZombiesInHorde++;
-            GameManager.removeEnemy(zombie);
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if (zombiesAlive == 0)
             {
@@ -215,6 +214,18 @@ public class HordeManager : MonoBehaviour
         public void setExplosiveZombieEvent(bool isExplosiveZombieEvent)
         {
             this.isExplosiveZombieEvent = isExplosiveZombieEvent;
+            if (zombiesAlive > 0)
+            {
+                foreach (var zombie in GameManager.getEnemies())
+                {
+                    EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                    ZombieStatus.setExplosiveZombieEvent(true);
+                }
+            }
+
+            {
+                
+            }
         }
 
     }

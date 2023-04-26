@@ -9,6 +9,7 @@ public class ThrowablePlayerStats : MonoBehaviour
     [SerializeField] private DecalProjector explosionArea;
     [SerializeField] private GameObject ThrowerHand;
     [SerializeField] private GameObject DecalSpawnPoint;
+    [SerializeField] private float coolDownBetweenThrows = 1.5f;
     private int maxCapacity;
     private List<ScObThrowableSpecs> throwableInventory = new List<ScObThrowableSpecs>();
     private int itemIndex = 0;
@@ -16,9 +17,9 @@ public class ThrowablePlayerStats : MonoBehaviour
     private bool isAiming;
     public GameObject throwableItemPrefab;
     private GameObject decalObject;
+    private bool canceledThrow = false;
     private bool canChangeItem = true;
     private bool canThrowItem = false;
-    private bool cancelThrow = false;
     private float currentThrowDistance = 0f;
 
 
@@ -107,27 +108,49 @@ public class ThrowablePlayerStats : MonoBehaviour
         this.maxCapacity = maxCapacity;
     }
     
+    public void coolDown()
+    {
+        canThrowItem = false;
+        StartCoroutine(coolDownCoroutine());
+    }
+    
+    private IEnumerator coolDownCoroutine()
+    {
+        yield return new WaitForSeconds(coolDownBetweenThrows);
+        if(throwableInventory.Count > 0)
+            canThrowItem = true;
+        canceledThrow = false;
+
+    }
+    
     public void setAiming(bool isAiming)
     {
         if (canThrowItem)
         {
-            if(isAiming)
+            if (!canceledThrow)
             {
-                this.isAiming = isAiming;
-                ControlDecalDistance();
+                if(isAiming)
+                {
+                    this.isAiming = isAiming;
+                }
+                else
+                {
+                    ThrowItem();
+                }
             }
             
             else
             {
-                this.isAiming = isAiming;
-                ThrowItem();
+                if(decalObject)
+                    Destroy(decalObject);
             }
         }
     }
 
     public void ThrowItem()
     {
-            GameObject throwableItemInstance = Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
+        GameObject throwableItemInstance =
+                Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
             Rigidbody rb = throwableItemInstance.GetComponent<Rigidbody>();
             throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(throwableInventory[itemIndex]);
             Vector3 trajetoria =
@@ -136,16 +159,23 @@ public class ThrowablePlayerStats : MonoBehaviour
             rb.AddForce(trajetoria, ForceMode.VelocityChange);
             throwableInventory.Remove(throwableInventory[itemIndex]);
             changeToNextItem();
-            if(throwableInventory.Count == 0)
+            if (throwableInventory.Count == 0)
                 canThrowItem = false;
             currentThrowDistance = 0f;
             Destroy(decalObject);
+            coolDown();
     }
-    
+
     public void cancelThrowAction()
     {
-        canThrowItem = false;
-        Destroy(decalObject);
-        canThrowItem = true;
+        canceledThrow = true;
+        coolDown();
+        currentThrowDistance = 0f;
+    }
+    
+    public void setCanceledThrow(bool canceledThrow)
+    {
+        this.canceledThrow = canceledThrow;
+         currentThrowDistance = 0f;
     }
 }

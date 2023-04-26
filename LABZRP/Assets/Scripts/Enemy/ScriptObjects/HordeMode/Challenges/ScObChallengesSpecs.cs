@@ -25,6 +25,7 @@ public class ScObChallengesSpecs : ScriptableObject
     public int ChallengeReward;
     public int ChallengeDifficulty;
     public float ChallengeTime;
+    public GameObject Model3dChallengeMachine;
     
     
     //Kill in time

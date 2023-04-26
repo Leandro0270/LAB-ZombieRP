@@ -89,6 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61c2b5747bd284b9610fc74dc5d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _throwablePlayerStats: {fileID: 4962438788449095720}
   miraLaser: {fileID: 4787241468040720977}
   canoDaArma: {fileID: 1809394511760243526}
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
@@ -116,6 +117,7 @@ MonoBehaviour:
   totalLife: 0
   life: 0
   PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
+  _mainGameManager: {fileID: 0}
   _playerIndicator: {fileID: 8476164450946481546}
 --- !u!114 &4110660743282712486
 MonoBehaviour:
@@ -185,6 +187,7 @@ MonoBehaviour:
   explosionArea: {fileID: 1519424236948069790, guid: d8a96f033f9c18649bcea42fad860f1d, type: 3}
   ThrowerHand: {fileID: 3431554702415488595}
   DecalSpawnPoint: {fileID: 5597692463332652274}
+  weaponSystem: {fileID: 4110660743282712484}
   throwableItemPrefab: {fileID: 2216045802385621327, guid: d5d2cd53e6d08d5498ddbe99c0d8d96f, type: 3}
 --- !u!65 &3281851553285552828
 BoxCollider:
