@@ -42,8 +42,18 @@ public class HordeManager : MonoBehaviour
     private float timeBetweenHordesUI;
     private bool isBossZombieAlive = false;
     //Special events Variables==========================================================
+    [SerializeField] private ChallengeManager challengeManager;
+    [SerializeField] private List<GameObject> challengeMachines;
+    [SerializeField] private bool haveChallenges = true;
+    [SerializeField] private int challengeMachineHordeSpawn = 5;
+    [SerializeField] private bool challengeMachinesChangePosition = true;
+    [SerializeField] private int challengeMachineHordeRespawn = 5;
+    [SerializeField] private bool willSpawnDifferentDifficulties = true;
+    [SerializeField] private int mediumDifficultyHordeSpawn = 7;
+    [SerializeField] private int hardDifficultyHordeSpawn = 9;
     private bool isSpecialEvent = false;
     private bool isExplosiveZombieEvent = false;
+    private bool isCoffeeMachineEvent = false;
     //=================================================================
     public void Start()
     { mainCamera = GameManager.getMainCamera();
@@ -71,6 +81,7 @@ public class HordeManager : MonoBehaviour
     //Função que decrementa a quantidade de zumbis vivos
         public void decrementZombiesAlive(GameObject zombie)
         {
+            GameManager.removeEnemy(zombie);
             zombiesAlive--;
             killedZombiesInHorde++;
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
@@ -87,6 +98,24 @@ public class HordeManager : MonoBehaviour
                     Itemgenerator.setIsOnHorderCooldown(true);
                     StartCoroutine(HorderBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
+                }
+                if(haveChallenges){
+                    if (willSpawnDifferentDifficulties)
+                    {
+                        if(currentHorde == mediumDifficultyHordeSpawn)
+                            challengeManager.addChalengeMachinesPrefab(challengeMachines[0]);
+                        if(currentHorde == hardDifficultyHordeSpawn)
+                            challengeManager.addChalengeMachinesPrefab(challengeMachines[1]);
+                    }
+                    if(currentHorde == challengeMachineHordeSpawn)
+                    {
+                        challengeManager.spawnChallengeMachines();
+                    }
+                    
+                    if(challengeMachinesChangePosition && currentHorde % challengeMachineHordeRespawn == 0)
+                    {
+                        challengeManager.respawnChallengeMachines();
+                    }
                 }
 
                 if (isLastHordeMode)
@@ -163,12 +192,17 @@ public class HordeManager : MonoBehaviour
                     if (haveBaseZombieLifeIncrement)
                     {
                         EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                        ZombieStatus.setHordeManager(this);
                         ZombieStatus.setTotalLife(currentZombieLife);
                         ZombieStatus.setCurrentLife(currentZombieLife);
                     }
 
-                    
-
+                    if (isCoffeeMachineEvent)
+                    {
+                        EnemyFollow ZombieFollow = zombie.GetComponent<EnemyFollow>();
+                        ZombieFollow.setCoffeeMachineEvent(true);
+                        
+                    }
                 }
                 
                 if (isExplosiveZombieEvent)
@@ -210,7 +244,7 @@ public class HordeManager : MonoBehaviour
         {
             this.isSpecialEvent = isSpecialEvent;
         }
-        
+
         public void setExplosiveZombieEvent(bool isExplosiveZombieEvent)
         {
             this.isExplosiveZombieEvent = isExplosiveZombieEvent;
@@ -222,11 +256,16 @@ public class HordeManager : MonoBehaviour
                     ZombieStatus.setExplosiveZombieEvent(true);
                 }
             }
+        }
 
+        public void setCoffeeMachineEvent(bool isCoffeeMachineEvent)
             {
-                
+                if (isCoffeeMachineEvent)
+                {
+                    this.isCoffeeMachineEvent = isCoffeeMachineEvent;
+                }
             }
         }
 
-    }
+    
 

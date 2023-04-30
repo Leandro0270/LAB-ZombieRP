@@ -156,6 +156,7 @@ public class WeaponSystem : MonoBehaviour
                         bala.setVelocidadeBalas(_velocidadeBala);
                         bala.setHitableEnemies(_hitableEnemies);
                         bala.setIsCritical(isCritical);
+                        bala.setIsAiming(_mirando);
                         
                         _balasRestantes--;
                         _disparosAEfetuar--;
@@ -182,6 +183,8 @@ public class WeaponSystem : MonoBehaviour
                                 bala.setShooter(this);
                                 bala.setHitableEnemies(_hitableEnemies);
                                 bala.setIsCritical(isCritical);
+                                bala.setIsAiming(_mirando);
+
 
                                 
                         }
@@ -400,6 +403,8 @@ public class WeaponSystem : MonoBehaviour
         public void addKilledNormalZombie()
         {
                 _playerPoints.addPointsNormalZombieKilled();
+                if (_isKillInTimeChallengeActive) 
+                        _challengeManager.addZombieKilled();
                 NormalZombiesKilled++;
                 
         }
@@ -436,6 +441,11 @@ public class WeaponSystem : MonoBehaviour
         public bool GetIsShotgun()
         {
                 return _isShotgun;
+        }
+        
+        public void SetIsInArea(bool aux)
+        {
+                _isInArea = aux;
         }
 
         public int GetBalasPente()
@@ -505,13 +515,30 @@ public class WeaponSystem : MonoBehaviour
         public void missedShot()
         {
                 missedShots++;
-                if (_isChallengeActive)
-                {
-                        if (_isSharpshooterChallengeActive)
-                        {
-                                _challengeManager.addZombieKilled();
-                        }
-                }
+                _challengeManager.missedShot();
+        }
+        
+        public void setisMeleeChallengeActive(bool aux)
+        {
+                _isMeleeChallengeActive = aux;
+        }
+        public void setisKillWithAimChallengeActive(bool aux)
+        {
+                _isKillWithAimChallengeActive = aux;
+        }
+        
+        public void setisKillInAreaChallengeActive(bool aux)
+        {
+                _isKillInAreaChallengeActive = aux;
+        }
+        
+        public void setisKillInTimeChallengeActive(bool aux)
+        {
+                _isKillInTimeChallengeActive = aux;
+        }
+        public void set_challengeManager(ChallengeManager challengeManager)
+        {
+                _challengeManager = challengeManager;
         }
 
         //================================================================================================

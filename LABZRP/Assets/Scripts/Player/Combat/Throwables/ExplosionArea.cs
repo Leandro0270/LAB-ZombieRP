@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class ExplosionArea : MonoBehaviour
 {
-    private ScObThrowableSpecs _throwableSpecs;
+    [SerializeField] private ScObThrowableSpecs _throwableSpecs;
+    [SerializeField] private bool isManualSetup = false;
     private ScObThrowableSpecs.Type _throwableType;
     
     //specs
@@ -36,6 +37,12 @@ public class ExplosionArea : MonoBehaviour
     private float effectTickTimer = 0;
     private bool _setupComplete = false;
 
+
+    private void Start()
+    {
+        if(isManualSetup)
+            Setup(_throwableSpecs);
+    }
 
     private void Update()
     {

@@ -24,6 +24,7 @@ public class ScObChallengesSpecs : ScriptableObject
     public String ChallengeDescription;
     public int ChallengeReward;
     public int ChallengeDifficulty;
+    public float TimeToStartChallenge;
     public float ChallengeTime;
     public GameObject Model3dChallengeMachine;
     

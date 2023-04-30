@@ -103,7 +103,7 @@ public class Item : MonoBehaviour
             return StartItem;
         }
         else{
-            StartItem = Instantiate(ItemScOB.throwable.throwablePrefabVendingMachine3DModel, transform.position, transform.rotation);
+            StartItem = Instantiate(ItemScOB.modelo3d, transform.position, transform.rotation);
             StartItem.transform.parent = transform;
             return StartItem;
         }

@@ -16,4 +16,6 @@ MonoBehaviour:
   life: 0
   Balas: 50
   modelo3d: {fileID: 7991626508051034808, guid: 710f5600369e6e2468f1afee4cdf3cee, type: 3}
+  modelo3dVendingMachine: {fileID: 7991626508051034808, guid: 33ac31241bd56f54bbf3bc33c1c6b1d3, type: 3}
+  throwable: {fileID: 0}
   Price: 10

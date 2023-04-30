@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyStatus : MonoBehaviour
 {
     public ScObEnemyStats _status;
-    private GameObject hordeManager;
+    private HordeManager hordeManager;
     public GameObject FireDamage;
     public GameObject blood1;
     public GameObject blood2;
@@ -120,7 +120,7 @@ public class EnemyStatus : MonoBehaviour
             GetComponent<BoxCollider>().enabled = true;
             isDead = true;
             GetComponent<EnemyFollow>().setIsAlive(false);
-            hordeManager.GetComponent<HordeManager>().decrementZombiesAlive(gameObject);
+            hordeManager.decrementZombiesAlive(gameObject);
             GameObject randomExplosive = explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
             var position = transform.position;
             Instantiate(randomExplosive, position, Quaternion.identity);
@@ -141,7 +141,7 @@ public class EnemyStatus : MonoBehaviour
             _animator.setTarget(false);
             _animator.triggerDown();
             GetComponent<EnemyFollow>().setIsAlive(false);
-            hordeManager.GetComponent<HordeManager>().decrementZombiesAlive(gameObject);
+            hordeManager.decrementZombiesAlive(gameObject);
             StartCoroutine(waiterToDestroy());
         }
 
@@ -291,7 +291,7 @@ public class EnemyStatus : MonoBehaviour
         return points;
     }
     
-    public void setHordeManager(GameObject hordeManager)
+    public void setHordeManager(HordeManager hordeManager)
     {
         this.hordeManager = hordeManager;
     }

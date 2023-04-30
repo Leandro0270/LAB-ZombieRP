@@ -18,11 +18,13 @@ public class VendingMachine : MonoBehaviour
     private int randomItemIndex;
     
     private bool isOnCooldown = false;
+    private bool canBuyOnlyInHordeCooldown = false;
     private bool isOnHordeCooldown = false;
     private int itemType;
     
     
     //In game objects
+    [SerializeField] private GameObject ItemSpawnPoint;
     [SerializeField]
     private GameObject ItemShowHolder;
     public GameObject itemHolder;
@@ -37,9 +39,7 @@ public class VendingMachine : MonoBehaviour
 
         setRandomItem();
     }
-
-
-
+    
 
     private void OnTriggerStay(Collider other)
     {
@@ -53,15 +53,32 @@ public class VendingMachine : MonoBehaviour
                     int pontosPlayerAtual = playerStats.getPlayerPoints().getPoints();
                     if (itemType == 0)
                     {
-                        if (pontosPlayerAtual >= itens[randomItemIndex].Price && !isOnCooldown)
+                        if (pontosPlayerAtual >= itens[randomItemIndex].Price)
                         {
-                            isOnCooldown = true;
-                            itemSpawn(other.gameObject);
-                            playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
-                            Destroy(StartItem);
-                            Destroy(ItemShowHolder);
-                            StartCoroutine(VendingMachineItemCoolDown());
-                            ScreenPoints.text = " ";
+                            if (canBuyOnlyInHordeCooldown)
+                            {
+                                if (isOnHordeCooldown)
+                                {
+                                    isOnCooldown = true;
+                                    itemSpawn(other.gameObject);
+                                    playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
+                                    Destroy(StartItem);
+                                    Destroy(ItemShowHolder);
+                                    StartCoroutine(VendingMachineItemCoolDown());
+                                    ScreenPoints.text = " ";
+                                }
+                            }
+                            else
+                            {
+                                isOnCooldown = true;
+                                itemSpawn(other.gameObject);
+                                playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
+                                Destroy(StartItem);
+                                Destroy(ItemShowHolder);
+                                StartCoroutine(VendingMachineItemCoolDown());
+                                ScreenPoints.text = " ";
+                            }
+                            
 
                         }
                     }
@@ -91,13 +108,13 @@ public class VendingMachine : MonoBehaviour
     private void itemSpawn(GameObject playerBuyer)
     {
 
-            if (itemType == 0)
+            if (itemType <= (itens.Length - 1))
             {
-                GameObject item = Instantiate(itemHolder, gameObject.transform.position, transform.rotation);
+                GameObject item = Instantiate(itemHolder, ItemSpawnPoint.transform.position, ItemSpawnPoint.transform.rotation);
                 item.GetComponent<Item>().setItem(itens[randomItemIndex]);
 
             }
-            else if (itemType == 1)
+            else if (itemType <= (guns.Length + itens.Length - 1))
             {
                 playerBuyer.GetComponent<WeaponSystem>().ChangeGun(guns[randomItemIndex]);
             }
@@ -108,20 +125,19 @@ public class VendingMachine : MonoBehaviour
     {
         //Randomizar se vai ser arma ou item
         var rotation = transform.rotation;
-        var position = transform.position;
-        itemType = Random.Range(0, 2);
-        if (itemType == 0)
+        itemType = Random.Range(0, guns.Length + itens.Length);
+        if (itemType <= (itens.Length - 1))
         {
             randomItemIndex = Random.Range(0, itens.Length);
             ScreenPoints.text = itens[randomItemIndex].Price.ToString();
-            StartItem = Instantiate(itens[randomItemIndex].modelo3d, ItemShowHolder.transform.position,
+            StartItem = Instantiate(itens[randomItemIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
                 rotation);
             //Coloca o start item como filho do objeto itemshowholder
             StartItem.transform.parent = ItemShowHolder.transform;
             ScreenPoints.text = itens[randomItemIndex].Price.ToString();
 
         }
-        else if(itemType == 1)
+        else if(itemType <= (guns.Length + itens.Length - 1))
         {
             randomItemIndex = Random.Range(0, guns.Length);
             ScreenPoints.text = guns[randomItemIndex].Price.ToString();
@@ -130,7 +146,7 @@ public class VendingMachine : MonoBehaviour
             StartItem.transform.parent = ItemShowHolder.transform;
             ScreenPoints.text = guns[randomItemIndex].Price.ToString();
 
-        }
+        } 
     }
     
     IEnumerator VendingMachineItemCoolDown()

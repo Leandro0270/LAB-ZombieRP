@@ -48,8 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8189e847e63f1014f9dc2f8dbc1fc09b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  degreesPerSecond: 15
-  amplitude: 0.5
+  degreesPerSecond: 0
+  amplitude: 0.2
   frequency: 1
 --- !u!1 &1808698052844457715
 GameObject:

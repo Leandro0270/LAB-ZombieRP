@@ -13,6 +13,8 @@ public class MainGameManager : MonoBehaviour
     private List<GameObject> enemies;
     private List<GameObject> itens;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private HordeManager hordeManager;
+    [SerializeField] private ChallengeManager challengeManager;
     
     
     
@@ -53,6 +55,7 @@ public class MainGameManager : MonoBehaviour
     {
         players.Add(player);
         alivePlayers.Add(player);
+        player.GetComponent<WeaponSystem>().set_challengeManager(challengeManager);
     }
     
     public void addEnemy(GameObject enemy)
@@ -111,6 +114,23 @@ public class MainGameManager : MonoBehaviour
     {
         return downedPlayers;
 
+    }
+    
+    public void resetZombiesTarget()
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyFollow>().setNearPlayerDestination();
+        }
+    }
+
+    public void cancelCoffeeMachineEvent()
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyFollow>().setCoffeeMachineEvent(false);
+        }
+        resetZombiesTarget();
     }
     
 }

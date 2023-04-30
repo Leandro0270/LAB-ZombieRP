@@ -20,7 +20,9 @@ public class ThrowablePlayerStats : MonoBehaviour
     private bool canceledThrow = false;
     private bool canChangeItem = true;
     private bool canThrowItem = false;
+    private bool throwedItem = false;
     private float currentThrowDistance = 0f;
+    private bool isInThrowableChallenge = false;
 
 
     private void Update()
@@ -149,7 +151,9 @@ public class ThrowablePlayerStats : MonoBehaviour
 
     public void ThrowItem()
     {
-        GameObject throwableItemInstance =
+        if (decalObject)
+        {
+            GameObject throwableItemInstance =
                 Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
             Rigidbody rb = throwableItemInstance.GetComponent<Rigidbody>();
             throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(throwableInventory[itemIndex]);
@@ -162,8 +166,11 @@ public class ThrowablePlayerStats : MonoBehaviour
             if (throwableInventory.Count == 0)
                 canThrowItem = false;
             currentThrowDistance = 0f;
+            isAiming = false;
             Destroy(decalObject);
+            
             coolDown();
+        }
     }
 
     public void cancelThrowAction()
@@ -176,6 +183,24 @@ public class ThrowablePlayerStats : MonoBehaviour
     public void setCanceledThrow(bool canceledThrow)
     {
         this.canceledThrow = canceledThrow;
+        isAiming = false;
+        Destroy(decalObject);
          currentThrowDistance = 0f;
+    }
+    
+    public void setIsInThrowableChallenge(bool isInThrowableChallenge)
+    {
+        if (isInThrowableChallenge)
+        {
+            this.isInThrowableChallenge = isInThrowableChallenge;
+            canThrowItem = false;
+        }
+        else
+        {
+            this.isInThrowableChallenge = isInThrowableChallenge;
+            if(throwableInventory.Count > 0)
+                canThrowItem = true;
+        }
+        
     }
 }
