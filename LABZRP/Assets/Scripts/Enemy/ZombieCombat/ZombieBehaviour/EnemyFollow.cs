@@ -9,19 +9,32 @@ public class EnemyFollow : MonoBehaviour
     public NavMeshAgent enemy;
     
     private GameObject[] players;
+    private GameObject[] CoffeMachines;
     private GameObject target;
     private bool canWalk = true;
     private bool isAlive = true;
     private bool followPlayers = true;
     private bool isSpecial = false;
     private bool canAttack = true;
+    private bool isCoffeMachineEvent = false;
+    private bool isEvent = false;
 
     public ZombieAnimationController animation;
     // Start is called before the first frame update
     void Start()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
-        target = GetTarget(players);
+        if (isCoffeMachineEvent)
+        {
+            
+
+
+        }
+        else
+        {
+            target = GetTarget(players);
+
+        }
         if (animation == null)
             animation = GetComponentInChildren<ZombieAnimationController>();
         animation.setTarget(true);
@@ -36,44 +49,10 @@ public class EnemyFollow : MonoBehaviour
 
             if (isAlive)
             {
-                //Vai pegar  os parametros de rotação do transform e vai adicionar 90 no eixo Y
-                PlayerStats _playerstats = target.GetComponent<PlayerStats>();
-                if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
+                if (!isEvent)
                 {
-                    //usa uma lista auxiliar sem o player que morreu para definir um novo target
-                    GameObject[] aux = new GameObject[players.Length - 1];
-                    foreach (GameObject player in players)
-                    {
-                        int i = 0;
-                        if (player != target)
-                        {
-                            aux[i] = player;
-                            i++;
-                        }
-                    }
-
-                    target = GetTarget(aux);
-                }
-
-                if (canWalk)
-                {
-                    enemy.isStopped = false;
-                    enemy.SetDestination(target.transform.position);
-                }
-                else
-                {
-                    enemy.isStopped = true;
-                }
-
-                float distance = Vector3.Distance(target.transform.position, transform.position);
-                if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated() && canAttack)
-                {
-
-                    animation.setAttack();
-                    canWalk = false;
-                    _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
-                    Invoke("resetCanWalk", 1f);
-                    if (_playerstats.verifyDown())
+                    PlayerStats _playerstats = target.GetComponent<PlayerStats>();
+                    if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
                     {
                         //usa uma lista auxiliar sem o player que morreu para definir um novo target
                         GameObject[] aux = new GameObject[players.Length - 1];
@@ -89,10 +68,74 @@ public class EnemyFollow : MonoBehaviour
 
                         target = GetTarget(aux);
                     }
+
+                    if (canWalk)
+                    {
+                        enemy.isStopped = false;
+                        enemy.SetDestination(target.transform.position);
+                    }
+                    else
+                    {
+                        enemy.isStopped = true;
+                    }
+
+                    float distance = Vector3.Distance(target.transform.position, transform.position);
+                    if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated() && canAttack)
+                    {
+
+                        animation.setAttack();
+                        canWalk = false;
+                        _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
+                        Invoke("resetCanWalk", 1f);
+                        if (_playerstats.verifyDown())
+                        {
+                            //usa uma lista auxiliar sem o player que morreu para definir um novo target
+                            GameObject[] aux = new GameObject[players.Length - 1];
+                            foreach (GameObject player in players)
+                            {
+                                int i = 0;
+                                if (player != target)
+                                {
+                                    aux[i] = player;
+                                    i++;
+                                }
+                            }
+
+                            target = GetTarget(aux);
+                        }
+                    }
+
+
+
                 }
+                else
+                {
+                    if (isCoffeMachineEvent)
+                    {
+                        CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
+                        target = GetTarget(CoffeMachines);
+                        ChallengeCoffeeMachine _challengeCoffeeMachine = target.GetComponent<ChallengeCoffeeMachine>();
 
+                        if (canWalk)
+                        {
+                            enemy.isStopped = false;
+                            enemy.SetDestination(target.transform.position);
+                        }
+                        else
+                        {
+                            enemy.isStopped = true;
+                        }
 
-
+                        float distance = Vector3.Distance(target.transform.position, transform.position);
+                        if (distance < 4f && canWalk && canAttack)
+                        {
+                            animation.setAttack();
+                            canWalk = false;
+                            _challengeCoffeeMachine.takeHit(GetComponent<EnemyStatus>().getDamage());
+                            Invoke("resetCanWalk", 1f);
+                        }
+                    }
+                }
             }
             else
             {
@@ -183,8 +226,12 @@ public class EnemyFollow : MonoBehaviour
     {
         target = GetTarget(players);
         enemy.SetDestination(target.transform.position);
-
-        
+    }
+    
+    public void setCoffeeMachineEvent(bool isCoffeMachineEvent)
+    {
+        isEvent = isCoffeMachineEvent;
+        this.isCoffeMachineEvent = isCoffeMachineEvent;
     }
 }
 

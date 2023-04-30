@@ -9,6 +9,7 @@ public class ThrowablePlayerStats : MonoBehaviour
     [SerializeField] private DecalProjector explosionArea;
     [SerializeField] private GameObject ThrowerHand;
     [SerializeField] private GameObject DecalSpawnPoint;
+    [SerializeField] private float coolDownBetweenThrows = 1.5f;
     private int maxCapacity;
     private List<ScObThrowableSpecs> throwableInventory = new List<ScObThrowableSpecs>();
     private int itemIndex = 0;
@@ -16,10 +17,12 @@ public class ThrowablePlayerStats : MonoBehaviour
     private bool isAiming;
     public GameObject throwableItemPrefab;
     private GameObject decalObject;
+    private bool canceledThrow = false;
     private bool canChangeItem = true;
     private bool canThrowItem = false;
-    private bool cancelThrow = false;
+    private bool throwedItem = false;
     private float currentThrowDistance = 0f;
+    private bool isInThrowableChallenge = false;
 
 
     private void Update()
@@ -107,27 +110,51 @@ public class ThrowablePlayerStats : MonoBehaviour
         this.maxCapacity = maxCapacity;
     }
     
+    public void coolDown()
+    {
+        canThrowItem = false;
+        StartCoroutine(coolDownCoroutine());
+    }
+    
+    private IEnumerator coolDownCoroutine()
+    {
+        yield return new WaitForSeconds(coolDownBetweenThrows);
+        if(throwableInventory.Count > 0)
+            canThrowItem = true;
+        canceledThrow = false;
+
+    }
+    
     public void setAiming(bool isAiming)
     {
         if (canThrowItem)
         {
-            if(isAiming)
+            if (!canceledThrow)
             {
-                this.isAiming = isAiming;
-                ControlDecalDistance();
+                if(isAiming)
+                {
+                    this.isAiming = isAiming;
+                }
+                else
+                {
+                    ThrowItem();
+                }
             }
             
             else
             {
-                this.isAiming = isAiming;
-                ThrowItem();
+                if(decalObject)
+                    Destroy(decalObject);
             }
         }
     }
 
     public void ThrowItem()
     {
-            GameObject throwableItemInstance = Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
+        if (decalObject)
+        {
+            GameObject throwableItemInstance =
+                Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
             Rigidbody rb = throwableItemInstance.GetComponent<Rigidbody>();
             throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(throwableInventory[itemIndex]);
             Vector3 trajetoria =
@@ -136,16 +163,44 @@ public class ThrowablePlayerStats : MonoBehaviour
             rb.AddForce(trajetoria, ForceMode.VelocityChange);
             throwableInventory.Remove(throwableInventory[itemIndex]);
             changeToNextItem();
-            if(throwableInventory.Count == 0)
+            if (throwableInventory.Count == 0)
                 canThrowItem = false;
             currentThrowDistance = 0f;
+            isAiming = false;
             Destroy(decalObject);
+            
+            coolDown();
+        }
     }
-    
+
     public void cancelThrowAction()
     {
-        canThrowItem = false;
+        canceledThrow = true;
+        coolDown();
+        currentThrowDistance = 0f;
+    }
+    
+    public void setCanceledThrow(bool canceledThrow)
+    {
+        this.canceledThrow = canceledThrow;
+        isAiming = false;
         Destroy(decalObject);
-        canThrowItem = true;
+         currentThrowDistance = 0f;
+    }
+    
+    public void setIsInThrowableChallenge(bool isInThrowableChallenge)
+    {
+        if (isInThrowableChallenge)
+        {
+            this.isInThrowableChallenge = isInThrowableChallenge;
+            canThrowItem = false;
+        }
+        else
+        {
+            this.isInThrowableChallenge = isInThrowableChallenge;
+            if(throwableInventory.Count > 0)
+                canThrowItem = true;
+        }
+        
     }
 }

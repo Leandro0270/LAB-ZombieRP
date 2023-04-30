@@ -41,7 +41,20 @@ public class HordeManager : MonoBehaviour
     private int zombiesAlive = 0;
     private float timeBetweenHordesUI;
     private bool isBossZombieAlive = false;
-    
+    //Special events Variables==========================================================
+    [SerializeField] private ChallengeManager challengeManager;
+    [SerializeField] private List<GameObject> challengeMachines;
+    [SerializeField] private bool haveChallenges = true;
+    [SerializeField] private int challengeMachineHordeSpawn = 5;
+    [SerializeField] private bool challengeMachinesChangePosition = true;
+    [SerializeField] private int challengeMachineHordeRespawn = 5;
+    [SerializeField] private bool willSpawnDifferentDifficulties = true;
+    [SerializeField] private int mediumDifficultyHordeSpawn = 7;
+    [SerializeField] private int hardDifficultyHordeSpawn = 9;
+    private bool isSpecialEvent = false;
+    private bool isExplosiveZombieEvent = false;
+    private bool isCoffeeMachineEvent = false;
+    //=================================================================
     public void Start()
     { mainCamera = GameManager.getMainCamera();
         HorderText.text = "Prepare for the First Horder";
@@ -66,8 +79,9 @@ public class HordeManager : MonoBehaviour
 }
 
     //Função que decrementa a quantidade de zumbis vivos
-        public void decrementZombiesAlive()
+        public void decrementZombiesAlive(GameObject zombie)
         {
+            GameManager.removeEnemy(zombie);
             zombiesAlive--;
             killedZombiesInHorde++;
             HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
@@ -84,6 +98,24 @@ public class HordeManager : MonoBehaviour
                     Itemgenerator.setIsOnHorderCooldown(true);
                     StartCoroutine(HorderBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
+                }
+                if(haveChallenges){
+                    if (willSpawnDifferentDifficulties)
+                    {
+                        if(currentHorde == mediumDifficultyHordeSpawn)
+                            challengeManager.addChalengeMachinesPrefab(challengeMachines[0]);
+                        if(currentHorde == hardDifficultyHordeSpawn)
+                            challengeManager.addChalengeMachinesPrefab(challengeMachines[1]);
+                    }
+                    if(currentHorde == challengeMachineHordeSpawn)
+                    {
+                        challengeManager.spawnChallengeMachines();
+                    }
+                    
+                    if(challengeMachinesChangePosition && currentHorde % challengeMachineHordeRespawn == 0)
+                    {
+                        challengeManager.respawnChallengeMachines();
+                    }
                 }
 
                 if (isLastHordeMode)
@@ -148,24 +180,37 @@ public class HordeManager : MonoBehaviour
 
                 }
 
+                GameObject zombie;
                 if (isSpecialZombie && currentHorde > 3)
                 {
                     int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
-                    GameObject zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex], visibleSpawnPoints[spawnPointIndex].transform.position,
+                    zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex], visibleSpawnPoints[spawnPointIndex].transform.position,
                         visibleSpawnPoints[spawnPointIndex].transform.rotation);
-                    GameManager.addEnemy(zombie);
                 }else{
-                    GameObject zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
+                    zombie = Instantiate(NormalZombiePrefab, visibleSpawnPoints[spawnPointIndex].transform.position,
                         visibleSpawnPoints[spawnPointIndex].transform.rotation);
                     if (haveBaseZombieLifeIncrement)
                     {
                         EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                        ZombieStatus.setHordeManager(this);
                         ZombieStatus.setTotalLife(currentZombieLife);
                         ZombieStatus.setCurrentLife(currentZombieLife);
                     }
 
-                    GameManager.addEnemy(zombie);
+                    if (isCoffeeMachineEvent)
+                    {
+                        EnemyFollow ZombieFollow = zombie.GetComponent<EnemyFollow>();
+                        ZombieFollow.setCoffeeMachineEvent(true);
+                        
+                    }
                 }
+                
+                if (isExplosiveZombieEvent)
+                { 
+                    EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                    ZombieStatus.setExplosiveZombieEvent(true);
+                }
+                GameManager.addEnemy(zombie);
                 incrementZombiesAlive();
             }
 
@@ -192,6 +237,35 @@ public class HordeManager : MonoBehaviour
             float randomValue = Random.Range(0f, 100f);
             return randomValue <= probability;
         }
+        
+        
+        
+        public void setSpecialEvent(bool isSpecialEvent)
+        {
+            this.isSpecialEvent = isSpecialEvent;
+        }
 
-    }
+        public void setExplosiveZombieEvent(bool isExplosiveZombieEvent)
+        {
+            this.isExplosiveZombieEvent = isExplosiveZombieEvent;
+            if (zombiesAlive > 0)
+            {
+                foreach (var zombie in GameManager.getEnemies())
+                {
+                    EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
+                    ZombieStatus.setExplosiveZombieEvent(true);
+                }
+            }
+        }
+
+        public void setCoffeeMachineEvent(bool isCoffeeMachineEvent)
+            {
+                if (isCoffeeMachineEvent)
+                {
+                    this.isCoffeeMachineEvent = isCoffeeMachineEvent;
+                }
+            }
+        }
+
+    
 

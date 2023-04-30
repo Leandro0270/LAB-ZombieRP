@@ -14,6 +14,7 @@ public class PlayerInputHandler : MonoBehaviour
     private PlayerStats _status;
     private CustomizePlayerInGame _customize;
     private ThrowablePlayerStats _throwableStats;
+    private MainGameManager _mainGameManager;
     public float delay = 2f;
     private float delayTimer = 0f;
 
@@ -30,7 +31,9 @@ public class PlayerInputHandler : MonoBehaviour
 
     private void Start()
     {
-        GameObject.Find("GameManager").GetComponent<MainGameManager>().addPlayer(this.gameObject);
+        _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
+        _mainGameManager.addPlayer(gameObject);
+        
     }
 
     private void Update()
@@ -47,6 +50,8 @@ public class PlayerInputHandler : MonoBehaviour
         _playerConfig.Input.onActionTriggered += Input_onActionTriggered;
         if (_status != null)
             _status.setPlayerStats(pc.playerStats);
+        
+
         if (_attack != null)
             _attack.SetGunStatus(pc.playerStats.startGun);
         if (_customize != null)
@@ -159,21 +164,25 @@ public class PlayerInputHandler : MonoBehaviour
     private void OnReload()
     {
         _attack.AuxReload();
+
     }
 
     private void OnMelee()
     {
         _attack.AuxMelee();
+
     }
 
     private void OnShootPress(CallbackContext ctx)
     {
         _attack.AuxShootPress(ctx);
+
     }
 
     private void OnSelect(bool value)
     {
         _status.setInteracting(value);
+
     }
 
     private void OnAimPress(CallbackContext ctx)
@@ -189,6 +198,8 @@ public class PlayerInputHandler : MonoBehaviour
     private void onChangeThrowable()
     {
         _throwableStats.changeToNextItem();
+        _throwableStats.cancelThrowAction();
+
     }
 
     private void cancelActions()

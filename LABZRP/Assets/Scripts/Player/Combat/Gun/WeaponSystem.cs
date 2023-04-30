@@ -11,6 +11,8 @@ public class WeaponSystem : MonoBehaviour
         private ScObGunSpecs _specsArma;
         private PlayerStats _playerStats;
         private PlayerPoints _playerPoints;
+        private ChallengeManager _challengeManager;
+        [SerializeField] private ThrowablePlayerStats _throwablePlayerStats;
 
         //Status das armas
         private float _danoMelee;
@@ -23,9 +25,12 @@ public class WeaponSystem : MonoBehaviour
         private bool _isShotgun, _isSniper, _haveCriticalChance;
         
         //ações
-        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando;
+        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando, _hitted, _hittedWithMelee,_hittedWithAim;
         private int NormalZombiesKilled = 0;
         private int SpecialZombiesKilled = 0;
+        private int KilledWithAim = 0;
+        private int KilledWithMelee = 0;
+        private int missedShots = 0;
 
 
         //Referencia
@@ -43,7 +48,16 @@ public class WeaponSystem : MonoBehaviour
         private BULLETS_UI _bulletsUI;
         public Slider reloadSlider;
         private Slider _reloadSliderInstance;
-
+        //Challenges specs
+        private bool _isChallengeActive;
+        private bool _isSharpshooterChallengeActive;
+        private bool _isMeleeChallengeActive;
+        private bool _isKillInTimeChallengeActive;
+        private bool _isKillInAreaChallengeActive;
+        private bool _isKillWithAimChallengeActive;
+        private bool _isInArea;
+        private bool _missedShot;
+        
 //======================================================================================================
 //Unity base functions
         private void Start()
@@ -53,6 +67,7 @@ public class WeaponSystem : MonoBehaviour
                 _danoMelee = _playerStats.getMeleeDamage();
                 _playerPoints = GetComponent<PlayerPoints>();
                 _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
+                _challengeManager = _playerStats.getChallengeManager();
                 ApplyGunSpecs();
 
         }
@@ -141,6 +156,7 @@ public class WeaponSystem : MonoBehaviour
                         bala.setVelocidadeBalas(_velocidadeBala);
                         bala.setHitableEnemies(_hitableEnemies);
                         bala.setIsCritical(isCritical);
+                        bala.setIsAiming(_mirando);
                         
                         _balasRestantes--;
                         _disparosAEfetuar--;
@@ -167,6 +183,8 @@ public class WeaponSystem : MonoBehaviour
                                 bala.setShooter(this);
                                 bala.setHitableEnemies(_hitableEnemies);
                                 bala.setIsCritical(isCritical);
+                                bala.setIsAiming(_mirando);
+
 
                                 
                         }
@@ -202,6 +220,8 @@ public class WeaponSystem : MonoBehaviour
 //Aux Functions
         private void ReloadTerminado()
         {
+                _throwablePlayerStats.setCanceledThrow(false);
+
                 if (_totalBalas >= _tamanhoPente)
                 {
                         _totalBalas -= _tamanhoPente - _balasRestantes;
@@ -228,6 +248,7 @@ public class WeaponSystem : MonoBehaviour
 
         private void ResetarMelee()
         {
+                _throwablePlayerStats.setCanceledThrow(false);
                 _meleePronto = true;
         }
 
@@ -291,12 +312,19 @@ public class WeaponSystem : MonoBehaviour
         public void AuxMelee()
         {
                 if (!_atirando && _meleePronto && !_recarregando && _prontoParaAtirar)
+                {
                         melee();
+                        _throwablePlayerStats.setCanceledThrow(true);
+
+                }
         }
         public void AuxReload()
         {
                 if (_balasRestantes < _tamanhoPente && !_recarregando && !_attMelee)
+                {
                         Recarregar();
+                        _throwablePlayerStats.setCanceledThrow(true);
+                }
         }
         
         public void AuxShootPress(InputAction.CallbackContext ctx)
@@ -305,18 +333,25 @@ public class WeaponSystem : MonoBehaviour
                 {
                         case InputActionPhase.Performed:
                                 if (_segurarGatilho)
+                                {
                                         _atirando = true;
+                                        _throwablePlayerStats.setCanceledThrow(true);
+                                }
                                 else
                                 {
+                                        _throwablePlayerStats.setCanceledThrow(false);
                                         _atirando = false;
                                 }
 
                                 break;
                         case InputActionPhase.Started:
                                 _atirando = true;
+                                _throwablePlayerStats.setCanceledThrow(true);
                                 break;
                         case InputActionPhase.Canceled:
                                 _atirando = false;
+                                _throwablePlayerStats.setCanceledThrow(false);
+
                                 break;
                 }
         }
@@ -334,11 +369,13 @@ public class WeaponSystem : MonoBehaviour
                                         _dispersao *= (_reducaoDispersaoMirando / 100);
                                         miraLaser.SetActive(true);
                                         _mirando = true;
+                                        _throwablePlayerStats.setCanceledThrow(true);
                                         break;
                                 case InputActionPhase.Canceled:
                                         _playerStats.aimSlow(0, false);
                                         miraLaser.SetActive(false);
                                         _dispersao *= (100 / _reducaoDispersaoMirando);
+                                        _throwablePlayerStats.setCanceledThrow(false);
                                         _mirando = false;
                                         break;
                         }
@@ -366,13 +403,30 @@ public class WeaponSystem : MonoBehaviour
         public void addKilledNormalZombie()
         {
                 _playerPoints.addPointsNormalZombieKilled();
+                if (_isKillInTimeChallengeActive) 
+                        _challengeManager.addZombieKilled();
                 NormalZombiesKilled++;
+                
         }
 
         public void addKilledSpecialZombie(int points)
         {
                 _playerPoints.addPointsSpecialZombiesKilled(points);
                 SpecialZombiesKilled++;
+                if (_isChallengeActive)
+                {
+                        if (_isKillInAreaChallengeActive)
+                        {
+                                if (_isInArea)
+                                        _challengeManager.addZombieKilled();
+                        }
+
+                        if (_isKillInTimeChallengeActive)
+                        {
+                                _challengeManager.addZombieKilled();
+                        }
+
+                }
         }
         public int GetAtualAmmo()
         {
@@ -387,6 +441,11 @@ public class WeaponSystem : MonoBehaviour
         public bool GetIsShotgun()
         {
                 return _isShotgun;
+        }
+        
+        public void SetIsInArea(bool aux)
+        {
+                _isInArea = aux;
         }
 
         public int GetBalasPente()
@@ -425,6 +484,63 @@ public class WeaponSystem : MonoBehaviour
         {
                 return _isSniper;
         }
+
+
+
+        public void addKilledZombieWithAim()
+        {
+                KilledWithAim++;
+                if (_isChallengeActive)
+                {
+                        if (_isKillWithAimChallengeActive)
+                        { 
+                                _challengeManager.addZombieKilled();
+                        }
+                }
+        }
+        
+        
+        public void addKilledZombieWithMelee()
+        {
+                KilledWithMelee++;
+                if (_isChallengeActive)
+                {
+                        if (_isMeleeChallengeActive)
+                        {
+                                _challengeManager.addZombieKilled();
+                        }
+                }
+        }
+        
+        public void missedShot()
+        {
+                missedShots++;
+                _challengeManager.missedShot();
+        }
+        
+        public void setisMeleeChallengeActive(bool aux)
+        {
+                _isMeleeChallengeActive = aux;
+        }
+        public void setisKillWithAimChallengeActive(bool aux)
+        {
+                _isKillWithAimChallengeActive = aux;
+        }
+        
+        public void setisKillInAreaChallengeActive(bool aux)
+        {
+                _isKillInAreaChallengeActive = aux;
+        }
+        
+        public void setisKillInTimeChallengeActive(bool aux)
+        {
+                _isKillInTimeChallengeActive = aux;
+        }
+        public void set_challengeManager(ChallengeManager challengeManager)
+        {
+                _challengeManager = challengeManager;
+        }
+
         //================================================================================================
 
 }

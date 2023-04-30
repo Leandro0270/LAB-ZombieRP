@@ -6,10 +6,15 @@ using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviour
 {
-    [SerializeField] private List<GameObject> players;
-    [SerializeField] private List<GameObject> enemies;
-    [SerializeField] private List<GameObject> itens;
+   
+    private List<GameObject> players;
+    private List<GameObject> alivePlayers;
+    private List<GameObject> downedPlayers;
+    private List<GameObject> enemies;
+    private List<GameObject> itens;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private HordeManager hordeManager;
+    [SerializeField] private ChallengeManager challengeManager;
     
     
     
@@ -17,6 +22,8 @@ public class MainGameManager : MonoBehaviour
     public void Start()
     {
         players = new List<GameObject>();
+        alivePlayers = new List<GameObject>();
+        downedPlayers = new List<GameObject>();
         enemies = new List<GameObject>();
         itens = new List<GameObject>();
     }
@@ -26,28 +33,29 @@ public class MainGameManager : MonoBehaviour
         itens.Add(item);
     }
 
-    public Boolean verifyItemDistance(Transform Spawnpoint)
-    {
-        //for each de todos os itens verificando a distancia do parametro de transform passado e caso não esteja no raio de 5 metros retorna true
-        foreach (GameObject item in itens)
-        {
-            if (Vector3.Distance(item.transform.position, Spawnpoint.position) > 20)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     public int getCountItens()
     {
         return itens.Count;
     }
+    
+    public void removeDownedPlayer(GameObject player)
+    {
+        alivePlayers.Remove(player);
+        downedPlayers.Add(player);
+    }
+    
+    
+    public void addDownedPlayer(GameObject player)
+    {
+        alivePlayers.Add(player);
+        downedPlayers.Remove(player);
+    }
     public void addPlayer(GameObject player)
     {
         players.Add(player);
+        alivePlayers.Add(player);
+        player.GetComponent<WeaponSystem>().set_challengeManager(challengeManager);
     }
     
     public void addEnemy(GameObject enemy)
@@ -86,4 +94,43 @@ public class MainGameManager : MonoBehaviour
     {
         return mainCamera;
     }
+    
+    public List<GameObject> getPlayers()
+    {
+        return players;
+    }
+    
+    public List<GameObject> getAlivePlayers()
+    {
+        return alivePlayers;
+    }
+    
+    public List<GameObject> getEnemies()
+    {
+        return enemies;
+    }
+    
+    public List<GameObject> getDownedPlayers()
+    {
+        return downedPlayers;
+
+    }
+    
+    public void resetZombiesTarget()
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyFollow>().setNearPlayerDestination();
+        }
+    }
+
+    public void cancelCoffeeMachineEvent()
+    {
+        foreach (GameObject enemy in enemies)
+        {
+            enemy.GetComponent<EnemyFollow>().setCoffeeMachineEvent(false);
+        }
+        resetZombiesTarget();
+    }
+    
 }

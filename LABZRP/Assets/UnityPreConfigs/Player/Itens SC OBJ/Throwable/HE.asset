@@ -15,6 +15,7 @@ MonoBehaviour:
   nome: Granade
   life: 0
   Balas: 0
-  modelo3d: {fileID: 0}
+  modelo3d: {fileID: 6868815689267993812, guid: d11b4d76aafe52f4cbc8b68e873404a9, type: 3}
+  modelo3dVendingMachine: {fileID: 6868815689267993812, guid: d11b4d76aafe52f4cbc8b68e873404a9, type: 3}
   throwable: {fileID: 11400000, guid: e7caa55c48cb9e048975623f503b941a, type: 2}
   Price: 30

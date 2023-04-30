@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-    [CreateAssetMenu]
     public class RampAsset : ScriptableObject
     {
         public Gradient gradient = new Gradient();

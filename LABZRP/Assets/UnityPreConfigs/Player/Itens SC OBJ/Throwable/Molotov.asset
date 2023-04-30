@@ -15,6 +15,7 @@ MonoBehaviour:
   nome: Molotov
   life: 0
   Balas: 0
-  modelo3d: {fileID: 0}
+  modelo3d: {fileID: 8149942042146444515, guid: 691a47a32758fe844a7ccca8c8b3b027, type: 3}
+  modelo3dVendingMachine: {fileID: 8149942042146444515, guid: 691a47a32758fe844a7ccca8c8b3b027, type: 3}
   throwable: {fileID: 11400000, guid: cf0cffc5116c55b4b9d070055c1eff32, type: 2}
   Price: 50
