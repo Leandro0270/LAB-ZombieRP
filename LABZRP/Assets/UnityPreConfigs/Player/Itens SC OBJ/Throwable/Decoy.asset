@@ -15,7 +15,7 @@ MonoBehaviour:
   nome: Decoy
   life: 0
   Balas: 0
-  modelo3d: {fileID: 8149942042146444515, guid: 691a47a32758fe844a7ccca8c8b3b027, type: 3}
-  modelo3dVendingMachine: {fileID: 8149942042146444515, guid: 691a47a32758fe844a7ccca8c8b3b027, type: 3}
+  modelo3d: {fileID: 4326643561330399799, guid: dce2bbe57051e3a42b93c25f0b45f383, type: 3}
+  modelo3dVendingMachine: {fileID: 4326643561330399799, guid: dce2bbe57051e3a42b93c25f0b45f383, type: 3}
   throwable: {fileID: 11400000, guid: 015f934bf34d4c148841d3a4e0e6b06e, type: 2}
   Price: 100

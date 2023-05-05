@@ -21,7 +21,7 @@ MonoBehaviour:
   balasPorDisparo: 6
   segurarGatilho: 0
   modelo3d: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}
-  modelo3dVendingMachine: {fileID: 5737093034888398923, guid: 2b7378df615df7a4ba687090edce1eed, type: 3}
+  modelo3dVendingMachine: {fileID: 143031717775817010, guid: d95bf4427755f0c4f8d80243407e8b5f, type: 3}
   isShotgun: 1
   isSniper: 0
   range: 50
@@ -31,4 +31,8 @@ MonoBehaviour:
   hitableEnemies: 1
   reducaoDispersaoMirando: 30
   slowWhileAimingPercent: 60
+  haveCriticalChance: 0
+  criticalChanceIncrementalPerBullet: 0
+  criticalDamagePercentage: 0
+  criticalBaseChancePercentage: 0
   Price: 100
