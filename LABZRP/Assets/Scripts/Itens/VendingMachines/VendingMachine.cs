@@ -31,8 +31,21 @@ public class VendingMachine : MonoBehaviour
     public GameObject itemShow;
     private GameObject StartItem;
     public TextMeshPro ScreenPoints;
-
     
+    
+    //debug
+    [SerializeField] private bool changeItem = false;
+
+
+    private void Update()
+    {
+        if (changeItem)
+        {
+            Destroy(StartItem);
+            setRandomItem();
+            changeItem = false;
+        }
+    }
 
     private void Awake()
     {
@@ -133,7 +146,7 @@ public class VendingMachine : MonoBehaviour
             StartItem = Instantiate(itens[randomItemIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
                 rotation);
             //Coloca o start item como filho do objeto itemshowholder
-            StartItem.transform.parent = ItemShowHolder.transform;
+            StartItem.transform.parent = transform;
             ScreenPoints.text = itens[randomItemIndex].Price.ToString();
 
         }

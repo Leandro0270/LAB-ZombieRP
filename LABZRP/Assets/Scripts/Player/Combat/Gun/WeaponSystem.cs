@@ -199,7 +199,7 @@ public class WeaponSystem : MonoBehaviour
                 if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando)
                 {
                         _reloadSliderInstance = Instantiate(reloadSlider, transform.position, Quaternion.identity);
-                        _reloadSliderInstance.transform.SetParent(GameObject.Find("Canvas").transform);
+                        _reloadSliderInstance.transform.SetParent(GameObject.Find("Canva").transform);
                         _reloadSliderInstance.maxValue = _tempoRecarga;
                         _prontoParaAtirar = false;
                         _recarregando = true;

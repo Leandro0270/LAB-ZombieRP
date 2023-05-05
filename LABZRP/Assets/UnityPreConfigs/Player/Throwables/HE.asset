@@ -15,7 +15,7 @@ MonoBehaviour:
   throwableType: 0
   throwablePrefab3DModel: {fileID: 7068152242072465925, guid: 05d42310abb66a84eabb7438a4769c4f, type: 3}
   visualEffect: {fileID: 100000, guid: e1a244474427c7d49a2358702a6212aa, type: 3}
-  throwablePrefabVendingMachine3DModel: {fileID: 7068152242072465925, guid: 05d42310abb66a84eabb7438a4769c4f, type: 3}
+  throwablePrefabVendingMachine3DModel: {fileID: 1209324057802803108, guid: e7302a377d424a2419224db7076b82f2, type: 3}
   explodeOnImpact: 0
   affectEnemies: 1
   affectAllies: 1

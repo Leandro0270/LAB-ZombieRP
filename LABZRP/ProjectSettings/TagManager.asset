@@ -10,6 +10,13 @@ TagManager:
   - SpawnPoint
   - PlayersUI
   - PlayerHead
+  - Floor
+  - GameManager
+  - Canva
+  - CoffeeMachine
+  - Enemy
+  - door
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -27,7 +34,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - MiniMap
   - 
   - 
   - 
