@@ -234,6 +234,7 @@ MonoBehaviour:
   totalLife: 0
   life: 0
   PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
+  _playerHead: {fileID: 6071763367816855199}
   _mainGameManager: {fileID: 0}
   _playerIndicator: {fileID: 8476164450946481546}
 --- !u!114 &4110660743282712486
@@ -857,6 +858,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a77111fbdeb5db4cb835a3aa81319dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6071763367816855199 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+  m_PrefabInstance: {fileID: 6695203684995679639}
+  m_PrefabAsset: {fileID: 0}
 --- !u!23 &6584152666732624451 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 555560891962376148, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

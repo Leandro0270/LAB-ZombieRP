@@ -7,16 +7,13 @@ using UnityEngine.UI;
 
 public class BULLETS_UI : MonoBehaviour
 {
-    private Text texto;
+    [SerializeField] private TextMeshProUGUI texto;
     private int balasPente;
     private int balasTotal;
     private bool isShotgun = false;
 
 
-    private void Start()
-    {
-        texto = GetComponent<Text>();
-    }
+
 
     public void initializeHud(int balasPente, int balasTotal, bool isShotgun)
     {
@@ -40,9 +37,9 @@ public class BULLETS_UI : MonoBehaviour
     public void updateText()
     {
         if (isShotgun)
-            texto.text = (balasPente / 6) + " / " + (balasTotal / 6);
+            texto.text ="|" + (balasPente / 6) + " / " + (balasTotal / 6);
         else
-            texto.text = balasPente + " / " + balasTotal;
+            texto.text ="|" + balasPente + " / " + balasTotal;
     }
 
 }
