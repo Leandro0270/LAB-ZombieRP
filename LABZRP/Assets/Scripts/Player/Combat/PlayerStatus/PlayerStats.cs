@@ -52,6 +52,7 @@ public class PlayerStats : MonoBehaviour
     private HealthBar_UI _healthBarUi;
     public GameObject PlayerUI;
     private Color _characterColor;
+    [SerializeField] private GameObject _playerHead;
     //======================================================================================================
     //Script components
     [SerializeField] private MainGameManager _mainGameManager;
@@ -478,5 +479,10 @@ public class PlayerStats : MonoBehaviour
     public void setMainGameManager(MainGameManager gameManager)
     {
         _mainGameManager = gameManager;
+    }
+
+    public GameObject getPlayerHead()
+    {
+        return _playerHead;
     }
 }

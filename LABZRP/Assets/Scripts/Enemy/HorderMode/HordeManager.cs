@@ -73,7 +73,7 @@ public class HordeManager : MonoBehaviour
         {
             timeBetweenHordesUI -= Time.deltaTime;
             //Vai printar o tempo que falta para a proxima horder formatado com no máximo 2 casas decimais
-            HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F2");
+            HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
 
         }
 }
@@ -84,7 +84,7 @@ public class HordeManager : MonoBehaviour
             GameManager.removeEnemy(zombie);
             zombiesAlive--;
             killedZombiesInHorde++;
-            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + (currentHordeZombies - killedZombiesInHorde);
+            HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if (zombiesAlive == 0)
             {
                 currentHorde++;
@@ -157,7 +157,7 @@ public class HordeManager : MonoBehaviour
                 currentZombieLife += (currentZombieLife* baseZombieLifeIncrement);
             }
             
-            HorderText.text = "Horder: " + (currentHorde + 1) + "\n Zombies: " + currentHordeZombies;
+            HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             if(isBossZombieAlive)
             {
                 GameObject bossZombie = Instantiate(FinalBosses, visibleSpawnPoints[0].transform.position,

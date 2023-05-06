@@ -10,17 +10,22 @@ public class VendingMachine : MonoBehaviour
     //Define Selling itens
     [SerializeField] private ScObItem[] itens;
     [SerializeField] private ScObGunSpecs[] guns;
-    
+
 
     //Settings
+    [SerializeField] private GameObject errorText;
+    [SerializeField] private GameObject errorPlane;
+    [SerializeField] private int timeShowingError = 3;
     [SerializeField] private float buyCooldown = 5f;
     
     private int randomItemIndex;
     
     private bool isOnCooldown = false;
-    private bool canBuyOnlyInHordeCooldown = false;
+    [SerializeField] private bool canBuyOnlyInHordeCooldown = false;
     private bool isOnHordeCooldown = false;
     private int itemType;
+    private bool isDisplayingError = false;
+
     
     
     //In game objects
@@ -56,67 +61,71 @@ public class VendingMachine : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if (isOnHordeCooldown)
+        if(isOnCooldown) return;
+        PlayerStats playerStats = other.GetComponent<PlayerStats>();
+        if (playerStats == null || !playerStats.getInteracting()) return;
+        if (canBuyOnlyInHordeCooldown && !isOnHordeCooldown)
         {
-            PlayerStats playerStats = other.GetComponent<PlayerStats>();
-            if (playerStats)
-            {
-                if (playerStats.getInteracting())
-                {
-                    int pontosPlayerAtual = playerStats.getPlayerPoints().getPoints();
-                    if (itemType == 0)
-                    {
-                        if (pontosPlayerAtual >= itens[randomItemIndex].Price)
-                        {
-                            if (canBuyOnlyInHordeCooldown)
-                            {
-                                if (isOnHordeCooldown)
-                                {
-                                    isOnCooldown = true;
-                                    itemSpawn(other.gameObject);
-                                    playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
-                                    Destroy(StartItem);
-                                    Destroy(ItemShowHolder);
-                                    StartCoroutine(VendingMachineItemCoolDown());
-                                    ScreenPoints.text = " ";
-                                }
-                            }
-                            else
-                            {
-                                isOnCooldown = true;
-                                itemSpawn(other.gameObject);
-                                playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
-                                Destroy(StartItem);
-                                Destroy(ItemShowHolder);
-                                StartCoroutine(VendingMachineItemCoolDown());
-                                ScreenPoints.text = " ";
-                            }
-                            
-
-                        }
-                    }
-                    else if (itemType == 1)
-                    {
-                        if (pontosPlayerAtual >= guns[randomItemIndex].Price && !isOnCooldown)
-                        {
-                            isOnCooldown = true;
-                            itemSpawn(other.gameObject);
-                            playerStats.getPlayerPoints().removePoints(guns[randomItemIndex].Price);
-                            Destroy(StartItem);
-                            Destroy(ItemShowHolder);
-                            StartCoroutine(VendingMachineItemCoolDown());
-                            ScreenPoints.text = " ";
-
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
+            ShowError("Termine a horda para comprar!");
             return;
         }
+        int pontosPlayerAtual = playerStats.getPlayerPoints().getPoints();
+
+        if (itemType <= (itens.Length - 1))
+        {
+            if (pontosPlayerAtual < itens[randomItemIndex].Price)
+            {
+                ShowError("Você não tem pontos suficientes!");
+                return;
+            }else
+                HandleItemTypeZero(other.gameObject, playerStats);
+        }
+        else if (itemType <= (guns.Length + itens.Length - 1))
+        {
+            if (pontosPlayerAtual < guns[randomItemIndex].Price)
+            {
+                ShowError("Você não tem pontos suficientes!");
+                return;
+            }else
+                HandleItemTypeOne(other.gameObject, playerStats);
+        }
     }
+
+    private void HandleItemTypeZero(GameObject player, PlayerStats playerStats)
+    {
+        isOnCooldown = true;
+        itemSpawn(player);
+        playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
+        Destroy(StartItem);
+        Destroy(ItemShowHolder);
+        StartCoroutine(VendingMachineItemCoolDown());
+        ScreenPoints.text = " ";
+    }
+
+    private void HandleItemTypeOne(GameObject player, PlayerStats playerStats)
+    {
+        isOnCooldown = true;
+            itemSpawn(player);
+            playerStats.getPlayerPoints().removePoints(guns[randomItemIndex].Price);
+            Destroy(StartItem);
+            Destroy(ItemShowHolder);
+            StartCoroutine(VendingMachineItemCoolDown());
+            ScreenPoints.text = " ";
+        
+    }
+
+    private void ShowError(string message)
+    {
+        if (isDisplayingError) return;
+        isDisplayingError = true;
+        errorPlane.SetActive(true);
+        errorText.SetActive(true);
+        errorText.GetComponent<TextMeshPro>().text = message;
+        ScreenPoints.text = "!";
+        StartCoroutine(restartError());
+    }
+    
+    
 
     private void itemSpawn(GameObject playerBuyer)
     {
@@ -174,6 +183,22 @@ public class VendingMachine : MonoBehaviour
     public void setIsOnHorderCooldown(bool isOnHordeCooldown)
     {
         this.isOnHordeCooldown = isOnHordeCooldown;
+    }
+
+    IEnumerator restartError()
+    {
+        yield return new WaitForSeconds(timeShowingError);
+        isDisplayingError = false;
+        if (itemType <= (itens.Length - 1))
+        {
+            ScreenPoints.text = itens[randomItemIndex].Price.ToString();
+        }
+        else if (itemType <= (guns.Length + itens.Length - 1))
+        {
+            ScreenPoints.text = guns[randomItemIndex].Price.ToString();
+        }
+        errorPlane.SetActive(false);
+        errorText.SetActive(false);
     }
 
 }

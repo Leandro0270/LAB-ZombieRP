@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -40,6 +41,19 @@ public class ChallengeManager : MonoBehaviour
     [SerializeField] private HordeManager hordeManager;
 
 
+    
+    
+    
+    //UI
+    [SerializeField] private GameObject currentChallengeText;
+    [SerializeField] private GameObject challengeNameUI;
+    [SerializeField] private TextMeshProUGUI _challengeNameText;
+    [SerializeField] private GameObject challengeDescriptionUI;
+    [SerializeField] private TextMeshProUGUI _challengeDescriptionText;
+    [SerializeField] private GameObject challengeTimeUI;
+    [SerializeField] private TextMeshProUGUI _challengeTimeText;
+    [SerializeField] private GameObject killedZombiesUI;
+    [SerializeField] private TextMeshProUGUI _killedZombiesText;
 
     //EXPLOSIVE ENEMIES VARIABLES
     private bool _explosiveEnemiesSetup = false;
@@ -116,6 +130,7 @@ public class ChallengeManager : MonoBehaviour
         challengeTime = challenge.ChallengeTime;
         activeChallenge = challenge;
         challengeInProgress = true;
+        currentChallengeText.SetActive(true);
         challengeName = activeChallenge.ChallengeName;
         challengeDescription = activeChallenge.ChallengeDescription;
         challengeReward = activeChallenge.ChallengeReward;
@@ -134,14 +149,21 @@ public class ChallengeManager : MonoBehaviour
     {
         if (!_explosiveEnemiesSetup)
         {
+            //UI
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
             hordeManager.setSpecialEvent(true);
             hordeManager.setExplosiveZombieEvent(true);
             _explosiveEnemiesSetup = true;
         }
         currentChallengeTime += Time.deltaTime;
-        
+        _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");        
         if(currentChallengeTime >= challengeTime)
         {
+            
             hordeManager.setSpecialEvent(false);
             hordeManager.setExplosiveZombieEvent(false);
             _explosiveEnemiesSetup = false;
@@ -153,6 +175,11 @@ public class ChallengeManager : MonoBehaviour
     {
         if (!_noHitSetup)
         {
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
             foreach (var player in players)
             {
                 player.GetComponent<PlayerStats>().setIsNoHitChallenge(true);
@@ -168,6 +195,7 @@ public class ChallengeManager : MonoBehaviour
         else
         {
             currentChallengeTime += Time.deltaTime;
+            _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
             if (currentChallengeTime >= challengeTime)
             {
                 foreach (var player in players)
@@ -186,15 +214,23 @@ public class ChallengeManager : MonoBehaviour
     {
         if(!_noThrowableSetup)
         { 
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
             foreach (var player in players)
             {
                 player.GetComponent<ThrowablePlayerStats>().setIsInThrowableChallenge(true);
             }
             _noThrowableSetup = true;
         }
-        
-        if(currentChallengeTime <= challengeTime)
+
+        if (currentChallengeTime <= challengeTime)
+        {
             currentChallengeTime += Time.deltaTime;
+            _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
+        }
         else
         {
             foreach (var player in players)
@@ -211,6 +247,15 @@ public class ChallengeManager : MonoBehaviour
     {
         if( !_killInAreaSetup)
         {
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+            killedZombiesUI.SetActive(true);
+            _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
+            
+            
             _instantiateArea = Instantiate(areaPrefab, areaSpawnPoints[UnityEngine.Random.Range(0, areaSpawnPoints.Length)].position, Quaternion.identity);
            
                 foreach (var Player in players)
@@ -219,10 +264,16 @@ public class ChallengeManager : MonoBehaviour
                 }
                 _killInAreaSetup = true;
         }
-        if(currentTimeToStartChallenge <= timeToStartChallenge)
+
+        if (currentTimeToStartChallenge <= timeToStartChallenge)
+        {
             currentTimeToStartChallenge += Time.deltaTime;
+            _challengeTimeText.text = "Desafio começará em: " + (timeToStartChallenge - currentTimeToStartChallenge).ToString("F0");
+        }
+
         if(currentTimeToStartChallenge >= timeToStartChallenge)
         {
+            _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
             currentChallengeTime += Time.deltaTime;
             if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
             {
@@ -253,6 +304,12 @@ public class ChallengeManager : MonoBehaviour
     {
         if(!_defendTheCoffeeMachineSetup)
         { 
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+
             int randomSpawnPoint = UnityEngine.Random.Range(0, _coffeMachineAreas.Count);
             //vai criar um array com todos os game objects filhos do _coffeMachineAreas[randomSpawnPoint]
             Transform[] coffeeMachineSpawnPoints = _coffeMachineAreas[randomSpawnPoint].GetComponentsInChildren<Transform>();
@@ -266,31 +323,39 @@ public class ChallengeManager : MonoBehaviour
             StartCoroutine(delayToStartChallenge());
             _defendTheCoffeeMachineSetup = true;
         }
-
-        if (destroyedCoffeeMachine)
-        {
-            hordeManager.setCoffeeMachineEvent(false);
-            mainGameManager.cancelCoffeeMachineEvent();
-            foreach (var coffeeMachine in _instantiatedCoffeeMachines)
+        else{
+            if (currentTimeToStartChallenge <= timeToStartChallenge)
             {
-                GameObject explosion = Instantiate(explosionCoffeeMachineFailPrefab, coffeeMachine.transform.position, Quaternion.identity);
-                Destroy(coffeeMachine);
+                currentTimeToStartChallenge += Time.deltaTime;
+                _challengeTimeText.text = "Desafio começará em + " + (timeToStartChallenge - currentTimeToStartChallenge).ToString("F0");
             }
-            destroyedCoffeeMachine = false;
-            FailChallenge();
+            else{
+                if (destroyedCoffeeMachine)
+                {
+                    hordeManager.setCoffeeMachineEvent(false);
+                    mainGameManager.cancelCoffeeMachineEvent();
+                    foreach (var coffeeMachine in _instantiatedCoffeeMachines)
+                    {
+                        GameObject explosion = Instantiate(explosionCoffeeMachineFailPrefab, coffeeMachine.transform.position, Quaternion.identity);
+                        Destroy(coffeeMachine);
+                    }
+                    destroyedCoffeeMachine = false;
+                    FailChallenge();
+                }
+                if(currentChallengeTime >= challengeTime)
+                {
+                    hordeManager.setCoffeeMachineEvent(false);
+                    mainGameManager.cancelCoffeeMachineEvent();
+                    _defendTheCoffeeMachineSetup = false;
+                    SuccessChallenge();
+                }
+                else
+                {
+                    currentChallengeTime += Time.deltaTime;
+                    _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
+                } 
+            }
         }
-        if(currentChallengeTime >= challengeTime)
-        {
-            hordeManager.setCoffeeMachineEvent(false);
-            mainGameManager.cancelCoffeeMachineEvent();
-            _defendTheCoffeeMachineSetup = false;
-            SuccessChallenge();
-        }
-        else
-        {
-            currentChallengeTime += Time.deltaTime;
-        }
-    
     }
 
 
@@ -298,6 +363,14 @@ public class ChallengeManager : MonoBehaviour
     {
         if (!_killInTimeSetup)
         {
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+            killedZombiesUI.SetActive(true);
+            _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
+
             foreach (var Player in players)
             {
                 Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(true);
@@ -305,6 +378,7 @@ public class ChallengeManager : MonoBehaviour
             _killInTimeSetup = true;
         }
         currentChallengeTime += Time.deltaTime;
+        _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
         if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
         {
             foreach (var Player in players)
@@ -327,6 +401,14 @@ public class ChallengeManager : MonoBehaviour
     {
         if (!_killWithAimSetup)
         {
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+            killedZombiesUI.SetActive(true);
+            _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
+
             foreach (var Player in players)
             {
                 Player.GetComponent<WeaponSystem>().setisKillWithAimChallengeActive(true);
@@ -334,6 +416,7 @@ public class ChallengeManager : MonoBehaviour
             _killWithAimSetup = true;
         }
         currentChallengeTime += Time.deltaTime;
+        _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
         if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
         {
             foreach (var Player in players)
@@ -355,16 +438,29 @@ public class ChallengeManager : MonoBehaviour
 
     public void StartKillWithMelee()
     {
-        currentChallengeTime += Time.deltaTime;
-        if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
+
+        if (!_killWithMeleeSetup)
         {
-            FailChallenge();
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+            killedZombiesUI.SetActive(true);
+            _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
+
+        }else{
+            _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
+            currentChallengeTime += Time.deltaTime;
+            if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
+            {
+                FailChallenge();
+            }
+            else if(_zombiesKilled >= _zombiesToKill)
+            {
+                SuccessChallenge();
+            } 
         }
-        else if(_zombiesKilled >= _zombiesToKill)
-        {
-            SuccessChallenge();
-        }
-    
     }
 
 
@@ -372,29 +468,43 @@ public class ChallengeManager : MonoBehaviour
     {
         if (!_sharpshooterSetup)
         {
-            _missedShot = false;
+            challengeNameUI.SetActive(true);
+            _challengeNameText.text = challengeName;
+            challengeDescriptionUI.SetActive(true);
+            _challengeDescriptionText.text = challengeDescription;
+            challengeTimeUI.SetActive(true);
+            killedZombiesUI.SetActive(true);
+            _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
             _sharpshooterSetup = true;
+        }else{
+            
+            _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
+            currentChallengeTime += Time.deltaTime;
+            
+            if (((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill) || _missedShot)
+            {
+                FailChallenge();
+                _missedShot = false;
+            }
+            else if(_zombiesKilled >= _zombiesToKill)
+            {
+                SuccessChallenge();
+            } 
         }
-        currentChallengeTime += Time.deltaTime;
-        if (((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill) || _missedShot)
-        {
-            FailChallenge();
-            _missedShot = false;
-        }
-        else if(_zombiesKilled >= _zombiesToKill)
-        {
-            SuccessChallenge();
-        }
-        
     }
     
     
 
     public void SuccessChallenge()
     {
+        challengeNameUI.SetActive(false);
+        challengeDescriptionUI.SetActive(false);
+        challengeTimeUI.SetActive(false);
+        killedZombiesUI.SetActive(false);
         challengeInProgress = false;
         challengeCompleted = true;
         challengeFailed = false;
+        currentChallengeText.SetActive(false);
         List<GameObject> players = mainGameManager.getAlivePlayers();
         foreach (GameObject player in players)
         {
@@ -407,10 +517,14 @@ public class ChallengeManager : MonoBehaviour
 
     public void FailChallenge()
     {
+        challengeNameUI.SetActive(false);
+        challengeDescriptionUI.SetActive(false);
+        challengeTimeUI.SetActive(false);
+        killedZombiesUI.SetActive(false);
         challengeInProgress = false;
         challengeCompleted = false;
         challengeFailed = true;
-        
+        currentChallengeText.SetActive(false);
         if (activeChallenge.havePenalty)
         {
             //penalidade do desafio
@@ -500,8 +614,12 @@ public class ChallengeManager : MonoBehaviour
 
     public void addZombieKilled()
     {
-        if(challengeInProgress)
+        if (challengeInProgress)
+        {
             _zombiesKilled++;
+            if (activeChallenge.ChallengeType == ScObChallengesSpecs.Type.Sharpshooter || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInTime || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInArea || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithAim || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithMelee)
+                _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled + "/" + _zombiesToKill;
+        }
     }
 
     public void missedShot()

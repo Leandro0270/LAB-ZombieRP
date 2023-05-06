@@ -18,7 +18,7 @@ MonoBehaviour:
   ChallengeDescription: "Defenda as m\xE1quinas de caf\xE9 dos ataques zumbis!"
   ChallengeReward: 800
   ChallengeDifficulty: 1
-  TimeToStartChallenge: 0
+  TimeToStartChallenge: 15
   ChallengeTime: 200
   Model3dChallengeMachine: {fileID: 9069408348972900834, guid: 213266bd0df78fe4d80136a2c22ad258, type: 3}
-  zombiesToKill: 75
+  zombiesToKill: 90
