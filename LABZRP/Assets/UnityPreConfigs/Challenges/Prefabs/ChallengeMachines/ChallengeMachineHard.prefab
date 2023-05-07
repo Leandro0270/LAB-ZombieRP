@@ -553,7 +553,7 @@ Transform:
   - {fileID: 2303902268191374551}
   - {fileID: 4902736635810918708}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &2741873593881239686
 MeshFilter:
@@ -625,6 +625,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b05dc6f99c76cbf42bb9d9ae41567c89, type: 2}
   - {fileID: 11400000, guid: df616ce84b8aa2b49bbc4cd64fa47436, type: 2}
   - {fileID: 11400000, guid: 9ccdf64c8f3bb39428149483f9a11bb4, type: 2}
+  - {fileID: 11400000, guid: 931e44863873dda4ca2c0f000fc203f7, type: 2}
   difficulty: 3
   ScreenPoints: {fileID: 8819249130347000852}
   changeChallenges: 0

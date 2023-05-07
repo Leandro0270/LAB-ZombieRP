@@ -39,13 +39,11 @@ public class ThrowablePlayerStats : MonoBehaviour
         {
             throwableInventory.Add(throwable);
             maxThrowDistance = throwableInventory[itemIndex].maxDistance;
-            canThrowItem = true;
+            if(!isInThrowableChallenge)
+                canThrowItem = true;
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     public void changeToNextItem()
