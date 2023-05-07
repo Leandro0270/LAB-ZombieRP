@@ -1713,7 +1713,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 19c27c53b3c77bc4b9360ed93f00d6c2, type: 2}
   - {fileID: 11400000, guid: 04cbd1c8a89c0f040944f449978b00b8, type: 2}
   - {fileID: 11400000, guid: d5c1c359315405848885593d9cf30cdd, type: 2}
-  - {fileID: 11400000, guid: 931e44863873dda4ca2c0f000fc203f7, type: 2}
   - {fileID: 11400000, guid: 8621e9fa26ce30946bc166fa77c51164, type: 2}
   difficulty: 1
   ScreenPoints: {fileID: 5503912416473279962}

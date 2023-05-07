@@ -150,14 +150,13 @@ public class WeaponSystem : MonoBehaviour
                         BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                         bala.SetDamage(currentDamage);
                         bala.setShooter(this);
+                        bala.setIsAiming(_mirando);
                         bala.setDistancia(_distancia);
                         bala.setIsKnockback(_haveKnockback);
                         bala.setKnockbackForce(_ForcaKnockback);
                         bala.setVelocidadeBalas(_velocidadeBala);
                         bala.setHitableEnemies(_hitableEnemies);
                         bala.setIsCritical(isCritical);
-                        bala.setIsAiming(_mirando);
-                        
                         _balasRestantes--;
                         _disparosAEfetuar--;
                         _bulletsUI.setBalasPente(_balasRestantes);
@@ -179,14 +178,13 @@ public class WeaponSystem : MonoBehaviour
                                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
                                 bala.setDistancia(_distancia);
                                 bala.setVelocidadeBalas(_velocidadeBala);
+                                bala.setIsAiming(_mirando);
                                 bala.SetDamage(currentDamage);
                                 bala.setShooter(this);
                                 bala.setHitableEnemies(_hitableEnemies);
                                 bala.setIsCritical(isCritical);
-                                bala.setIsAiming(_mirando);
 
 
-                                
                         }
                         _balasRestantes -= _balasPorDisparo;
                         _bulletsUI.setBalasPente(_balasRestantes);
@@ -405,6 +403,8 @@ public class WeaponSystem : MonoBehaviour
                 _playerPoints.addPointsNormalZombieKilled();
                 if (_isKillInTimeChallengeActive) 
                         _challengeManager.addZombieKilled();
+                if(_isSharpshooterChallengeActive)
+                        _challengeManager.addZombieKilled();
                 NormalZombiesKilled++;
                 
         }
@@ -425,6 +425,8 @@ public class WeaponSystem : MonoBehaviour
                         {
                                 _challengeManager.addZombieKilled();
                         }
+                        if(_isSharpshooterChallengeActive)
+                                _challengeManager.addZombieKilled();
 
                 }
         }
@@ -520,20 +522,26 @@ public class WeaponSystem : MonoBehaviour
         
         public void setisMeleeChallengeActive(bool aux)
         {
+                _isChallengeActive = aux;
                 _isMeleeChallengeActive = aux;
         }
         public void setisKillWithAimChallengeActive(bool aux)
         {
+                _isChallengeActive = aux;
+
                 _isKillWithAimChallengeActive = aux;
         }
         
         public void setisKillInAreaChallengeActive(bool aux)
         {
+                _isChallengeActive = aux;
                 _isKillInAreaChallengeActive = aux;
         }
         
         public void setisKillInTimeChallengeActive(bool aux)
         {
+                _isChallengeActive = aux;
+
                 _isKillInTimeChallengeActive = aux;
         }
         public void set_challengeManager(ChallengeManager challengeManager)

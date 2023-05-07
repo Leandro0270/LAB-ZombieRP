@@ -22,6 +22,7 @@ public class BulletScript : MonoBehaviour
     private int enemiesHitted = 0;
     private bool isCritical = false;
     private bool _isAiming = false;
+    private bool hitted = false;
     
 
     private void Start()
@@ -45,7 +46,8 @@ public class BulletScript : MonoBehaviour
     {
         float tempo = distancia / velocidadeBala;
         yield return new WaitForSeconds(tempo);
-        PlayerShooter.missedShot();
+        if(!hitted)
+            PlayerShooter.missedShot();
         Destroy(gameObject);
     }
 
@@ -70,6 +72,7 @@ public class BulletScript : MonoBehaviour
         {
             if (!_status.isDeadEnemy())
             {
+                hitted = true;
                 enemiesHitted++;
                 if (isCritical)
                 {
@@ -82,10 +85,19 @@ public class BulletScript : MonoBehaviour
                 //A função takeDamage retorna true se o zumbi morreu
                 if (_status.takeDamage(damage))
                 {
-                    if(_isAiming)
+                    if(_isAiming){
+                        Debug.Log("Matou mirando");
                         PlayerShooter.addKilledZombieWithAim();
-                    if(isMelee)
+                        
+                    }
+
+                    else if (isMelee)
+                    {
+                        Debug.Log("Matou com melee");
                         PlayerShooter.addKilledZombieWithMelee();
+
+
+                    }
                     if (_status.getIsSpecial())
                     {
                         int points = _status.getPoints();

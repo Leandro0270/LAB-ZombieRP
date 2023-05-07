@@ -254,9 +254,9 @@ public class ChallengeManager : MonoBehaviour
             challengeTimeUI.SetActive(true);
             killedZombiesUI.SetActive(true);
             _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
-            
-            
-            _instantiateArea = Instantiate(areaPrefab, areaSpawnPoints[UnityEngine.Random.Range(0, areaSpawnPoints.Length)].position, Quaternion.identity);
+
+            int randomAreaIndex = Random.Range(0, areaSpawnPoints.Length);
+            _instantiateArea = Instantiate(areaPrefab, areaSpawnPoints[randomAreaIndex].position, areaSpawnPoints[randomAreaIndex].rotation);
            
                 foreach (var Player in players)
                 {
@@ -448,6 +448,11 @@ public class ChallengeManager : MonoBehaviour
             challengeTimeUI.SetActive(true);
             killedZombiesUI.SetActive(true);
             _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled +"/"+_zombiesToKill;
+            foreach (var player in players)
+            {
+                player.GetComponent<WeaponSystem>().setisMeleeChallengeActive(true);
+            }
+            _killWithMeleeSetup = true;
 
         }else{
             _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
@@ -617,8 +622,11 @@ public class ChallengeManager : MonoBehaviour
         if (challengeInProgress)
         {
             _zombiesKilled++;
-            if (activeChallenge.ChallengeType == ScObChallengesSpecs.Type.Sharpshooter || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInTime || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInArea || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithAim || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithMelee)
+            if (activeChallenge.ChallengeType == ScObChallengesSpecs.Type.Sharpshooter || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInTime || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillInArea || 
+                activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithAim || activeChallenge.ChallengeType == ScObChallengesSpecs.Type.KillWithMelee){
+                Debug.Log("Matou um zumbi no desafio de matar zumbis");
                 _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled + "/" + _zombiesToKill;
+            }
         }
     }
 

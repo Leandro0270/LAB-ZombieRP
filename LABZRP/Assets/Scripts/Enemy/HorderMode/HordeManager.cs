@@ -192,7 +192,6 @@ public class HordeManager : MonoBehaviour
                     if (haveBaseZombieLifeIncrement)
                     {
                         EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                        ZombieStatus.setHordeManager(this);
                         ZombieStatus.setTotalLife(currentZombieLife);
                         ZombieStatus.setCurrentLife(currentZombieLife);
                     }
@@ -210,6 +209,7 @@ public class HordeManager : MonoBehaviour
                     EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
                     ZombieStatus.setExplosiveZombieEvent(true);
                 }
+                zombie.GetComponent<EnemyStatus>().setHordeManager(this);
                 GameManager.addEnemy(zombie);
                 incrementZombiesAlive();
             }
