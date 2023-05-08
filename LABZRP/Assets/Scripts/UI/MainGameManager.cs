@@ -13,6 +13,7 @@ public class MainGameManager : MonoBehaviour
     private List<GameObject> enemies;
     private List<GameObject> itens;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private Camera miniMapCamera;
     [SerializeField] private HordeManager hordeManager;
     [SerializeField] private ChallengeManager challengeManager;
     
@@ -131,6 +132,11 @@ public class MainGameManager : MonoBehaviour
             enemy.GetComponent<EnemyFollow>().setCoffeeMachineEvent(false);
         }
         resetZombiesTarget();
+    }
+
+    public Camera getMiniMapCamera()
+    {
+        return miniMapCamera;
     }
     
 }
