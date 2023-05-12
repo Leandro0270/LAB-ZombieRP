@@ -51,6 +51,8 @@ public class EnemyFollow : MonoBehaviour
             {
                 if (!isEvent)
                 {
+                    if(target == null)
+                        target = GetTarget(players);
                     PlayerStats _playerstats = target.GetComponent<PlayerStats>();
                     if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
                     {

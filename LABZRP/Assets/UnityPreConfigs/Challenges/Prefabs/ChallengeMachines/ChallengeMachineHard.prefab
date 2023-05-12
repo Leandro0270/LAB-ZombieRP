@@ -2857,6 +2857,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Size.x
+      value: 5.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Size.y
+      value: 5.12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a35966b06d7b5e0499743d263949ecb6, type: 3}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.g
+      value: 0.94509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6026822363570454077, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
       propertyPath: m_Name
       value: MiniMapIcon

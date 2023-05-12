@@ -14,6 +14,7 @@ public class BulletScript : MonoBehaviour
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     public GameObject bloodParticle;
+    public GameObject bloodParticleCritical;
     private Rigidbody _rb;
     private float damage;
     public float distancia;
@@ -76,12 +77,14 @@ public class BulletScript : MonoBehaviour
                 enemiesHitted++;
                 if (isCritical)
                 {
+                    GameObject NewBloodParticleCritical = Instantiate(bloodParticleCritical, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
+                    Destroy(NewBloodParticleCritical, 4f);
+
                     Debug.Log("Critico!");
-                }
-                
-                GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
-                Destroy(NewBloodParticle, 4f);
-                
+                }else{
+                    GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
+                    Destroy(NewBloodParticle, 4f);
+                }            
                 //A função takeDamage retorna true se o zumbi morreu
                 if (_status.takeDamage(damage))
                 {
