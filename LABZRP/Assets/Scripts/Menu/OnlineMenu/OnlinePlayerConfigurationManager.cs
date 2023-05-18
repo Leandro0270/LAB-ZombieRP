@@ -19,6 +19,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<OnlineLobbyPlayersShower> lobbyPlayersShower;
     private List<OnlineLobbyPlayersShower> availableLobbyPlayersShower = new List<OnlineLobbyPlayersShower>();
     private List<OnlinePlayerConfiguration> playerConfigs;
+    private Player[] playersNaSala;
     private int readyCount = 0;
     private int playersCount = 0;
     
@@ -68,80 +69,88 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
     [PunRPC]
     public void ReadyPlayer(int index)
     {
-
-        if (playerConfigs[index].isLocal)
+        Debug.Log("Chamou o RPC");
+        foreach (var configs in playerConfigs)
         {
-            Debug.Log("Entrou na condição de local");
-            lobbyPanel.SetActive(true);
-            ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
-        }
-        else
-        {
-            Debug.Log("Entrou na condição de não local");
-         playerConfigs[index].lobbyPlayersShower.setIsReady(true);   
-        }
-        playerConfigs[index].isReady = true;
-        readyCount++;
-        if (readyCount == playerConfigs.Count)
-        {
-            SceneManager.LoadScene("SampleScene");
+            if (configs.PlayerIndex == index)
+            {
+                if (configs.isLocal)
+                {
+                    Debug.Log("Entrou na condição de local");
+                    lobbyPanel.SetActive(true);
+                    ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
+                }else
+                {
+                    Debug.Log("Entrou na condição de não local");
+                    playerConfigs[index].lobbyPlayersShower.setIsReady(true);   
+                }
+                configs.isReady = true;
+                readyCount++;
+                if (readyCount == playerConfigs.Count)
+                {
+                    SceneManager.LoadScene("SampleScene");
+                }
+                
+            }
         }
     }
 
 
     public OnlinePlayerConfiguration HandlePlayerJoined(Player player)
     {
-        if (playerConfigs.Any(p => p.PlayerIndex == player.ActorNumber - 1))
+        if (playerConfigs.Count >= 4)
+        {
+            Debug.Log("Max players reached");
             return null;
+        }
+
+        for (int i = 0; i < playerConfigs.Count; i++)
+        {
+            if (Equals(playerConfigs[i].player, player))
+                return null;
+        }
         
         var config = new OnlinePlayerConfiguration(player);
+        config.player = player;
         config.PlayerIndex = player.ActorNumber - 1;
         playerConfigs.Add(config);
         return config;
-
     }
-
+ 
 
     public override void OnJoinedRoom()
     {
-        roomCodeText.text = "CÓDIGO DA SALA: "+ PhotonNetwork.CurrentRoom.Name;
-
-            foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
+        roomCodeText.text = "Room Code: " + PhotonNetwork.CurrentRoom.Name;
+        playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+        foreach (var CurrentPlayer in playersNaSala)
+        {
+            OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(CurrentPlayer);
+            if (OnlineConfigPlayer != null)
             {
-                if (!player.IsLocal)
+                if (playersNaSala[0] == OnlineConfigPlayer.player)
                 {
-                    OnlinePlayerConfiguration config = HandlePlayerJoined(player);
-                    if(config != null){
-                        config.lobbyPlayersShower = availableLobbyPlayersShower[0];
-                        lobbyPlayersShower[0].setPlayerIndex(config.PlayerIndex);
-                        availableLobbyPlayersShower.RemoveAt(0);
-
-                    }
+                    OnlineConfigPlayer.isLocal = true;
+                    ClientPlayerSetupMenu.SetPlayerIndex(OnlineConfigPlayer.PlayerIndex);
                 }
                 else
                 {
-                    OnlinePlayerConfiguration clientConfig = HandlePlayerJoined(player);
-                    if (clientConfig != null)
-                    {
-                        clientConfig.isLocal = true;
-                        ClientPlayerSetupMenu.SetPlayerIndex(clientConfig.PlayerIndex);
-                    }
+                    OnlineConfigPlayer.isLocal = false;
+                    OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
+                    lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+                    availableLobbyPlayersShower.RemoveAt(0);
                 }
             }
-            
-            
+        }
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        
-        OnlinePlayerConfiguration config = HandlePlayerJoined(newPlayer);
-        if(config != null){
-            lobbyPlayersShower[0].setPlayerIndex(config.PlayerIndex);
+        OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
+        if (OnlineConfigPlayer != null)
+        {
+            OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
+            lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
             availableLobbyPlayersShower.RemoveAt(0);
-
         }
-        
-        
     }
 
     public class OnlinePlayerConfiguration
@@ -151,7 +160,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             PlayerIndex = player.ActorNumber;
         }
     
-        public Player Player { get; set; }
+        public Player player { get; set; }
         public int PlayerIndex { get; set; }
         
         public bool isLocal { get; set; }
