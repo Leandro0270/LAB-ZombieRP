@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d90ebd2fdeca63146aa9dd4be69cd5cd, type: 3}
+  m_Name: Poison
+  m_EditorClassIdentifier: 
+  EffectIsPermanent: 0
+  areaEffectTime: 8
+  radiusAreaEffect: 15
+  addEnemyDamage: 0
+  EnemyDamage: 0
+  addEnemySpeed: 0
+  EnemySpeed: 0
+  addEnemyHealth: 0
+  EnemyHealth: 0
+  isDamagePlayerSplash: 1
+  isDamagePlayerOverTime: 1
+  isPlayerSpeedSlower: 1
+  PlayerSpeedSlower: 5
+  ParticlesAreaEffect: {fileID: 6655085146247247102, guid: 5ee97c23f43e9da4dbaa5e1957fc2887, type: 3}
+  PlayerSplashDamage: 20
+  PlayerOverTimeDamage: 5
+  TimeEffect: 10
