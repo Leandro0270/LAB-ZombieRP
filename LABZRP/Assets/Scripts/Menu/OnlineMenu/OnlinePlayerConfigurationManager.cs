@@ -19,6 +19,14 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
     [SerializeField] private List<OnlineLobbyPlayersShower> lobbyPlayersShower;
     private List<OnlineLobbyPlayersShower> availableLobbyPlayersShower = new List<OnlineLobbyPlayersShower>();
     private List<OnlinePlayerConfiguration> playerConfigs;
+    [SerializeField] private PhotonView photonView;
+    
+    [SerializeField] private List<Material> Skin;
+    [SerializeField] private List<Material> Eyes;
+    [SerializeField] private List<Material> tshirt;
+    [SerializeField] private List<Material> pants;
+    [SerializeField] private List<Material> Shoes;
+
     private Player[] playersNaSala;
     private int readyCount = 0;
     private int playersCount = 0;
@@ -51,37 +59,89 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
         playerConfigs[index].isReady = false;
         readyCount--;
     }
-    
+
+    [PunRPC]
     public void SetPlayerName(int index, string name)
     {
-        playerConfigs[index].playerStats.name = name;
+        foreach (OnlinePlayerConfiguration configs in playerConfigs)
+        {
+            if (configs.PlayerIndex == index)
+            {
+                if (configs.isLocal)
+                {
+                    ClientPlayerSetupMenu.setPlayerName(name);
+                }
+                else
+                {
+                    configs.lobbyPlayersShower.setPlayerName(name);
+                }
+            }
+        }
     }
-    public void SetPlayerSkin(int index, ScObPlayerCustom playerCustom)
+
+    [PunRPC]
+    public void SetPlayerSkin(int index, int skinIndex, int eyesIndex, int tshirtIndex, int pantsIndex, int shoesIndex)
     {
-        playerConfigs[index].playerCustom = playerCustom;
+        ScObPlayerCustom playerCustom = ScriptableObject.CreateInstance<ScObPlayerCustom>();
+        playerCustom.Skin = Skin[skinIndex];
+        playerCustom.SkinIndex = skinIndex;
+        playerCustom.Eyes = Eyes[eyesIndex];
+        playerCustom.EyesIndex = eyesIndex;
+        playerCustom.tshirt = tshirt[tshirtIndex];
+        playerCustom.tshirtIndex = tshirtIndex;
+        playerCustom.pants = pants[pantsIndex];
+        playerCustom.pantsIndex = pantsIndex;
+        playerCustom.Shoes = Shoes[shoesIndex];
+        playerCustom.ShoesIndex = shoesIndex;
+        foreach (OnlinePlayerConfiguration configs in playerConfigs)
+        {
+            if (configs.PlayerIndex == index)
+            {
+                configs.playerCustom = playerCustom;
+                if(!configs.isLocal){
+                    configs.lobbyPlayersShower.setPlayerCustom(playerCustom);
+                }
+            }
+        }
+        
+    }
+    
+    public void PunSetPlayerSkin(int index, ScObPlayerCustom playerCustom)
+    {
+        int skinIndex = playerCustom.SkinIndex;
+        int eyesIndex = playerCustom.EyesIndex;
+        int tshirtIndex = playerCustom.tshirtIndex;
+        int pantsIndex = playerCustom.pantsIndex;
+        int shoesIndex = playerCustom.ShoesIndex;
+        photonView.RPC("SetPlayerSkin", RpcTarget.All, index, skinIndex, eyesIndex, tshirtIndex, pantsIndex, shoesIndex);
+    }
+    public void PunSetPlayerName(int index, string name)
+    {
+        photonView.RPC("SetPlayerName", RpcTarget.All, index, name);
     }
 
     public List<OnlinePlayerConfiguration> GetPlayerConfigs()
     {
         return playerConfigs;
     }
-    
+
+    public void PunReadyPlayer(int index)
+    {
+        photonView.RPC("ReadyPlayer", RpcTarget.All, index);
+    }
     [PunRPC]
     public void ReadyPlayer(int index)
     {
-        Debug.Log("Chamou o RPC");
-        foreach (var configs in playerConfigs)
+        foreach (OnlinePlayerConfiguration configs in playerConfigs)
         {
             if (configs.PlayerIndex == index)
             {
                 if (configs.isLocal)
                 {
-                    Debug.Log("Entrou na condição de local");
                     lobbyPanel.SetActive(true);
                     ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
                 }else
                 {
-                    Debug.Log("Entrou na condição de não local");
                     playerConfigs[index].lobbyPlayersShower.setIsReady(true);   
                 }
                 configs.isReady = true;
@@ -93,6 +153,11 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                 
             }
         }
+    }
+    
+    public void PunCancelReadyPlayer(int index)
+    {
+        photonView.RPC("CancelReadyPlayer", RpcTarget.All, index);
     }
 
 
@@ -114,6 +179,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
         config.player = player;
         config.PlayerIndex = player.ActorNumber - 1;
         playerConfigs.Add(config);
+
         return config;
     }
  
@@ -131,6 +197,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                 {
                     OnlineConfigPlayer.isLocal = true;
                     ClientPlayerSetupMenu.SetPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+
                 }
                 else
                 {
@@ -138,18 +205,30 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                     OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
                     lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
                     availableLobbyPlayersShower.RemoveAt(0);
+
+                }
+
+                foreach (Player player in playersNaSala)
+                {
+                    if (OnlineConfigPlayer.player == player)
+                    {
+                        PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, player.NickName);
+                    }
                 }
             }
         }
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        playersNaSala.Append(newPlayer);
         OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
         if (OnlineConfigPlayer != null)
         {
+            OnlineConfigPlayer.isLocal = false;
             OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
             lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
             availableLobbyPlayersShower.RemoveAt(0);
+            PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, newPlayer.NickName);
         }
     }
 

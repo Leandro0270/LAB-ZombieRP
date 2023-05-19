@@ -39,6 +39,7 @@ public class PlayerSetupMenuController : MonoBehaviour
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
     private String name;
+    
 
     [SerializeField] private GameObject OnlineLobbyReady;
     [SerializeField] private GameObject ClientCustomizationPanel;
@@ -57,8 +58,10 @@ public class PlayerSetupMenuController : MonoBehaviour
     public void SetPlayerIndex(int pi)
     {
         PlayerIndex = pi;
-        name = "Player " + (pi + 1).ToString();
-        titletext.SetText(name);
+        if(isOnline){
+            name = "Player " + (pi + 1).ToString();
+            titletext.SetText(name);
+        }
         ignoreInputTime = Time.time + ignoreInputTime;
     }
 
@@ -67,7 +70,13 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (Time.time > ignoreInputTime)
             inputEnabled = true;
     }
-
+    
+    
+    public void setPlayerName(string name)
+    {
+        this.name = name;
+        titletext.SetText(name);
+    }
     
     public void SelectClass(ScObPlayerStats playerClass){
         playerStats = playerClass;
@@ -108,15 +117,18 @@ public class PlayerSetupMenuController : MonoBehaviour
             return;
         ScObPlayerCustom ScOb = ScriptableObject.CreateInstance<ScObPlayerCustom>();
         ScOb.Skin = Skin[SkinIndex];
+        ScOb.SkinIndex = SkinIndex;
         ScOb.Eyes = Eyes[EyesIndex];
-  
+        ScOb.EyesIndex = EyesIndex;
         ScOb.tshirt = tshirt[tshirtIndex];
+        ScOb.tshirtIndex = tshirtIndex;
         ScOb.pants = pants[pantsIndex];
+        ScOb.pantsIndex = pantsIndex;
         ScOb.Shoes = Shoes[ShoesIndex];
+        ScOb.ShoesIndex = ShoesIndex;
         if(isOnline){
-            OnlinePlayerConfigurationManager.Instance.SetPlayerSkin(PlayerIndex, ScOb);
-            OnlinePlayerConfigurationManager.Instance.SetPlayerName(PlayerIndex, name);
-            OnlinePlayerConfigurationManager.Instance.ReadyPlayer(PlayerIndex);
+            OnlinePlayerConfigurationManager.Instance.PunSetPlayerSkin(PlayerIndex, ScOb);
+            OnlinePlayerConfigurationManager.Instance.PunReadyPlayer(PlayerIndex);
         }
         else
         {
