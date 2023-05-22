@@ -48,6 +48,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             playerConfigs = new List<OnlinePlayerConfiguration>();
         }
     }
+    
 
     public void SetScObPlayerStats(int index, ScObPlayerStats stats)
     {
@@ -142,7 +143,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                     ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
                 }else
                 {
-                    playerConfigs[index].lobbyPlayersShower.setIsReady(true);   
+                    configs.lobbyPlayersShower.setIsReady(true);   
                 }
                 configs.isReady = true;
                 readyCount++;
@@ -178,8 +179,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
         var config = new OnlinePlayerConfiguration(player);
         config.player = player;
         config.PlayerIndex = player.ActorNumber - 1;
-        playerConfigs.Add(config);
-
         return config;
     }
  
@@ -193,10 +192,12 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(CurrentPlayer);
             if (OnlineConfigPlayer != null)
             {
-                if (playersNaSala[0] == OnlineConfigPlayer.player)
+                if (OnlineConfigPlayer.player == PhotonNetwork.LocalPlayer)
                 {
                     OnlineConfigPlayer.isLocal = true;
                     ClientPlayerSetupMenu.SetPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+                    playerConfigs.Add(OnlineConfigPlayer);
+
 
                 }
                 else
@@ -204,7 +205,9 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                     OnlineConfigPlayer.isLocal = false;
                     OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
                     lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+                    Debug.Log(OnlineConfigPlayer.lobbyPlayersShower);
                     availableLobbyPlayersShower.RemoveAt(0);
+                    playerConfigs.Add(OnlineConfigPlayer);
 
                 }
 
@@ -220,6 +223,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        
         playersNaSala.Append(newPlayer);
         OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
         if (OnlineConfigPlayer != null)
@@ -227,7 +231,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             OnlineConfigPlayer.isLocal = false;
             OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
             lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
-            availableLobbyPlayersShower.RemoveAt(0);
+            Debug.Log(OnlineConfigPlayer.lobbyPlayersShower);
             PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, newPlayer.NickName);
         }
     }

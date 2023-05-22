@@ -129,6 +129,7 @@ public class PlayerSetupMenuController : MonoBehaviour
         if(isOnline){
             OnlinePlayerConfigurationManager.Instance.PunSetPlayerSkin(PlayerIndex, ScOb);
             OnlinePlayerConfigurationManager.Instance.PunReadyPlayer(PlayerIndex);
+            
         }
         else
         {

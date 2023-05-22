@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class InitializeLevel : MonoBehaviour
 {
     [SerializeField] private Transform[] playerSpawns;
@@ -10,16 +11,32 @@ public class InitializeLevel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
         var playerConfigs = PlayerConfigurationManager.Instance.GetPlayerConfigs().ToArray();
-        for (int i = 0; i < playerConfigs.Length; i++)
+        var OnlinePlayerConfigs = OnlinePlayerConfigurationManager.Instance.GetPlayerConfigs().ToArray();
+
+
+        if (playerConfigs.Length == 0)
         {
-            var player = Instantiate(playerPrefab, playerSpawns[i].position, playerSpawns[i].rotation,
-                gameObject.transform);
-            player.GetComponent<PlayerInputHandler>().InitializePlayer(playerConfigs[i]);
+            for (int i = 0; i < OnlinePlayerConfigs.Length; i++)
+            {
+                
+            }
+
+            mainGameManager.setIsOnline(true);
+            mainGameManager.setOnlinePlayerConfigurationManager(OnlinePlayerConfigurationManager.Instance.gameObject);
         }
-        
-        mainGameManager.setPlayerConfigurationManager(PlayerConfigurationManager.Instance.gameObject);
-        
+        else
+        {
+            for (int i = 0; i < playerConfigs.Length; i++)
+            {
+                var player = Instantiate(playerPrefab, playerSpawns[i].position, playerSpawns[i].rotation,
+                    gameObject.transform);
+                player.GetComponent<PlayerInputHandler>().InitializePlayer(playerConfigs[i]);
+            }
+            mainGameManager.setPlayerConfigurationManager(PlayerConfigurationManager.Instance.gameObject);
+
+        }
     }
     
 }

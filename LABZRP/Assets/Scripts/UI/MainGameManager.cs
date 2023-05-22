@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class MainGameManager : MonoBehaviour
+public class MainGameManager : MonoBehaviourPunCallbacks
 {
-   
+    private bool isOnline = false;
     private List<GameObject> players;
     private List<GameObject> alivePlayers;
     private List<GameObject> downedPlayers;
@@ -17,6 +18,7 @@ public class MainGameManager : MonoBehaviour
     [SerializeField] private ChallengeManager challengeManager;
     [SerializeField] private HordeModeGameOverManager gameOverUI;
     [SerializeField] private GameObject playerConfigurationManager;
+    [SerializeField] private GameObject onlinePlayerConfigurationManager;
 
 
     public bool _killAllPlayers = false;
@@ -191,4 +193,19 @@ public class MainGameManager : MonoBehaviour
         return playerConfigurationManager;
     }
     
+    public void setOnlinePlayerConfigurationManager(GameObject onlinePlayerConfigurationManager)
+    {
+        this.onlinePlayerConfigurationManager = onlinePlayerConfigurationManager;
+    }
+    
+    public GameObject getOnlinePlayerConfigurationManager()
+    {
+        return onlinePlayerConfigurationManager;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+
 }
