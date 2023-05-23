@@ -9,6 +9,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
 
 public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 {
@@ -187,52 +188,50 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
     {
         roomCodeText.text = "Room Code: " + PhotonNetwork.CurrentRoom.Name;
         playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+        
         foreach (var CurrentPlayer in playersNaSala)
         {
             OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(CurrentPlayer);
-            if (OnlineConfigPlayer != null)
+            if (OnlineConfigPlayer != null && !OnlineConfigPlayer.player.IsLocal)
             {
-                if (OnlineConfigPlayer.player == PhotonNetwork.LocalPlayer)
-                {
-                    OnlineConfigPlayer.isLocal = true;
-                    ClientPlayerSetupMenu.SetPlayerIndex(OnlineConfigPlayer.PlayerIndex);
-                    playerConfigs.Add(OnlineConfigPlayer);
-
-
-                }
-                else
-                {
+                Debug.Log("Já tinha player na sala");
                     OnlineConfigPlayer.isLocal = false;
                     OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
                     lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
                     Debug.Log(OnlineConfigPlayer.lobbyPlayersShower);
                     availableLobbyPlayersShower.RemoveAt(0);
                     playerConfigs.Add(OnlineConfigPlayer);
-
-                }
-
-                foreach (Player player in playersNaSala)
-                {
-                    if (OnlineConfigPlayer.player == player)
-                    {
-                        PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, player.NickName);
-                    }
-                }
             }
         }
+        OnlinePlayerConfiguration LocalPlayer = HandlePlayerJoined(playersNaSala[0]);
+        if (LocalPlayer != null)
+        {
+            LocalPlayer.isLocal = true;
+            ClientPlayerSetupMenu.SetPlayerIndex(LocalPlayer.PlayerIndex);
+            playerConfigs.Add(LocalPlayer);
+        }
+        foreach (var player in playerConfigs)
+        {
+            PunSetPlayerName(player.PlayerIndex, player.player.NickName);
+        }
+
     }
+        
+    
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        
+        Debug.Log("Novo player na sala");
         playersNaSala.Append(newPlayer);
         OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
         if (OnlineConfigPlayer != null)
         {
+            Debug.Log("Não é null");
             OnlineConfigPlayer.isLocal = false;
             OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
             lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
-            Debug.Log(OnlineConfigPlayer.lobbyPlayersShower);
             PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, newPlayer.NickName);
+            playerConfigs.Add(OnlineConfigPlayer);
+
         }
     }
 

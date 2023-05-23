@@ -14,6 +14,7 @@ using Vector3 = UnityEngine.Vector3;
 public class PlayerRotation : MonoBehaviour
 {
 
+    private bool isOnlinePlayer;
     private PlayerStats _status;
     private Vector3 _inputRotation;
     private Vector3 _inputMouse;
@@ -65,7 +66,7 @@ void Start()
                     transform.rotation = newRotation;
             }
         }
-        if(!isGamepad){
+        if(!isGamepad && !isOnlinePlayer){
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _hit, 100, ground))
             {
                     //Nessa variavel está sendo feito a distância do player para onde o raycast está batendo
@@ -83,6 +84,11 @@ void Start()
     public void setCanRotate(bool valor)
     {
         _canRotate = valor;
+    }
+    
+    public void setIsOnlinePlayer(bool valor)
+    {
+        isOnlinePlayer = valor;
     }
 }
     

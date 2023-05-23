@@ -7413,7 +7413,7 @@ GameObject:
   - component: {fileID: 1455388684}
   - component: {fileID: 1455388685}
   m_Layer: 0
-  m_Name: PlayerConfigurationManager
+  m_Name: OnlinePlayerConfigurationManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
