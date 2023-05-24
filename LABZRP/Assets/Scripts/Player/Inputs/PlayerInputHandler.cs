@@ -59,21 +59,21 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         {
             Debug.Log("Is pc.playerstats null " + pc.playerStats == null);
             _status = GetComponent<PlayerStats>();
-            _status.setPlayerStats(pc.playerStats);
+            _status.setPlayerStats(_OnlinePlayerConfig.playerStats);
         }
 
         if (_attack != null)
         {
             Debug.Log("Is pc.playerstats null " + pc.playerStats.startGun == null);
             _attack = GetComponent<WeaponSystem>();
-            _attack.SetGunStatus(pc.playerStats.startGun);
+            _attack.SetGunStatus(_OnlinePlayerConfig.playerStats.startGun);
         }
 
         if (_customize != null)
         {
             Debug.Log("Is pc.playerstats null " + pc.playerCustom == null);
             _customize = GetComponent<CustomizePlayerInGame>();
-            _customize.SetSkin(pc.playerCustom);
+            _customize.SetSkin(_OnlinePlayerConfig.playerCustom);
         }
     }
         

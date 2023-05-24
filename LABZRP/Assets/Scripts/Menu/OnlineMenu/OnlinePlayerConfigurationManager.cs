@@ -150,7 +150,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                 readyCount++;
                 if (readyCount == playerConfigs.Count)
                 {
-                    SceneManager.LoadScene("SampleScene");
+                            PhotonNetwork.LoadLevel("SampleScene");
                 }
                 
             }
