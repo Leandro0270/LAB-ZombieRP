@@ -32,6 +32,10 @@ public class PlayerConfigurationManager : MonoBehaviour
         playerConfigs[index].playerStats = stats;
     }
     
+    public void SetPlayerName(int index, string name)
+    {
+        playerConfigs[index].playerStats.name = name;
+    }
     public void SetPlayerSkin(int index, ScObPlayerCustom playerCustom)
     {
         playerConfigs[index].playerCustom = playerCustom;
@@ -43,19 +47,22 @@ public class PlayerConfigurationManager : MonoBehaviour
     }
     public void ReadyPlayer(int index)
     {
-        Debug.Log("Player " + index + " pronto");
         playerConfigs[index].isReady = true;
         readyCount++;
         if (readyCount == playerConfigs.Count)
         {
-            Debug.Log("carregando fase");
             SceneManager.LoadScene("SampleScene");
         }
+    }
+    
+    public void CancelReadyPlayer(int index)
+    {
+        playerConfigs[index].isReady = false;
+        readyCount--;
     }
 
     public void HandlePlayerJoined(PlayerInput pi)
     {
-        Debug.Log("Player Joined" + pi.playerIndex);
         if (!playerConfigs.Any(p => p.PlayerIndex == pi.playerIndex))
         {
             pi.transform.SetParent(transform);

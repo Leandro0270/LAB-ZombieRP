@@ -548,6 +548,12 @@ public class WeaponSystem : MonoBehaviour
         {
                 _challengeManager = challengeManager;
         }
+        
+        public int getTotalKilledZombies()
+        {
+                return NormalZombiesKilled + SpecialZombiesKilled;
+        }
+        
 
         //================================================================================================
 

@@ -1,21 +1,28 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class MainGameManager : MonoBehaviour
+public class MainGameManager : MonoBehaviourPunCallbacks
 {
-   
+    private bool isOnline = false;
     private List<GameObject> players;
     private List<GameObject> alivePlayers;
     private List<GameObject> downedPlayers;
     private List<GameObject> enemies;
     private List<GameObject> itens;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private Camera miniMapCamera;
     [SerializeField] private HordeManager hordeManager;
     [SerializeField] private ChallengeManager challengeManager;
+    [SerializeField] private HordeModeGameOverManager gameOverUI;
+    [SerializeField] private GameObject playerConfigurationManager;
+    [SerializeField] private GameObject onlinePlayerConfigurationManager;
+    [SerializeField] private Camera minimapCamera;
+
+
+    public bool _killAllPlayers = false;
     
     
     
@@ -28,7 +35,15 @@ public class MainGameManager : MonoBehaviour
         enemies = new List<GameObject>();
         itens = new List<GameObject>();
     }
-    
+
+    private void Update()
+    {
+        if(_killAllPlayers){
+            killAllPlayers();
+            _killAllPlayers = false;
+        }
+    }
+
     public void addItem(GameObject item)
     {
         itens.Add(item);
@@ -42,10 +57,23 @@ public class MainGameManager : MonoBehaviour
     
     public void removeDownedPlayer(GameObject player)
     {
-        alivePlayers.Remove(player);
-        downedPlayers.Add(player);
+        if (alivePlayers.Contains(player))
+        {
+            alivePlayers.Remove(player);
+            downedPlayers.Add(player);
+            if (downedPlayers.Count == players.Count)
+            {
+                
+                StartCoroutine(gameOver());
+            }
+        }
+        
+        
     }
-    
+    public Camera getMiniMapCamera()
+    {
+        return minimapCamera;
+    }
     
     public void addDownedPlayer(GameObject player)
     {
@@ -69,6 +97,15 @@ public class MainGameManager : MonoBehaviour
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<EnemyStatus>().killEnemy();
+        }
+    }
+    
+    
+    public void killAllPlayers()
+    {
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerStats>().takeDamage(100000);
         }
     }
 
@@ -124,6 +161,10 @@ public class MainGameManager : MonoBehaviour
             enemy.GetComponent<EnemyFollow>().setNearPlayerDestination();
         }
     }
+    public HordeManager getHordeManager()
+    {
+        return hordeManager;
+    }
 
     public void cancelCoffeeMachineEvent()
     {
@@ -133,10 +174,42 @@ public class MainGameManager : MonoBehaviour
         }
         resetZombiesTarget();
     }
-
-    public Camera getMiniMapCamera()
+    
+    private IEnumerator gameOver()
     {
-        return miniMapCamera;
+        yield return new WaitForSeconds(2);
+        gameOverUI.gameObject.SetActive(true);
+        hordeManager.gameOver();
+        foreach (var zombie in enemies)
+        {
+            zombie.GetComponent<EnemyStatus>().gameIsOver();
+        }
+        gameOverUI.gameOver();
     }
     
+    public void setPlayerConfigurationManager(GameObject playerConfigurationManager)
+    {
+        this.playerConfigurationManager = playerConfigurationManager;
+    }
+    
+    public GameObject getPlayerConfigurationManager()
+    {
+        return playerConfigurationManager;
+    }
+    
+    public void setOnlinePlayerConfigurationManager(GameObject onlinePlayerConfigurationManager)
+    {
+        this.onlinePlayerConfigurationManager = onlinePlayerConfigurationManager;
+    }
+    
+    public GameObject getOnlinePlayerConfigurationManager()
+    {
+        return onlinePlayerConfigurationManager;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+
 }

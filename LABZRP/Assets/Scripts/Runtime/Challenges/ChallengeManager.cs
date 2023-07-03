@@ -279,22 +279,24 @@ public class ChallengeManager : MonoBehaviour
             {
                 foreach (var Player in players)
                 {
-                    WeaponSystem weaponSystem = Player.GetComponent<WeaponSystem>();
-                    weaponSystem.setisKillInTimeChallengeActive(false);
-                    weaponSystem.SetIsInArea(false);                }
+                    Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
+                }
                 FailChallenge();
             }
             else if(_zombiesKilled >= _zombiesToKill)
             {
                 foreach (var Player in players)
                 {
-                    WeaponSystem weaponSystem = Player.GetComponent<WeaponSystem>();
-                    weaponSystem.setisKillInTimeChallengeActive(false);
-                    weaponSystem.SetIsInArea(false);
+                    Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
                 }
                 SuccessChallenge();
             }
-
+            Destroy(_instantiateArea);
+            foreach (var Player in players)
+            {
+                Player.GetComponent<WeaponSystem>().SetIsInArea(false);
+            }
+            
         }
     }
     
@@ -314,7 +316,7 @@ public class ChallengeManager : MonoBehaviour
             
             for(int i= 0; i < _coffeeMachinesToDefend; i++)
             {
-                _coffeeMachine = Instantiate(_coffeeMachine, coffeeMachineSpawnPoints[i+1].position, coffeeMachineSpawnPoints[i+1].transform.rotation);
+                _coffeeMachine = Instantiate(_coffeeMachine, coffeeMachineSpawnPoints[i].position, coffeeMachineSpawnPoints[i].transform.rotation);
                 _instantiatedCoffeeMachines.Add(_coffeeMachine);
                 hordeManager.setCoffeeMachineEvent(true);
             }

@@ -22,6 +22,7 @@ public class PlayerStats : MonoBehaviour
     //Player Specs
    
     private ScObPlayerStats _playerStatus;
+    private String _name;
     private bool _isAiming;
     private bool _isBurning;
     private bool _isStunned;
@@ -55,7 +56,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private GameObject _playerHead;
     //======================================================================================================
     //Script components
-    [SerializeField] private MainGameManager _mainGameManager;
+    private MainGameManager _mainGameManager;
     public DecalProjector _playerIndicator;
     private CâmeraMovement _camera;
     private PlayerMovement _playerMovement;
@@ -181,13 +182,12 @@ public class PlayerStats : MonoBehaviour
 
             if (life < 1)
             {
-                _mainGameManager.removeDownedPlayer(this.gameObject);
+                _isDown = true;
                 GameObject _blood2 = Instantiate(blood2,
                     new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
                     blood2.transform.rotation);
                 Destroy(_blood2, 15f);
                 _weaponSystem.SetIsIncapacitated(true);
-                _isDown = true;
                 _characterController.enabled = false;
                 GetComponent<BoxCollider>().enabled = true;
                 _camera.removePlayer(gameObject);
@@ -197,7 +197,8 @@ public class PlayerStats : MonoBehaviour
                 _playerAnimationManager.setDown(true);
                 _weaponSystem.SetGunVisable(false);
                 _healthBarUi.setColor(Color.gray);
-
+                GetComponent<ReviveScript>().addDownCount();
+                _mainGameManager.removeDownedPlayer(this.gameObject);
             }
         }
     }
@@ -255,6 +256,7 @@ public class PlayerStats : MonoBehaviour
         _maxGunItens = _playerStatus.maxGunCapacity;
         _maxAuxiliaryItens = _playerStatus.maxAuxiliaryCapacity;
         _characterColor = _playerStatus.MainColor;
+        _name = _playerStatus.name;
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
         life = totalLife;
@@ -484,5 +486,10 @@ public class PlayerStats : MonoBehaviour
     public GameObject getPlayerHead()
     {
         return _playerHead;
+    }
+    
+    public String getPlayerName()
+    {
+        return _name;
     }
 }

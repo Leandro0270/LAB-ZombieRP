@@ -41,6 +41,7 @@ public class HordeManager : MonoBehaviour
     private int zombiesAlive = 0;
     private float timeBetweenHordesUI;
     private bool isBossZombieAlive = false;
+    private bool isGameOver = false;
     //Special events Variables==========================================================
     [SerializeField] private ChallengeManager challengeManager;
     [SerializeField] private List<GameObject> challengeMachines;
@@ -168,6 +169,8 @@ public class HordeManager : MonoBehaviour
             for (int i = 0; i < currentHordeZombies; i++)
             {
                 yield return new WaitForSeconds(spawnTime);
+                if (isGameOver)
+                    break;
                 specialZombiePercentage -= specialZombiePercentageDecrement;
                 if(specialZombiePercentage < 10f)
                     specialZombiePercentage = 10f;
@@ -265,7 +268,20 @@ public class HordeManager : MonoBehaviour
                     this.isCoffeeMachineEvent = isCoffeeMachineEvent;
                 }
             }
+        
+        public void gameOver()
+        {
+            StopAllCoroutines();
+            isGameOver = true;
+            HorderText.text = " ";
         }
+
+        public int getCurrentHorde()
+        {
+            return currentHorde;
+        }
+}
+
 
     
 

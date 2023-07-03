@@ -301,4 +301,12 @@ public class EnemyStatus : MonoBehaviour
         this.isOnExplosiveEvents = isOnExplosiveEvents;
     }
     
+    public void gameIsOver()
+    {
+        _enemyFollow.setFollowPlayers(false);
+        _enemyFollow.setCanWalk(false);
+        _enemyFollow.setIsStoped(true);
+        
+    }
+    
 }

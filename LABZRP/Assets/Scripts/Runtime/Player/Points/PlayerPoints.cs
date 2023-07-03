@@ -8,25 +8,32 @@ public class PlayerPoints : MonoBehaviour
     [SerializeField] private float pointsMultiplier = 1.5f;
     [SerializeField] private bool isMultiplierActive = false;
     private Points_UI pointsUI;
+    private int totalPointsInGame = 0;
     private int points = 0;
 
     public void addPointsNormalZombieKilled()
     {
-        if(isMultiplierActive)
+        if(isMultiplierActive){
             points += (int)(pointsPerNormalZombie * pointsMultiplier);
-        else
+            totalPointsInGame += (int)(pointsPerNormalZombie * pointsMultiplier);
+        }
+        else{
             points += pointsPerNormalZombie;
-        
+            totalPointsInGame += pointsPerNormalZombie;
+        }
         pointsUI.setPoints(points);
     }
 
     public void addPointsSpecialZombiesKilled(int points)
     {
-        if(isMultiplierActive)
+        if(isMultiplierActive){
             this.points += (int)(points * pointsMultiplier);
-        else
+            totalPointsInGame += (int)(points * pointsMultiplier);
+        }else{
+            
+            totalPointsInGame += points;
             this.points += points;
-        
+        }
         pointsUI.setPoints(this.points);
     }
 
@@ -56,6 +63,11 @@ public class PlayerPoints : MonoBehaviour
     public void setPointsUI(Points_UI pointsUI)
     {
         this.pointsUI = pointsUI;
+    }
+    
+    public int getTotalPointsInGame()
+    {
+        return totalPointsInGame;
     }
 
 }

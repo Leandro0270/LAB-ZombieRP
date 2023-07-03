@@ -3,7 +3,6 @@ using UnityEngine;
 public class ZombieAnimationController : MonoBehaviour
 {
     private Animator _animator;
-    [SerializeField] private bool haveDifferentAnimations = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -12,18 +11,15 @@ public class ZombieAnimationController : MonoBehaviour
     
     public void setTarget(bool haveTarget)
     {
-        if(!haveDifferentAnimations)
-            _animator.SetBool("HaveTarget", haveTarget);
+        _animator.SetBool("HaveTarget", haveTarget);
     }
     public void setAttack()
     {
-        if(!haveDifferentAnimations)
-            _animator.SetTrigger("Attacking");
+        _animator.SetTrigger("Attacking");
     }
     public void triggerDown()
     {
-        if(!haveDifferentAnimations)
-            _animator.SetTrigger("isDying");
+        _animator.SetTrigger("isDying");
     }
        
 }
