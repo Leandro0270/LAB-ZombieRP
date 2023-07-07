@@ -11,247 +11,250 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
 
-public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
+ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private TextMeshProUGUI roomCodeText;
-    [SerializeField] private GameObject lobbyPanel;
-    [SerializeField] private GameObject clientPanel;
-    [SerializeField] PlayerSetupMenuController ClientPlayerSetupMenu;
-    [SerializeField] private List<OnlineLobbyPlayersShower> lobbyPlayersShower;
-    private List<OnlineLobbyPlayersShower> availableLobbyPlayersShower = new List<OnlineLobbyPlayersShower>();
-    private List<OnlinePlayerConfiguration> playerConfigs;
-    [SerializeField] private PhotonView photonView;
+     private List<int> playersIndexReady = new List<int>();
+     private bool isMasterClient = false;
+     private string roomCode;
+     private string clientPlayerName;
+     private int clientPlayerIndex;
+     [SerializeField] private TextMeshProUGUI roomCodeText;
+     [SerializeField] private GameObject lobbyPanel;
+     [SerializeField] private GameObject clientPanel;
+     [SerializeField] OnlinePlayerSetupMenuController ClientPlayerSetupMenu;
+     [SerializeField] private List<OnlineLobbyPlayersShower> lobbyPlayersShower;
+     [SerializeField] private List<OnlineLobbyPlayersShower> availableLobbyPlayersShower = new List<OnlineLobbyPlayersShower>();
+     List<OnlinePlayerConfiguration> playerConfigs = new List<OnlinePlayerConfiguration>();
+     [SerializeField] private PhotonView photonView;
+     [SerializeField] private List<Material> Skin;
+     [SerializeField] private List<Material> Eyes;
+     [SerializeField] private List<Material> tshirt;
+     [SerializeField] private List<Material> pants;
+     [SerializeField] private List<Material> Shoes;
+     [SerializeField] private List<ScObPlayerStats> playerStats;
+     private Player[] playersNaSala;
+     private int readyCount = 0;
+     private int playersCount = 0;
+     
+     
+     private void Awake()
+     {
+         DontDestroyOnLoad(this);
+         availableLobbyPlayersShower = lobbyPlayersShower;
+         PhotonNetwork.AutomaticallySyncScene = true;
+     }
+    public override void OnJoinedRoom(){
     
-    [SerializeField] private List<Material> Skin;
-    [SerializeField] private List<Material> Eyes;
-    [SerializeField] private List<Material> tshirt;
-    [SerializeField] private List<Material> pants;
-    [SerializeField] private List<Material> Shoes;
-
-    private Player[] playersNaSala;
-    private int readyCount = 0;
-    private int playersCount = 0;
-    
-
-    public static OnlinePlayerConfigurationManager Instance { get; private set; }
-
-    private void Awake()
-    {
-        if (Instance != null)
+        playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+        isMasterClient = PhotonNetwork.IsMasterClient;
+        roomCode = PhotonNetwork.CurrentRoom.Name;
+        roomCodeText.text = roomCode;
+        clientPlayerName = PhotonNetwork.LocalPlayer.NickName;
+        clientPlayerIndex = PhotonNetwork.LocalPlayer.ActorNumber;
+        if (!isMasterClient)
         {
-            Debug.Log("SINGLETON - Trying to create another instance of singleton");
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(Instance);
-            availableLobbyPlayersShower = lobbyPlayersShower;
-            playerConfigs = new List<OnlinePlayerConfiguration>();
-        }
-    }
-    
-
-    public void SetScObPlayerStats(int index, ScObPlayerStats stats)
-    {
-        playerConfigs[index].playerStats = stats;
-    }
-    
-    public void CancelReadyPlayer(int index)
-    {
-        playerConfigs[index].isReady = false;
-        readyCount--;
-    }
-
-    [PunRPC]
-    public void SetPlayerName(int index, string name)
-    {
-        foreach (OnlinePlayerConfiguration configs in playerConfigs)
-        {
-            if (configs.PlayerIndex == index)
+            foreach (var verificacaoDePlayer in playersNaSala)
             {
-                if (configs.isLocal)
+                OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(verificacaoDePlayer);
+                if (OnlineConfigPlayer.isLocal == false)
                 {
-                    ClientPlayerSetupMenu.setPlayerName(name);
+                    OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
+                    lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+                    availableLobbyPlayersShower.RemoveAt(0);
+                    playerConfigs.Add(OnlineConfigPlayer);
+                    
                 }
                 else
                 {
-                    configs.lobbyPlayersShower.setPlayerName(name);
-                }
-            }
-        }
-    }
-
-    [PunRPC]
-    public void SetPlayerSkin(int index, int skinIndex, int eyesIndex, int tshirtIndex, int pantsIndex, int shoesIndex)
-    {
-        ScObPlayerCustom playerCustom = ScriptableObject.CreateInstance<ScObPlayerCustom>();
-        playerCustom.Skin = Skin[skinIndex];
-        playerCustom.SkinIndex = skinIndex;
-        playerCustom.Eyes = Eyes[eyesIndex];
-        playerCustom.EyesIndex = eyesIndex;
-        playerCustom.tshirt = tshirt[tshirtIndex];
-        playerCustom.tshirtIndex = tshirtIndex;
-        playerCustom.pants = pants[pantsIndex];
-        playerCustom.pantsIndex = pantsIndex;
-        playerCustom.Shoes = Shoes[shoesIndex];
-        playerCustom.ShoesIndex = shoesIndex;
-        foreach (OnlinePlayerConfiguration configs in playerConfigs)
-        {
-            if (configs.PlayerIndex == index)
-            {
-                configs.playerCustom = playerCustom;
-                if(!configs.isLocal){
-                    configs.lobbyPlayersShower.setPlayerCustom(playerCustom);
-                }
-            }
-        }
-        
-    }
-    
-    public void PunSetPlayerSkin(int index, ScObPlayerCustom playerCustom)
-    {
-        int skinIndex = playerCustom.SkinIndex;
-        int eyesIndex = playerCustom.EyesIndex;
-        int tshirtIndex = playerCustom.tshirtIndex;
-        int pantsIndex = playerCustom.pantsIndex;
-        int shoesIndex = playerCustom.ShoesIndex;
-        photonView.RPC("SetPlayerSkin", RpcTarget.All, index, skinIndex, eyesIndex, tshirtIndex, pantsIndex, shoesIndex);
-    }
-    public void PunSetPlayerName(int index, string name)
-    {
-        photonView.RPC("SetPlayerName", RpcTarget.All, index, name);
-    }
-
-    public List<OnlinePlayerConfiguration> GetPlayerConfigs()
-    {
-        return playerConfigs;
-    }
-
-    public void PunReadyPlayer(int index)
-    {
-        photonView.RPC("ReadyPlayer", RpcTarget.All, index);
-    }
-    [PunRPC]
-    public void ReadyPlayer(int index)
-    {
-        foreach (OnlinePlayerConfiguration configs in playerConfigs)
-        {
-            if (configs.PlayerIndex == index)
-            {
-                if (configs.isLocal)
-                {
-                    lobbyPanel.SetActive(true);
-                    ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
-                }else
-                {
-                    configs.lobbyPlayersShower.setIsReady(true);   
-                }
-                configs.isReady = true;
-                readyCount++;
-                if (readyCount == playerConfigs.Count)
-                {
-                            PhotonNetwork.LoadLevel("SampleScene");
-                }
-                
-            }
-        }
-    }
-    
-    public void PunCancelReadyPlayer(int index)
-    {
-        photonView.RPC("CancelReadyPlayer", RpcTarget.All, index);
-    }
-
-
-    public OnlinePlayerConfiguration HandlePlayerJoined(Player player)
-    {
-        if (playerConfigs.Count >= 4)
-        {
-            Debug.Log("Max players reached");
-            return null;
-        }
-
-        for (int i = 0; i < playerConfigs.Count; i++)
-        {
-            if (Equals(playerConfigs[i].player, player))
-                return null;
-        }
-        
-        var config = new OnlinePlayerConfiguration(player);
-        config.player = player;
-        config.PlayerIndex = player.ActorNumber - 1;
-        return config;
-    }
- 
-
-    public override void OnJoinedRoom()
-    {
-        roomCodeText.text = "Room Code: " + PhotonNetwork.CurrentRoom.Name;
-        playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
-        
-        foreach (var CurrentPlayer in playersNaSala)
-        {
-            OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(CurrentPlayer);
-            if (OnlineConfigPlayer != null && !OnlineConfigPlayer.player.IsLocal)
-            {
-                Debug.Log("Já tinha player na sala");
-                    OnlineConfigPlayer.isLocal = false;
-                    OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
-                    lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
-                    Debug.Log(OnlineConfigPlayer.lobbyPlayersShower);
-                    availableLobbyPlayersShower.RemoveAt(0);
+                    clientPlayerIndex = OnlineConfigPlayer.PlayerIndex;
+                    clientPlayerName = OnlineConfigPlayer.playerName;
+                    ClientPlayerSetupMenu.SetPlayerIndex(clientPlayerIndex, clientPlayerName);
                     playerConfigs.Add(OnlineConfigPlayer);
+                    
+                }
             }
+            //Vai organizar a lista de playerconfigs com base no playerindex
+            playerConfigs = playerConfigs.OrderBy(playerConfig => playerConfig.PlayerIndex).ToList();
         }
-        OnlinePlayerConfiguration LocalPlayer = HandlePlayerJoined(playersNaSala[0]);
-        if (LocalPlayer != null)
+        else
         {
-            LocalPlayer.isLocal = true;
-            ClientPlayerSetupMenu.SetPlayerIndex(LocalPlayer.PlayerIndex);
-            playerConfigs.Add(LocalPlayer);
-        }
-        foreach (var player in playerConfigs)
-        {
-            PunSetPlayerName(player.PlayerIndex, player.player.NickName);
+            OnlinePlayerConfiguration MasterLocalPlayer = HandlePlayerJoined(playersNaSala[0]);
+            clientPlayerIndex = MasterLocalPlayer.PlayerIndex;
+            clientPlayerName = MasterLocalPlayer.playerName;
+            ClientPlayerSetupMenu.SetPlayerIndex(clientPlayerIndex, clientPlayerName);
+            playerConfigs.Add(MasterLocalPlayer);
         }
 
     }
-        
+    
     
     public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        Debug.Log("Novo player na sala");
-        playersNaSala.Append(newPlayer);
-        OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
-        if (OnlineConfigPlayer != null)
-        {
-            Debug.Log("Não é null");
-            OnlineConfigPlayer.isLocal = false;
-            OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
-            lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
-            PunSetPlayerName(OnlineConfigPlayer.PlayerIndex, newPlayer.NickName);
-            playerConfigs.Add(OnlineConfigPlayer);
+     {
+         if(isMasterClient){
+             foreach (int readyPlayerIndex in playersIndexReady)
+             {
+                 ScObPlayerCustom playerCustom = playerConfigs[readyPlayerIndex].playerCustom;
+                 int skinIndex = playerCustom.SkinIndex;
+                 int eyesIndex = playerCustom.EyesIndex;
+                 int tshirtIndex = playerCustom.tshirtIndex;
+                 int pantsIndex = playerCustom.pantsIndex;
+                 int shoesIndex = playerCustom.ShoesIndex;
+                 photonView.RPC("SetPlayerSkin", RpcTarget.All, readyPlayerIndex, skinIndex, eyesIndex, tshirtIndex, pantsIndex, shoesIndex);
+             }
+             foreach (int readyPlayerIndex in playersIndexReady)
+             {
+                 int classIndex = playerConfigs[readyPlayerIndex].playerStats.classIndex;
+                    photonView.RPC("SetScObPlayerStats", RpcTarget.All, readyPlayerIndex, classIndex);
+             }
+             
+             foreach (var readyPlayers in playersIndexReady)
+             {
+                 photonView.RPC("ReadyPlayer", RpcTarget.All, readyPlayers);
+             }
+         }
+         playersNaSala.Append(newPlayer);
+         OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
+         if (OnlineConfigPlayer != null)
+         {
+             OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
+             lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
+             availableLobbyPlayersShower.RemoveAt(0);
+             playerConfigs.Add(OnlineConfigPlayer);
 
-        }
-    }
-
-    public class OnlinePlayerConfiguration
-    {
-        public OnlinePlayerConfiguration(Player player)
-        {
-            PlayerIndex = player.ActorNumber;
-        }
+         }
+     }
     
-        public Player player { get; set; }
-        public int PlayerIndex { get; set; }
-        
-        public bool isLocal { get; set; }
+    //PUNRPC FUNCTIONS ============================================
 
-        public OnlineLobbyPlayersShower lobbyPlayersShower { get; set; }
-        public bool isReady { get; set; }
-        public ScObPlayerStats playerStats { get; set; }
-    
-        public ScObPlayerCustom playerCustom { get; set; }
+    [PunRPC]
+    public void SetScObPlayerStats(int index, int classIndex) {
+        playerConfigs[index].playerStats = playerStats[classIndex];
     }
+    
+    
+    [PunRPC]
+     public void SetPlayerSkin(int index, int skinIndex, int eyesIndex, int tshirtIndex, int pantsIndex, int shoesIndex)
+     {
+         ScObPlayerCustom playerCustom = ScriptableObject.CreateInstance<ScObPlayerCustom>();
+         playerCustom.Skin = Skin[skinIndex];
+         playerCustom.SkinIndex = skinIndex;
+         playerCustom.Eyes = Eyes[eyesIndex];
+         playerCustom.EyesIndex = eyesIndex;
+         playerCustom.tshirt = tshirt[tshirtIndex];
+         playerCustom.tshirtIndex = tshirtIndex;
+         playerCustom.pants = pants[pantsIndex];
+         playerCustom.pantsIndex = pantsIndex;
+         playerCustom.Shoes = Shoes[shoesIndex];
+         playerCustom.ShoesIndex = shoesIndex;
+         foreach (OnlinePlayerConfiguration configs in playerConfigs)
+         {
+             if (configs.PlayerIndex == index)
+             {
+                 configs.playerCustom = playerCustom;
+                 if(!configs.isLocal){
+                     configs.lobbyPlayersShower.setPlayerCustom(playerCustom);
+                 }
+             }
+         }
+         
+     }
+     
+     [PunRPC]
+     public void ReadyPlayer(int index)
+     {
+         foreach (OnlinePlayerConfiguration configs in playerConfigs)
+         {
+             if (configs.PlayerIndex == index)
+             {
+                 if (configs.isLocal)
+                 {
+                     lobbyPanel.SetActive(true);
+                     ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
+                 }else
+                 {
+                     configs.lobbyPlayersShower.setIsReady(true);   
+                 }
+                 if(configs.isReady)
+                     return;
+                 
+                 configs.isReady = true;
+                 readyCount++;
+                 if (readyCount == playerConfigs.Count)
+                 {
+                     if(isMasterClient)
+                         PhotonNetwork.LoadLevel("SampleScene");
+                 }
+                 
+             }
+         }
+     }
+     
+     
+    //PUNRPC CALLS=====================================
+    public void PunSetPlayerSkin(int index, ScObPlayerCustom playerCustom)
+     {
+         int skinIndex = playerCustom.SkinIndex;
+         int eyesIndex = playerCustom.EyesIndex;
+         int tshirtIndex = playerCustom.tshirtIndex;
+         int pantsIndex = playerCustom.pantsIndex;
+         int shoesIndex = playerCustom.ShoesIndex;
+         photonView.RPC("SetPlayerSkin", RpcTarget.All, index, skinIndex, eyesIndex, tshirtIndex, pantsIndex, shoesIndex);
+     }
+    
+    private OnlinePlayerConfiguration HandlePlayerJoined(Player verificacaoDePlayer)
+     {
+         var config = new OnlinePlayerConfiguration(verificacaoDePlayer);
+         return config;
+     }
+    
+    public void PunSetPlayerStats(int index, int classIndex)
+    {
+        photonView.RPC("SetScObPlayerStats", RpcTarget.All, index, classIndex);
+    }
+    
+    
 
+//     
+//
+
+//     
+//     public void CancelReadyPlayer(int index)
+//     {
+//         playerConfigs[index].isReady = false;
+//         readyCount--;
+//     }
+//
+//
+//     
+//     
+
+//
+     public List<OnlinePlayerConfiguration> GetPlayerConfigs()
+     {
+         return playerConfigs;
+     }
+//
+     public void PunReadyPlayer(int index)
+     {
+         photonView.RPC("ReadyPlayer", RpcTarget.All, index);
+     }
+     
+//     
+//     public void PunCancelReadyPlayer(int index)
+//     {
+//         photonView.RPC("CancelReadyPlayer", RpcTarget.All, index);
+//     }
+//
+//
+
+//  
+//
+//    
+//     }
+//         
+//     
+// 
+//
+//     
+//
 }

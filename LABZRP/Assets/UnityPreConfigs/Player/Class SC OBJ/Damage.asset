@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46db3ca41a83bf47b5f15102bb5b8de, type: 3}
   m_Name: Damage
   m_EditorClassIdentifier: 
+  classIndex: 1
+  name: 
   maxThrowableCapacity: 2
   maxAuxiliaryCapacity: 0
   maxGunCapacity: 0

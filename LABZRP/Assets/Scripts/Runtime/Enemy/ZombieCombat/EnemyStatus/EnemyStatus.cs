@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class EnemyStatus : MonoBehaviour
+public class EnemyStatus : MonoBehaviourPunCallbacks
 {
     public ScObEnemyStats _status;
     private HordeManager hordeManager;
@@ -27,7 +28,8 @@ public class EnemyStatus : MonoBehaviour
     private float timeBurning = 0;
     private bool _isSpeedSlowed = false;
     
-    
+    private bool isOnline = false;
+    [SerializeField] PhotonView photonView;
     
     //Special events
     //Explosive enemies===============================================
@@ -49,7 +51,35 @@ public class EnemyStatus : MonoBehaviour
     }
 
     // Update is called once per frame
-
+    public void setIsOnlineRPC(bool isOnline)
+    {
+        photonView.RPC("setIsOnline", RpcTarget.All, isOnline);
+    }
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+    
+    [PunRPC]
+    public void setTotalLifeRPC(float totalLife)
+    {
+        this.totalLife = totalLife;
+    }
+    [PunRPC]
+    public void setLifeRPC(float life)
+    {
+        this._life = life;
+    }
+    
+    public void setLifeOnline(float life)
+    {
+        photonView.RPC("setLifeRPC", RpcTarget.All, life);
+    }
+    
+    public void setTotalLifeOnline(float totalLife)
+    {
+        photonView.RPC("setTotalLifeRPC", RpcTarget.All, totalLife);
+    }
     private void Start()
     {
         _enemyFollow.getEnemy().speed = _speed;

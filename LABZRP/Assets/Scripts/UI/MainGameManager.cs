@@ -7,12 +7,14 @@ using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviourPunCallbacks
 {
+    private bool isMasterClient = false;
     private bool isOnline = false;
     private List<GameObject> players;
     private List<GameObject> alivePlayers;
     private List<GameObject> downedPlayers;
     private List<GameObject> enemies;
     private List<GameObject> itens;
+    [SerializeField] private PhotonView photonView;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private HordeManager hordeManager;
     [SerializeField] private ChallengeManager challengeManager;
@@ -26,7 +28,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     
     
     
-    
+   
     public void Start()
     {
         players = new List<GameObject>();
@@ -92,6 +94,18 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         enemies.Add(enemy);
     }
     
+    public void addEnemyOnOnline(int PhotonViewID)
+    {
+        photonView.RPC("addEnemyOnOnlineRPC", RpcTarget.All, PhotonViewID);
+    }
+    
+    [PunRPC]
+    public void addEnemyOnOnlineRPC(int PhotonViewID)
+    {
+        GameObject enemy = PhotonView.Find(PhotonViewID).gameObject;
+        enemies.Add(enemy);
+    }
+    
     public void killAllEnemies()
     {
         foreach (GameObject enemy in enemies)
@@ -100,6 +114,11 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         }
     }
     
+    
+    public void setIsMasterClient(bool isMasterClient)
+    {
+        this.isMasterClient = isMasterClient;
+    }
     
     public void killAllPlayers()
     {

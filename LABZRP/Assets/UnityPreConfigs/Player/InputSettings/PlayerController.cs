@@ -530,6 +530,24 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Point"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""9f9fc6c5-76b6-4c2b-80bb-8a4d57f502c4"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Click"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""6c441da6-3a1c-40ab-9137-764747eaf4f6"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -572,7 +590,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Controller"",
                     ""action"": ""Select"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -583,7 +601,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Controller"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -594,7 +612,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Gamepad>/dpad"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Controller"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -616,7 +634,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -627,7 +645,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -638,7 +656,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -649,7 +667,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -671,7 +689,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/upArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -682,7 +700,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -693,7 +711,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/leftArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
@@ -704,21 +722,10 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/rightArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""03d4e445-1249-4b0e-bc0f-6b6f5cdb0bc3"",
-                    ""path"": ""<Gamepad>/dpad/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Cancel"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
@@ -726,7 +733,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/backspace"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Cancel"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -737,8 +744,96 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": ""Keyboard"",
                     ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d6521d57-3642-491d-8e63-de5691d5748d"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Controller"",
+                    ""action"": ""Cancel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""92d9a196-4b86-4186-855f-cf3fcd8f9a7b"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""fe3d9164-b830-41b2-a7e1-8e2592c9d679"",
+                    ""path"": ""<Pen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7dc6b7d6-d9ce-4f91-9608-a659382a0c9b"",
+                    ""path"": ""<Touchscreen>/touch*/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8af8610e-7c63-4e6e-837d-3346a27d3330"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard"",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b3f26c35-69eb-44f6-928d-8e8d9b0a7b68"",
+                    ""path"": ""<Pen>/tip"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a401d4f2-5aac-4378-adda-11f35f97a19b"",
+                    ""path"": ""<Touchscreen>/touch*/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""639c466c-d420-469a-bfd5-011812e237a4"",
+                    ""path"": ""<XRController>/trigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Click"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -795,6 +890,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Menu_Select = m_Menu.FindAction("Select", throwIfNotFound: true);
         m_Menu_Move = m_Menu.FindAction("Move", throwIfNotFound: true);
         m_Menu_Cancel = m_Menu.FindAction("Cancel", throwIfNotFound: true);
+        m_Menu_Point = m_Menu.FindAction("Point", throwIfNotFound: true);
+        m_Menu_Click = m_Menu.FindAction("Click", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -986,6 +1083,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Menu_Select;
     private readonly InputAction m_Menu_Move;
     private readonly InputAction m_Menu_Cancel;
+    private readonly InputAction m_Menu_Point;
+    private readonly InputAction m_Menu_Click;
     public struct MenuActions
     {
         private @PlayerController m_Wrapper;
@@ -993,6 +1092,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Select => m_Wrapper.m_Menu_Select;
         public InputAction @Move => m_Wrapper.m_Menu_Move;
         public InputAction @Cancel => m_Wrapper.m_Menu_Cancel;
+        public InputAction @Point => m_Wrapper.m_Menu_Point;
+        public InputAction @Click => m_Wrapper.m_Menu_Click;
         public InputActionMap Get() { return m_Wrapper.m_Menu; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1011,6 +1112,12 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Cancel.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
                 @Cancel.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
                 @Cancel.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnCancel;
+                @Point.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+                @Point.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+                @Point.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnPoint;
+                @Click.started -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
+                @Click.performed -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
+                @Click.canceled -= m_Wrapper.m_MenuActionsCallbackInterface.OnClick;
             }
             m_Wrapper.m_MenuActionsCallbackInterface = instance;
             if (instance != null)
@@ -1024,6 +1131,12 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Cancel.started += instance.OnCancel;
                 @Cancel.performed += instance.OnCancel;
                 @Cancel.canceled += instance.OnCancel;
+                @Point.started += instance.OnPoint;
+                @Point.performed += instance.OnPoint;
+                @Point.canceled += instance.OnPoint;
+                @Click.started += instance.OnClick;
+                @Click.performed += instance.OnClick;
+                @Click.canceled += instance.OnClick;
             }
         }
     }
@@ -1067,5 +1180,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnSelect(InputAction.CallbackContext context);
         void OnMove(InputAction.CallbackContext context);
         void OnCancel(InputAction.CallbackContext context);
+        void OnPoint(InputAction.CallbackContext context);
+        void OnClick(InputAction.CallbackContext context);
     }
 }

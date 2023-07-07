@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class OnlineLobbyPlayersShower : MonoBehaviour
+public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TextMeshProUGUI playerNameText;
     [SerializeField] private TextMeshProUGUI playerStatusText;
@@ -31,6 +32,7 @@ public class OnlineLobbyPlayersShower : MonoBehaviour
     {
         playerNameText.gameObject.SetActive(true);
         playerStatusText.text = "Not Ready!";
+        playerNameText.text = PhotonNetwork.PlayerList[index].NickName;
         PlayerIndex = index;
     }
 

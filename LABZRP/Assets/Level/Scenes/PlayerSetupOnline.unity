@@ -1255,8 +1255,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetPreviousShoes
         m_Mode: 1
         m_Arguments:
@@ -4776,7 +4776,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 450.94498, y: -121.400024}
+  m_AnchoredPosition: {x: 450.72183, y: -121.52551}
   m_SizeDelta: {x: 843.06, y: 731.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1123952792
@@ -5920,7 +5920,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
         m_MethodName: CancelSelectClass
         m_Mode: 1
@@ -5995,13 +5995,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1230195591}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -64, y: 1.0525908, z: -9.034146}
+  m_LocalScale: {x: 0.0005230452, y: 0.0005230452, z: 0.0005230452}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 7948031287930656600}
-  m_RootOrder: -1
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1230195594
 MonoBehaviour:
@@ -6496,8 +6496,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetNextEyes
         m_Mode: 1
         m_Arguments:
@@ -7414,7 +7414,7 @@ GameObject:
   - component: {fileID: 1455388685}
   m_Layer: 0
   m_Name: OnlinePlayerConfigurationManager
-  m_TagString: Untagged
+  m_TagString: OnlinePlayerConfigurationManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7449,17 +7449,13 @@ MonoBehaviour:
   roomCodeText: {fileID: 1678607520}
   lobbyPanel: {fileID: 1181528251}
   clientPanel: {fileID: 7948031287930656601}
-  ClientPlayerSetupMenu: {fileID: 7132336387038393123}
+  ClientPlayerSetupMenu: {fileID: 7948031287930656609}
   lobbyPlayersShower:
   - {fileID: 1123952795}
   - {fileID: 1465790452}
   - {fileID: 1502618862}
+  availableLobbyPlayersShower: []
   photonView: {fileID: 1455388685}
-  ScObplayerStatsList:
-  - {fileID: 11400000, guid: e73d6aba12f23a344a41f309cf7f2ee3, type: 2}
-  - {fileID: 11400000, guid: 3ec4a73c0d2a94846b5dfa578ec75c96, type: 2}
-  - {fileID: 11400000, guid: e2286d1bdf78c0b4b97d66a25d14fb1e, type: 2}
-  - {fileID: 11400000, guid: 9de39e60ee44b2c42bc9fe9c04d3294f, type: 2}
   Skin:
   - {fileID: 2100000, guid: 53612c79b52b1344682d590b6f3fdb19, type: 2}
   - {fileID: 2100000, guid: 49f4c1d48c5bf12448ce2bc9e7033008, type: 2}
@@ -7492,6 +7488,11 @@ MonoBehaviour:
   Shoes:
   - {fileID: 2100000, guid: 5418c7dcf2d9ca84db070bf48591601d, type: 2}
   - {fileID: 2100000, guid: d0af4fed2d0097447b7543bf1e76f89f, type: 2}
+  playerStats:
+  - {fileID: 11400000, guid: e2286d1bdf78c0b4b97d66a25d14fb1e, type: 2}
+  - {fileID: 11400000, guid: e73d6aba12f23a344a41f309cf7f2ee3, type: 2}
+  - {fileID: 11400000, guid: 3ec4a73c0d2a94846b5dfa578ec75c96, type: 2}
+  - {fileID: 11400000, guid: 9de39e60ee44b2c42bc9fe9c04d3294f, type: 2}
 --- !u!114 &1455388685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7555,7 +7556,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 450.94498, y: -958.60004}
+  m_AnchoredPosition: {x: 450.72183, y: -958.7255}
   m_SizeDelta: {x: 843.06, y: 731.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1465790449
@@ -7805,7 +7806,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1469.055, y: -121.400024}
+  m_AnchoredPosition: {x: 1468.8319, y: -121.52551}
   m_SizeDelta: {x: 843.06, y: 731.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1518428759
@@ -7923,8 +7924,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetNextShoes
         m_Mode: 1
         m_Arguments:
@@ -8094,8 +8095,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetNextPants
         m_Mode: 1
         m_Arguments:
@@ -9101,8 +9102,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetPreviousSkin
         m_Mode: 1
         m_Arguments:
@@ -9686,8 +9687,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetClass
         m_Mode: 1
         m_Arguments:
@@ -9887,8 +9888,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetPreviousTshirt
         m_Mode: 1
         m_Arguments:
@@ -10020,8 +10021,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetNextTshirt
         m_Mode: 1
         m_Arguments:
@@ -10454,8 +10455,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: ReadyPlayer
         m_Mode: 1
         m_Arguments:
@@ -10956,7 +10957,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetClass
         m_Mode: 2
@@ -11069,8 +11070,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetPreviousPants
         m_Mode: 1
         m_Arguments:
@@ -11260,8 +11261,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetPreviousEyes
         m_Mode: 1
         m_Arguments:
@@ -12723,8 +12724,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SetNextSkin
         m_Mode: 1
         m_Arguments:
@@ -12743,68 +12744,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3480873408675862047}
   m_Mesh: {fileID: -4585267173311428481, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
---- !u!114 &7132336387038393123
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7948031287930656601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22e8f7c979c7b3c4bb76c6b14c59f9c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isOnline: 1
-  readyClassButton: {fileID: 1856079969}
-  titletext: {fileID: 7948031289669389406}
-  CharacterCustomizePanel: {fileID: 599469388993051281}
-  menuPanel: {fileID: 7948031289217487362}
-  readySkinButton: {fileID: 2040353367}
-  ReadyPanel: {fileID: 4398152210472480872}
-  playerPrefab: {fileID: 4374021880346709910}
-  firstButton: {fileID: 1771775508}
-  Skin:
-  - {fileID: 2100000, guid: 53612c79b52b1344682d590b6f3fdb19, type: 2}
-  - {fileID: 2100000, guid: 49f4c1d48c5bf12448ce2bc9e7033008, type: 2}
-  - {fileID: 2100000, guid: c03f1757fe2f69e4c86072103538364b, type: 2}
-  - {fileID: 2100000, guid: e33ab3f01adf016439f218b058c4fca1, type: 2}
-  - {fileID: 2100000, guid: ec36a5a244742f84c9dcd3b3b11b6d9a, type: 2}
-  Eyes:
-  - {fileID: 2100000, guid: c69825cb08853a74a95885acd803e2a0, type: 2}
-  - {fileID: 2100000, guid: 17806e322c0ae8448baefe09b3854657, type: 2}
-  - {fileID: 2100000, guid: 115cdeb2da1503243ae959061ada0bcd, type: 2}
-  - {fileID: 2100000, guid: d247cbd1c96f1fb47b60cf7e0708153d, type: 2}
-  - {fileID: 2100000, guid: 088dc2d7aa58e4142be303de758d0c6e, type: 2}
-  tshirt:
-  - {fileID: 2100000, guid: d323c4e81f5cd6244b42d7e933f566b7, type: 2}
-  - {fileID: 2100000, guid: a45a92ff81add6542bd05a1376b51b0c, type: 2}
-  - {fileID: 2100000, guid: c443cb4303c37084687e02d386f3af24, type: 2}
-  - {fileID: 2100000, guid: 01d3568e57c9ff54e99a86251817f6a7, type: 2}
-  - {fileID: 2100000, guid: 493b97c3e80051f49a09ff5184f90bae, type: 2}
-  - {fileID: 2100000, guid: a3df02499709c4a4fa6db54c72978f6f, type: 2}
-  - {fileID: 2100000, guid: e846dd00e68994c479ea12c7cdc04cec, type: 2}
-  - {fileID: 2100000, guid: 99dee67d9e4192945bc64eb2841b8eea, type: 2}
-  pants:
-  - {fileID: 2100000, guid: 64a03d3c48ab14f408ec5010cbe3ff0e, type: 2}
-  - {fileID: 2100000, guid: 54e3ff0e17ca508428c31a2355e090d3, type: 2}
-  - {fileID: 2100000, guid: 3f7dab6bb35b8034db96f5aaf71fda34, type: 2}
-  - {fileID: 2100000, guid: ba0fd8dc2ed2bb747882a4c523ff52d5, type: 2}
-  - {fileID: 2100000, guid: a06934c0d8d23ae458f4af160c2f0a0f, type: 2}
-  - {fileID: 2100000, guid: 8b21b2188ecbce04bb14c5aff0312254, type: 2}
-  - {fileID: 2100000, guid: f2cad7b99a100b54b9da87d6cdcb3da1, type: 2}
-  Shoes:
-  - {fileID: 2100000, guid: 5418c7dcf2d9ca84db070bf48591601d, type: 2}
-  - {fileID: 2100000, guid: d0af4fed2d0097447b7543bf1e76f89f, type: 2}
-  SkinIndexText: {fileID: 986142678}
-  EyesIndexText: {fileID: 2119297404}
-  tshirtIndexText: {fileID: 39093821}
-  pantsIndexText: {fileID: 1282357400}
-  ShoesIndexText: {fileID: 1064221784}
-  OnlineLobbyReady: {fileID: 1181528251}
-  ClientCustomizationPanel: {fileID: 280104036}
-  playerModel: {fileID: 6239648510032731879}
-  playerModelAnimator: {fileID: 6763421402083853406}
 --- !u!23 &7147191433608208123
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13214,8 +13153,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SelectClass
         m_Mode: 2
         m_Arguments:
@@ -13319,7 +13258,6 @@ RectTransform:
   - {fileID: 7948031289669389407}
   - {fileID: 7948031289217487361}
   - {fileID: 2919940396361923421}
-  - {fileID: 1230195592}
   - {fileID: 1856079972}
   - {fileID: 2040353366}
   - {fileID: 2102445265}
@@ -13344,8 +13282,8 @@ GameObject:
   - component: {fileID: 7948031287930656600}
   - component: {fileID: 7948031287930656606}
   - component: {fileID: 7948031287930656607}
-  - component: {fileID: 7132336387038393123}
   - component: {fileID: 7948031287930656608}
+  - component: {fileID: 7948031287930656609}
   m_Layer: 5
   m_Name: CurrentPlayer
   m_TagString: Untagged
@@ -13406,6 +13344,68 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0.73562217, b: 1, a: 0.5}
   m_EffectDistance: {x: 12, y: 12}
   m_UseGraphicAlpha: 1
+--- !u!114 &7948031287930656609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7948031287930656601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9117e69b589e3a342934d8d5bf4c9efd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerConfigurationManager: {fileID: 1455388684}
+  readyClassButton: {fileID: 1856079969}
+  titletext: {fileID: 7948031289669389406}
+  CharacterCustomizePanel: {fileID: 599469388993051281}
+  menuPanel: {fileID: 7948031289217487362}
+  readySkinButton: {fileID: 2040353367}
+  ReadyPanel: {fileID: 4398152210472480872}
+  playerPrefab: {fileID: 4374021880346709910}
+  firstButton: {fileID: 1771775508}
+  Skin:
+  - {fileID: 2100000, guid: 53612c79b52b1344682d590b6f3fdb19, type: 2}
+  - {fileID: 2100000, guid: 49f4c1d48c5bf12448ce2bc9e7033008, type: 2}
+  - {fileID: 2100000, guid: c03f1757fe2f69e4c86072103538364b, type: 2}
+  - {fileID: 2100000, guid: e33ab3f01adf016439f218b058c4fca1, type: 2}
+  - {fileID: 2100000, guid: ec36a5a244742f84c9dcd3b3b11b6d9a, type: 2}
+  Eyes:
+  - {fileID: 2100000, guid: c69825cb08853a74a95885acd803e2a0, type: 2}
+  - {fileID: 2100000, guid: 17806e322c0ae8448baefe09b3854657, type: 2}
+  - {fileID: 2100000, guid: 115cdeb2da1503243ae959061ada0bcd, type: 2}
+  - {fileID: 2100000, guid: d247cbd1c96f1fb47b60cf7e0708153d, type: 2}
+  - {fileID: 2100000, guid: 088dc2d7aa58e4142be303de758d0c6e, type: 2}
+  tshirt:
+  - {fileID: 2100000, guid: d323c4e81f5cd6244b42d7e933f566b7, type: 2}
+  - {fileID: 2100000, guid: a45a92ff81add6542bd05a1376b51b0c, type: 2}
+  - {fileID: 2100000, guid: c443cb4303c37084687e02d386f3af24, type: 2}
+  - {fileID: 2100000, guid: 01d3568e57c9ff54e99a86251817f6a7, type: 2}
+  - {fileID: 2100000, guid: 493b97c3e80051f49a09ff5184f90bae, type: 2}
+  - {fileID: 2100000, guid: a3df02499709c4a4fa6db54c72978f6f, type: 2}
+  - {fileID: 2100000, guid: e846dd00e68994c479ea12c7cdc04cec, type: 2}
+  - {fileID: 2100000, guid: 99dee67d9e4192945bc64eb2841b8eea, type: 2}
+  pants:
+  - {fileID: 2100000, guid: 64a03d3c48ab14f408ec5010cbe3ff0e, type: 2}
+  - {fileID: 2100000, guid: 54e3ff0e17ca508428c31a2355e090d3, type: 2}
+  - {fileID: 2100000, guid: 3f7dab6bb35b8034db96f5aaf71fda34, type: 2}
+  - {fileID: 2100000, guid: ba0fd8dc2ed2bb747882a4c523ff52d5, type: 2}
+  - {fileID: 2100000, guid: a06934c0d8d23ae458f4af160c2f0a0f, type: 2}
+  - {fileID: 2100000, guid: 8b21b2188ecbce04bb14c5aff0312254, type: 2}
+  - {fileID: 2100000, guid: f2cad7b99a100b54b9da87d6cdcb3da1, type: 2}
+  Shoes:
+  - {fileID: 2100000, guid: 5418c7dcf2d9ca84db070bf48591601d, type: 2}
+  - {fileID: 2100000, guid: d0af4fed2d0097447b7543bf1e76f89f, type: 2}
+  SkinIndexText: {fileID: 1190565209}
+  EyesIndexText: {fileID: 1003316414}
+  tshirtIndexText: {fileID: 1173484951}
+  pantsIndexText: {fileID: 1279602729}
+  ShoesIndexText: {fileID: 721785259}
+  OnlineLobbyReady: {fileID: 1181528251}
+  ClientCustomizationPanel: {fileID: 599469388993051281}
+  playerModel: {fileID: 6239648510032731879}
+  playerModelAnimator: {fileID: 6763421402083853406}
 --- !u!114 &7948031287990450768
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13722,8 +13722,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SelectClass
         m_Mode: 2
         m_Arguments:
@@ -14069,8 +14069,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SelectClass
         m_Mode: 2
         m_Arguments:
@@ -14182,8 +14182,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7132336387038393123}
-        m_TargetAssemblyTypeName: PlayerSetupMenuController, Assembly-CSharp
+      - m_Target: {fileID: 7948031287930656609}
+        m_TargetAssemblyTypeName: OnlinePlayerSetupMenuController, Assembly-CSharp
         m_MethodName: SelectClass
         m_Mode: 2
         m_Arguments:

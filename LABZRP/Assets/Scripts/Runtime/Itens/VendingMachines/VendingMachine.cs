@@ -37,11 +37,13 @@ public class VendingMachine : MonoBehaviour
     private GameObject StartItem;
     public TextMeshPro ScreenPoints;
     
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private bool isMasterClient = false;
     
     //debug
     [SerializeField] private bool changeItem = false;
 
-
+    
     private void Update()
     {
         if (changeItem)

@@ -10,7 +10,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     [SerializeField] PlayerInput _OnlinePlayerInput;
     private PlayerController _controls;
     private PauseMenu _pause;
-    private OnlinePlayerConfigurationManager.OnlinePlayerConfiguration _OnlinePlayerConfig;
+    private OnlinePlayerConfiguration _OnlinePlayerConfig;
     private PlayerConfiguration _playerConfig;
     [SerializeField] private PlayerMovement _move;
     [SerializeField] private PlayerRotation _rotate;
@@ -48,7 +48,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         }
     }
     
-    public void InitializeOnlinePlayer(OnlinePlayerConfigurationManager.OnlinePlayerConfiguration pc)
+    public void InitializeOnlinePlayer(OnlinePlayerConfiguration pc)
     {
         _OnlinePlayerConfig = pc;
         if(_OnlinePlayerConfig.player == PhotonNetwork.LocalPlayer)
@@ -57,21 +57,18 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
             _rotate.setIsOnlinePlayer(true);
         if (_status != null)
         {
-            Debug.Log("Is pc.playerstats null " + pc.playerStats == null);
             _status = GetComponent<PlayerStats>();
             _status.setPlayerStats(_OnlinePlayerConfig.playerStats);
         }
 
         if (_attack != null)
         {
-            Debug.Log("Is pc.playerstats null " + pc.playerStats.startGun == null);
             _attack = GetComponent<WeaponSystem>();
             _attack.SetGunStatus(_OnlinePlayerConfig.playerStats.startGun);
         }
 
         if (_customize != null)
         {
-            Debug.Log("Is pc.playerstats null " + pc.playerCustom == null);
             _customize = GetComponent<CustomizePlayerInGame>();
             _customize.SetSkin(_OnlinePlayerConfig.playerCustom);
         }

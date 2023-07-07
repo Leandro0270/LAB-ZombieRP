@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Photon.Pun;
 
-public class VendingMachineHorderGenerator : MonoBehaviour
+public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
 {
     
     private int playersCount = 0;
@@ -15,10 +16,22 @@ public class VendingMachineHorderGenerator : MonoBehaviour
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager mainGameManager;
     private List<GameObject> spawnedVendingMachines = new List<GameObject>();
+    private bool isOnline = false;
+    private bool isMasterClient = false;
 
     public void addPlayer(GameObject player)
     {
         playersCount++;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+    
+    public void setIsMasterClient(bool isMasterClient)
+    {
+        this.isMasterClient = isMasterClient;
     }
     
     public void removePlayer(GameObject player)
@@ -73,8 +86,8 @@ public class VendingMachineHorderGenerator : MonoBehaviour
     {
         foreach (var vendingMachine in spawnedVendingMachines)
         {
-            if(vendingMachine != null)
-                vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown);
+                if (vendingMachine != null)
+                    vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown);
         }
     }
     
