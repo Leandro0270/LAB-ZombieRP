@@ -15,6 +15,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     private NavMeshAgent navMeshAgent;
     private Rigidbody rb;
 
+    [SerializeField] private ZombieAnimationController animationController;
     [SerializeField] private GameObject Effect;
     [SerializeField] private float damage = 10f;
     [SerializeField] private GameObject CoffeProjectile;
@@ -113,6 +114,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
                         if (Vector3.Distance(transform.position, alvo.transform.position) > distanciaFuga)
                         {
                             enemyFollow.setIsStoped(true);
+                            animationController.setAttack();
                             enemyFollow.setFollowPlayers(false);
                             if (canSpecialAttack && !zumbi.isDeadEnemy())
                             {
