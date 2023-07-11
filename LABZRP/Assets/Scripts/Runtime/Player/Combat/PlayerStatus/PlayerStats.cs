@@ -2,11 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.Rendering.Universal;
 using Random = UnityEngine.Random;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviourPun, IPunObservable
 {
     
     //VISUAL
@@ -43,6 +44,7 @@ public class PlayerStats : MonoBehaviour
     private int _maxThrowableItens;
     private int _maxAuxiliaryItens;
     private int _maxGunItens;
+    private bool _isWalking;
     private bool _burnTickDamage = true;
     private float _burnTickTime = 0;
     private float _timeBurning = 0;
@@ -157,6 +159,32 @@ public class PlayerStats : MonoBehaviour
 
 //======================================================================================================
 //Main functions
+
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(life);
+            stream.SendNext(_isDead);
+            stream.SendNext(_isDown);
+            stream.SendNext(_isIncapatitated);
+            stream.SendNext(_downLife);
+            stream.SendNext(_interacting);
+            stream.SendNext(_isWalking);
+            
+        }
+        else
+        {
+            life = (float)stream.ReceiveNext();
+            _isDead = (bool)stream.ReceiveNext();
+            _isDown = (bool)stream.ReceiveNext();
+            _isIncapatitated = (bool)stream.ReceiveNext();
+            _downLife = (float)stream.ReceiveNext();
+            _interacting = (bool)stream.ReceiveNext();
+            _isWalking = (bool)stream.ReceiveNext();
+        }
+    }
     public void takeDamage(float damage)
     {
         if (!_isDown && !_isDead)
@@ -293,6 +321,11 @@ public class PlayerStats : MonoBehaviour
     //================================================================================================
     //Getters and Setters
     
+    public void setIsWalking(bool isWalking)
+    {
+        _playerAnimationManager.setMovement(isWalking);
+        _isWalking = isWalking;
+    }
     public ThrowablePlayerStats getThrowablePlayerStats()
     {
         return _throwablePlayerStats;

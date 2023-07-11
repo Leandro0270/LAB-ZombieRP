@@ -8,10 +8,12 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
 {
     
     [SerializeField] PlayerInput _OnlinePlayerInput;
+    [SerializeField] PhotonView _photonView;
     private PlayerController _controls;
     private PauseMenu _pause;
     private OnlinePlayerConfiguration _OnlinePlayerConfig;
     private PlayerConfiguration _playerConfig;
+    
     [SerializeField] private PlayerMovement _move;
     [SerializeField] private PlayerRotation _rotate;
     [SerializeField] private WeaponSystem _attack;
@@ -33,6 +35,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         _throwableStats = GetComponent<ThrowablePlayerStats>();
     }
 
+    
     private void Start()
     {
         _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
@@ -51,10 +54,15 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     public void InitializeOnlinePlayer(OnlinePlayerConfiguration pc)
     {
         _OnlinePlayerConfig = pc;
-        if(_OnlinePlayerConfig.player == PhotonNetwork.LocalPlayer)
+        if (_photonView.IsMine)
+        {
             _OnlinePlayerInput.onActionTriggered += Input_onActionTriggered;
+        }
         else
+        {
             _rotate.setIsOnlinePlayer(true);
+        }
+
         if (_status != null)
         {
             _status = GetComponent<PlayerStats>();

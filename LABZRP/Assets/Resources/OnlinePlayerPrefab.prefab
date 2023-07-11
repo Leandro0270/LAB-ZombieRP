@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: -294461941703932716}
   - component: {fileID: 554684332481843621}
   - component: {fileID: 1879370835576843484}
+  - component: {fileID: -8201662427984948167}
   m_Layer: 0
   m_Name: OnlinePlayerPrefab
   m_TagString: Player
@@ -279,6 +280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _OnlinePlayerInput: {fileID: 1879370835576843484}
+  _photonView: {fileID: -294461941703932716}
   _move: {fileID: 4110660743282712486}
   _rotate: {fileID: 4110660743282712481}
   _attack: {fileID: 4110660743282712484}
@@ -468,6 +470,22 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &-8201662427984948167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4110660743282712483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters: []
+  m_SynchronizeLayers: []
 --- !u!1 &4110660743618978061
 GameObject:
   m_ObjectHideFlags: 0

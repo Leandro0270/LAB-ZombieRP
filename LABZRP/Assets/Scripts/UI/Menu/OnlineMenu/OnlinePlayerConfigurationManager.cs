@@ -48,7 +48,7 @@ using UnityEngine.SocialPlatforms;
         playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
         isMasterClient = PhotonNetwork.IsMasterClient;
         roomCode = PhotonNetwork.CurrentRoom.Name;
-        roomCodeText.text = roomCode;
+        roomCodeText.text = "Código da sala: " + roomCode;
         clientPlayerName = PhotonNetwork.LocalPlayer.NickName;
         clientPlayerIndex = PhotonNetwork.LocalPlayer.ActorNumber;
         if (!isMasterClient)

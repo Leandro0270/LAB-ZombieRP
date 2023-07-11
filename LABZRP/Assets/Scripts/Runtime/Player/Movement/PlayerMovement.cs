@@ -45,11 +45,11 @@ public class PlayerMovement : MonoBehaviour
         if (_canMove && auxVector3 != Vector3.zero)
         {
             _controller.Move(auxVector3);
-            _animationManager.setMovement(true);
+            _status.setIsWalking(true);
         }
         else
         {
-            _animationManager.setMovement(false);
+            _status.setIsWalking(false);
         }
 
     }

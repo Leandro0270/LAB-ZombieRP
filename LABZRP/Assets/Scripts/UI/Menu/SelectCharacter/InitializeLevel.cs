@@ -70,13 +70,14 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void instantiatePlayer(int playerIndex)
+    public void instantiatePlayer()
     {
-        Debug.Log("Chamou para o player" + playerIndex);
-        GameObject player = PhotonNetwork.InstantiateSceneObject("OnlinePlayerPrefab", playerSpawns[playerIndex].position,
-            playerSpawns[playerIndex].rotation);
+        int playerindex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
+        Debug.Log("Chamou para o player" + (playerindex));
+        GameObject player = PhotonNetwork.Instantiate("OnlinePlayerPrefab", playerSpawns[playerindex].position,
+            playerSpawns[playerindex].rotation);
         photonViewID = player.GetComponent<PhotonView>().ViewID;
-        photonView.RPC("setConfigsToplayer", RpcTarget.All, playerIndex, photonViewID);
+        photonView.RPC("setConfigsToplayer", RpcTarget.All, playerindex, photonViewID);
     }
 
     [PunRPC]
@@ -85,8 +86,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         playersReady++;
         if (playersReady == pc.Count)
         {
-            for(int i = 0; i < pc.Count; i++)
-                instantiatePlayer(i);
+            photonView.RPC("instantiatePlayer", RpcTarget.All);
         }
     }
     
