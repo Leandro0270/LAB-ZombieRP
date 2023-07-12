@@ -51,6 +51,9 @@ MonoBehaviour:
   - setTotalLifeRPC
   - setLifeRPC
   - SetScObPlayerStats
+  - reloadSliderOnline
+  - setOnlineAttackSpecs
+  - updateBulletsUi
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

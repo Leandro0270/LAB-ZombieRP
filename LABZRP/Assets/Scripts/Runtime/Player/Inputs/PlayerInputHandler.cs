@@ -66,12 +66,14 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         if (_status != null)
         {
             _status = GetComponent<PlayerStats>();
+            _status.setIsOnline(true);
             _status.setPlayerStats(_OnlinePlayerConfig.playerStats);
         }
 
         if (_attack != null)
         {
             _attack = GetComponent<WeaponSystem>();
+            _attack.setIsOnline(true);
             _attack.SetGunStatus(_OnlinePlayerConfig.playerStats.startGun);
         }
 

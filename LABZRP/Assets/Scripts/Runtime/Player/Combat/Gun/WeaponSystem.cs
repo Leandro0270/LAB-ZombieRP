@@ -1,4 +1,5 @@
 using System.Collections;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -6,8 +7,10 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
-public class WeaponSystem : MonoBehaviour
+public class WeaponSystem : MonoBehaviourPunCallbacks
 {
+        
+        
         private ScObGunSpecs _specsArma;
         private PlayerStats _playerStats;
         private PlayerPoints _playerPoints;
@@ -39,6 +42,7 @@ public class WeaponSystem : MonoBehaviour
         public BulletScript MeleeHitBox;
         public BulletScript _bala;
         public GameObject armaSpawn;
+        [SerializeField] private PhotonView _photonView;
 
         //Grafico
         private PlayerAnimationManager _playerAnimationManager;
@@ -57,6 +61,8 @@ public class WeaponSystem : MonoBehaviour
         private bool _isKillWithAimChallengeActive;
         private bool _isInArea;
         private bool _missedShot;
+        //Other settings
+        private bool _isOnline = false;
         
 //======================================================================================================
 //Unity base functions
@@ -102,6 +108,8 @@ public class WeaponSystem : MonoBehaviour
 
 //======================================================================================================
 //Main Functions
+
+
         private void melee()
         {
                 if (_danoMelee == 0)
@@ -109,15 +117,50 @@ public class WeaponSystem : MonoBehaviour
                         _danoMelee = _playerStats.getMeleeDamage();
                 } 
                 _meleePronto = false;
-                BulletScript hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
-                hitboxMelee.SetDamage(_danoMelee);
-                hitboxMelee.setMelee(true);
-                hitboxMelee.setShooter(this);
+                BulletScript hitboxMelee;
+                if (_isOnline)
+                {
+                        GameObject meleeHitBox = PhotonNetwork.Instantiate("meleeHitBox", canoDaArma.position, canoDaArma.rotation);
+                        int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
+                        int bulletPhotonViewId = meleeHitBox.GetComponent<PhotonView>().ViewID;
+                        photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, false,_danoMelee, _distancia,1,true,true,10, photonviewid,false, bulletPhotonViewId);
+
+                }
+                else
+                {
+                        hitboxMelee = Instantiate(MeleeHitBox, canoDaArma.position, canoDaArma.rotation);
+                        hitboxMelee.SetDamage(_danoMelee);
+                        hitboxMelee.setMelee(true);
+                        hitboxMelee.setShooter(this);
+                }
+                
                 _playerAnimationManager.setAttack();
                 Invoke("ResetarMelee", _tempoEntreMelee);
 
         }
-
+        
+        
+        [PunRPC]
+        public void setOnlineAttackSpecs(bool isCritical, float MeleeDamage,float distancia,int hitableEnemies, bool isMelee,bool haveKnockBack,float knockbackForce, int photonviewid,bool isAiming, int bulletPhotonViewId)
+        {
+                GameObject bullet = PhotonView.Find(bulletPhotonViewId).gameObject;
+                GameObject player = PhotonView.Find(photonviewid).gameObject;
+                BulletScript bulletScript = bullet.GetComponent<BulletScript>();
+                bulletScript.setIsOnline(true);
+                bulletScript.setIsCritical(isCritical);
+                bulletScript.SetDamage(MeleeDamage);
+                bulletScript.setMelee(isMelee);
+                bulletScript.setShooter(player.GetComponent<WeaponSystem>());
+                bulletScript.setHaveKnockback(haveKnockBack);
+                if(haveKnockBack)
+                        bulletScript.setKnockbackForce(knockbackForce);
+                bulletScript.setIsAiming(isAiming);
+                bulletScript.setDistancia(distancia);
+                bulletScript.setHitableEnemies(hitableEnemies);
+                
+                player.GetComponent<WeaponSystem>()._danoMelee = MeleeDamage;
+                player.GetComponent<WeaponSystem>()._haveKnockback = isMelee;
+        }
         private void Atirar()
         {
                 float currentDamage = _dano;
@@ -147,19 +190,37 @@ public class WeaponSystem : MonoBehaviour
                         Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
 
                         //Spawn da bala
-                        BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
-                        bala.SetDamage(currentDamage);
-                        bala.setShooter(this);
-                        bala.setIsAiming(_mirando);
-                        bala.setDistancia(_distancia);
-                        bala.setIsKnockback(_haveKnockback);
-                        bala.setKnockbackForce(_ForcaKnockback);
-                        bala.setVelocidadeBalas(_velocidadeBala);
-                        bala.setHitableEnemies(_hitableEnemies);
-                        bala.setIsCritical(isCritical);
+                        if (_isOnline)
+                        {
+                                GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, canoDaArma.rotation);
+                                int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
+                                int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
+                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, isCritical,_dano, _distancia,_hitableEnemies,false,_haveKnockback,_ForcaKnockback,photonviewid, _mirando, bulletPhotonViewId);
+                        }
+                        else
+                        {
+
+
+                                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position,
+                                        dispersaoCalculada);
+                                bala.SetDamage(currentDamage);
+                                bala.setShooter(this);
+                                bala.setIsAiming(_mirando);
+                                bala.setDistancia(_distancia);
+                                bala.setIsKnockback(_haveKnockback);
+                                bala.setKnockbackForce(_ForcaKnockback);
+                                bala.setVelocidadeBalas(_velocidadeBala);
+                                bala.setHitableEnemies(_hitableEnemies);
+                                bala.setIsCritical(isCritical);
+                        }
                         _balasRestantes--;
                         _disparosAEfetuar--;
-                        _bulletsUI.setBalasPente(_balasRestantes);
+                        if(!_isOnline)
+                                _bulletsUI.setBalasPente(_balasRestantes);
+                        else
+                        {
+                                _photonView.RPC("updateBulletsUi", RpcTarget.All, _balasRestantes);
+                        }
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                         if (_disparosAEfetuar > 0 && _balasRestantes > 0)
                         {
@@ -175,19 +236,36 @@ public class WeaponSystem : MonoBehaviour
                                 Vector3 auxVector = canoDaArma.rotation.eulerAngles;
                                 Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
                                 //Spawn da bala
-                                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
-                                bala.setDistancia(_distancia);
-                                bala.setVelocidadeBalas(_velocidadeBala);
-                                bala.setIsAiming(_mirando);
-                                bala.SetDamage(currentDamage);
-                                bala.setShooter(this);
-                                bala.setHitableEnemies(_hitableEnemies);
-                                bala.setIsCritical(isCritical);
+
+                                if (_isOnline)
+                                {
+                                        GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, canoDaArma.rotation);
+                                                int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
+                                                int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
+                                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, isCritical,_dano, _distancia,_hitableEnemies,false,_haveKnockback,_ForcaKnockback,photonviewid, _mirando, bulletPhotonViewId);
+                                }
+                                else
+                                {
+                                        BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
+                                        bala.setDistancia(_distancia);
+                                        bala.setVelocidadeBalas(_velocidadeBala);
+                                        bala.setIsAiming(_mirando);
+                                        bala.SetDamage(currentDamage);
+                                        bala.setShooter(this);
+                                        bala.setHitableEnemies(_hitableEnemies);
+                                        bala.setIsCritical(isCritical);
+                                }
+                                
 
 
                         }
                         _balasRestantes -= _balasPorDisparo;
-                        _bulletsUI.setBalasPente(_balasRestantes);
+                        if(!_isOnline)
+                                _bulletsUI.setBalasPente(_balasRestantes);
+                        else
+                        {
+                                _photonView.RPC("updateBulletsUi", RpcTarget.All, _balasRestantes);
+                        }
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                 }
         }
@@ -196,12 +274,23 @@ public class WeaponSystem : MonoBehaviour
         {
                 if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando)
                 {
-                        _reloadSliderInstance = Instantiate(reloadSlider, transform.position, Quaternion.identity);
-                        _reloadSliderInstance.transform.SetParent(GameObject.Find("Canva").transform);
-                        _reloadSliderInstance.maxValue = _tempoRecarga;
-                        _prontoParaAtirar = false;
-                        _recarregando = true;
-                        Invoke("ReloadTerminado", _tempoRecarga);
+                        if (_isOnline)
+                        {
+                                PhotonNetwork.Instantiate("reloadSlider", transform.position, Quaternion.identity);
+                                int reloadSliderPhotonId = _reloadSliderInstance.GetComponent<PhotonView>().ViewID;
+                                photonView.RPC("reloadSliderOnline", RpcTarget.All, reloadSliderPhotonId, _tempoRecarga);
+
+                        }
+                        else
+                        {
+                                _reloadSliderInstance =
+                                        Instantiate(reloadSlider, transform.position, Quaternion.identity);
+                                _reloadSliderInstance.transform.SetParent(GameObject.Find("Canva").transform);
+                                _reloadSliderInstance.maxValue = _tempoRecarga;
+                                _prontoParaAtirar = false;
+                                _recarregando = true;
+                                Invoke("ReloadTerminado", _tempoRecarga);
+                        }
                 }
         }
         
@@ -216,6 +305,17 @@ public class WeaponSystem : MonoBehaviour
 
 //======================================================================================================
 //Aux Functions
+        [PunRPC]
+        public void reloadSliderOnline()
+        {
+                
+        }
+
+        [PunRPC]
+        public void updateBulletsUi()
+        {
+                _bulletsUI.setBalasPente(_balasRestantes);
+        }
         private void ReloadTerminado()
         {
                 _throwablePlayerStats.setCanceledThrow(false);
@@ -397,7 +497,12 @@ public class WeaponSystem : MonoBehaviour
         }
         //================================================================================================
         //Getters and setters
-
+        
+        
+        public void setIsOnline(bool isOnline)
+        {
+                _isOnline = isOnline;
+        }
         public void addKilledNormalZombie()
         {
                 _playerPoints.addPointsNormalZombieKilled();

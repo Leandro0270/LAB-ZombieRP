@@ -76,6 +76,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     //======================================================================================================
     //Other components
     private CharacterController _characterController;
+    private bool _isOnline = false;
 
 
 
@@ -320,7 +321,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     
     //================================================================================================
     //Getters and Setters
-    
+    public void setIsOnline(bool isOnline)
+    {
+        _isOnline = isOnline;
+    }
     public void setIsWalking(bool isWalking)
     {
         _playerAnimationManager.setMovement(isWalking);

@@ -23,6 +23,7 @@ public class BulletScript : MonoBehaviour
     private bool isCritical = false;
     private bool _isAiming = false;
     private bool hitted = false;
+    private bool _isOnline = false;
     
 
     private void Start()
@@ -189,6 +190,14 @@ public class BulletScript : MonoBehaviour
     public void setMelee(bool melee)
     {
         isMelee = melee;
+    }
+    public void setHaveKnockback(bool knockback)
+    {
+        haveKnockback = knockback;
+    }
+    public void setIsOnline(bool online)
+    {
+        _isOnline = online;
     }
     public void setIsAiming(bool aiming)
     {

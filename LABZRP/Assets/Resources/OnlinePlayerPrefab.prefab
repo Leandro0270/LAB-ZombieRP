@@ -482,6 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Animator: {fileID: 972973158037288966}
   ShowLayerWeightsInspector: 1
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
@@ -917,6 +918,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3857840240969519102}
   m_SourcePrefab: {fileID: 100100000, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+--- !u!95 &972973158037288966 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+  m_PrefabInstance: {fileID: 6695203684995679639}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1751075680383047673 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4276389627041721746, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

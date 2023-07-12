@@ -78,7 +78,7 @@ namespace Photon.Pun
 
         private bool TriggerUsageWarningDone;
         
-        private Animator m_Animator;
+        [SerializeField] private Animator m_Animator;
 
         private PhotonStreamQueue m_StreamQueue = new PhotonStreamQueue(120);
 
@@ -118,11 +118,7 @@ namespace Photon.Pun
 
 
         #region Unity
-
-        private void Awake()
-        {
-            this.m_Animator = GetComponent<Animator>();
-        }
+        
 
         private void Update()
         {
