@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 
-public class WeaponSystem : MonoBehaviourPunCallbacks
+public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 {
         
         
@@ -19,7 +19,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
 
         //Status das armas
         private float _danoMelee;
-        private int _dano;
+        private float _dano;
         private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback, _criticalChanceIncrementalPerBullet, _criticalDamagePercentage, _criticalBaseChancePercentage, _currentCriticalChance;
         private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
         private int _hitableEnemies;
@@ -104,6 +104,23 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                         _reloadSliderInstance.transform.position = Camera.main.WorldToScreenPoint(transform.position + new Vector3(0, 6, 0));
                 }
 
+                if (_isOnline && !photonView.IsMine)
+                {
+                        if (!_meleePronto)
+                        {
+                                _playerAnimationManager.setAttack();
+                        }
+                        if (_mirando)
+                        {
+                                miraLaser.SetActive(true);
+                        }
+                        else
+                        {
+                                miraLaser.SetActive(false);
+                        }
+                        
+                }
+
         }
 
 //======================================================================================================
@@ -123,7 +140,17 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                         GameObject meleeHitBox = PhotonNetwork.Instantiate("meleeHitBox", canoDaArma.position, canoDaArma.rotation);
                         int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
                         int bulletPhotonViewId = meleeHitBox.GetComponent<PhotonView>().ViewID;
-                        photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, false,_danoMelee, _distancia,1,true,true,10, photonviewid,false, bulletPhotonViewId);
+                        photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
+                                false,
+                                _danoMelee,
+                                _distancia,
+                                1,
+                                true,
+                                true,
+                                10,
+                                photonviewid,
+                                false,
+                                bulletPhotonViewId);
 
                 }
                 else
@@ -141,14 +168,24 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
         
         
         [PunRPC]
-        public void setOnlineAttackSpecs(bool isCritical, float MeleeDamage,float distancia,int hitableEnemies, bool isMelee,bool haveKnockBack,float knockbackForce, int photonviewid,bool isAiming, int bulletPhotonViewId)
+        public void setOnlineAttackSpecs(
+                bool isCritical
+                ,float damage
+                ,float distancia
+                ,int hitableEnemies
+                ,bool isMelee
+                ,bool haveKnockBack
+                ,float knockbackForce
+                ,int photonviewid
+                ,bool isAiming
+                ,int bulletPhotonViewId)
         {
                 GameObject bullet = PhotonView.Find(bulletPhotonViewId).gameObject;
                 GameObject player = PhotonView.Find(photonviewid).gameObject;
                 BulletScript bulletScript = bullet.GetComponent<BulletScript>();
                 bulletScript.setIsOnline(true);
                 bulletScript.setIsCritical(isCritical);
-                bulletScript.SetDamage(MeleeDamage);
+                bulletScript.SetDamage(damage);
                 bulletScript.setMelee(isMelee);
                 bulletScript.setShooter(player.GetComponent<WeaponSystem>());
                 bulletScript.setHaveKnockback(haveKnockBack);
@@ -158,7 +195,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                 bulletScript.setDistancia(distancia);
                 bulletScript.setHitableEnemies(hitableEnemies);
                 
-                player.GetComponent<WeaponSystem>()._danoMelee = MeleeDamage;
+                player.GetComponent<WeaponSystem>()._danoMelee = damage;
                 player.GetComponent<WeaponSystem>()._haveKnockback = isMelee;
         }
         private void Atirar()
@@ -195,7 +232,17 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                                 GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, canoDaArma.rotation);
                                 int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
                                 int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
-                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, isCritical,_dano, _distancia,_hitableEnemies,false,_haveKnockback,_ForcaKnockback,photonviewid, _mirando, bulletPhotonViewId);
+                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
+                                        isCritical
+                                        ,_dano
+                                        ,_distancia
+                                        ,_hitableEnemies
+                                        ,false
+                                        ,_haveKnockback
+                                        ,_ForcaKnockback
+                                        ,photonviewid
+                                        ,_mirando
+                                        ,bulletPhotonViewId);
                         }
                         else
                         {
@@ -219,7 +266,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                                 _bulletsUI.setBalasPente(_balasRestantes);
                         else
                         {
-                                _photonView.RPC("updateBulletsUi", RpcTarget.All, _balasRestantes);
+                                _photonView.RPC("updateBulletsUi", RpcTarget.All);
                         }
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                         if (_disparosAEfetuar > 0 && _balasRestantes > 0)
@@ -239,10 +286,20 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
 
                                 if (_isOnline)
                                 {
-                                        GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, canoDaArma.rotation);
+                                        GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
                                                 int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
                                                 int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
-                                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, isCritical,_dano, _distancia,_hitableEnemies,false,_haveKnockback,_ForcaKnockback,photonviewid, _mirando, bulletPhotonViewId);
+                                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
+                                                        isCritical
+                                                        ,_dano
+                                                        ,_distancia
+                                                        ,_hitableEnemies
+                                                        ,false
+                                                        ,_haveKnockback
+                                                        ,_ForcaKnockback
+                                                        ,photonviewid
+                                                        ,_mirando
+                                                        ,bulletPhotonViewId);
                                 }
                                 else
                                 {
@@ -264,7 +321,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                                 _bulletsUI.setBalasPente(_balasRestantes);
                         else
                         {
-                                _photonView.RPC("updateBulletsUi", RpcTarget.All, _balasRestantes);
+                                _photonView.RPC("updateBulletsUi", RpcTarget.All);
                         }
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                 }
@@ -276,8 +333,9 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
                 {
                         if (_isOnline)
                         {
-                                PhotonNetwork.Instantiate("reloadSlider", transform.position, Quaternion.identity);
-                                int reloadSliderPhotonId = _reloadSliderInstance.GetComponent<PhotonView>().ViewID;
+                                GameObject slide = PhotonNetwork.Instantiate("reloadSlider", transform.position, Quaternion.identity);
+                                _reloadSliderInstance = slide.GetComponent<Slider>();
+                                int reloadSliderPhotonId = slide.GetComponent<PhotonView>().ViewID;
                                 photonView.RPC("reloadSliderOnline", RpcTarget.All, reloadSliderPhotonId, _tempoRecarga);
 
                         }
@@ -305,10 +363,35 @@ public class WeaponSystem : MonoBehaviourPunCallbacks
 
 //======================================================================================================
 //Aux Functions
-        [PunRPC]
-        public void reloadSliderOnline()
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-                
+                if (stream.IsWriting)
+                {
+                        stream.SendNext(_balasRestantes);
+                        stream.SendNext(_totalBalas);
+                        stream.SendNext(_mirando);
+
+                }
+                else
+                {
+                       _balasRestantes = (int)stream.ReceiveNext();
+                        _totalBalas = (int)stream.ReceiveNext();
+                        _mirando = (bool)stream.ReceiveNext();
+                        
+                }
+        }
+        [PunRPC]
+        public void reloadSliderOnline(int sliderPhotonId, float reloadTime)
+        {
+                GameObject reloadSlider = PhotonView.Find(sliderPhotonId).gameObject;
+                reloadSlider.transform.SetParent(GameObject.Find("Canva").transform);
+                _reloadSliderInstance = reloadSlider.GetComponent<Slider>();
+                _reloadSliderInstance.maxValue = reloadTime;
+                _prontoParaAtirar = false;
+                _recarregando = true;
+                Invoke("ReloadTerminado", reloadTime);
+        
         }
 
         [PunRPC]

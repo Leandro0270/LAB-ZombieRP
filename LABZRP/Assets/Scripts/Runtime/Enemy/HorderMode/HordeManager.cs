@@ -105,8 +105,16 @@ public class HordeManager : MonoBehaviourPunCallbacks
         {
             timeBetweenHordesUI -= Time.deltaTime;
             //Vai printar o tempo que falta para a proxima horder formatado com no máximo 2 casas decimais
-            HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
+            if (isOnline)
+            {
+                string text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
+                photonView.RPC("setHordeText", RpcTarget.All, text);
 
+            }
+            else
+            {
+                HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
+            }
         }
 }
 
@@ -116,7 +124,19 @@ public class HordeManager : MonoBehaviourPunCallbacks
             GameManager.removeEnemy(zombie);
             zombiesAlive--;
             killedZombiesInHorde++;
-            HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
+            if (isOnline)
+            {
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    string text = "Horder: " + (currentHorde + 1) + " | Zombies: " +
+                                  (currentHordeZombies - killedZombiesInHorde);
+                    photonView.RPC("setHordeText", RpcTarget.All, text);
+                }
+            }
+            else
+            {
+                HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
+            }
             if (zombiesAlive == 0)
             {
                 currentHorde++;
@@ -199,7 +219,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
                 photonView.RPC("setHordeText", RpcTarget.All, text);
                 if (isBossZombieAlive)
                 {
-                    GameObject zombieBoss = PhotonNetwork.InstantiateSceneObject("FinalBoss", visibleSpawnPoints[0].transform.position,
+                    GameObject zombieBoss = PhotonNetwork.Instantiate("FinalBoss", visibleSpawnPoints[0].transform.position,
                         visibleSpawnPoints[0].transform.rotation);
                     int viewID = zombieBoss.GetComponent<PhotonView>().ViewID;
                     GameManager.addEnemyOnOnline(viewID);
@@ -232,7 +252,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     }
                     else
                     {
-                        zombie = PhotonNetwork.InstantiateSceneObject("NormalZombiePrefab", visibleSpawnPoints[spawnPointIndex].transform.position,
+                        zombie = PhotonNetwork.Instantiate("NormalZombiePrefab", visibleSpawnPoints[spawnPointIndex].transform.position,
                             visibleSpawnPoints[spawnPointIndex].transform.rotation);
                         zombie.GetComponent<EnemyStatus>().setIsOnlineRPC(true);
                         if (haveBaseZombieLifeIncrement)

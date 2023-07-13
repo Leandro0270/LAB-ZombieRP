@@ -55,9 +55,12 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
     {
         photonView.RPC("setIsOnline", RpcTarget.All, isOnline);
     }
+    
+    [PunRPC]
     public void setIsOnline(bool isOnline)
     {
         this.isOnline = isOnline;
+        _enemyFollow.setIsOnline(isOnline);
     }
     
     [PunRPC]
@@ -93,6 +96,9 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
 
     private void Update()
     {
+        if(isOnline && !PhotonNetwork.IsMasterClient)
+            return;
+        
         if (isBurning)
         {
             if (burnTickDamage && !isDead)
@@ -150,7 +156,10 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
             GetComponent<BoxCollider>().enabled = true;
             isDead = true;
             GetComponent<EnemyFollow>().setIsAlive(false);
-            hordeManager.decrementZombiesAlive(gameObject);
+            if (PhotonNetwork.IsMasterClient || !isOnline)
+            {
+                hordeManager.decrementZombiesAlive(gameObject);
+            }
             GameObject randomExplosive = explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
             var position = transform.position;
             Instantiate(randomExplosive, position, Quaternion.identity);
@@ -171,8 +180,11 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
             _animator.setTarget(false);
             _animator.triggerDown();
             GetComponent<EnemyFollow>().setIsAlive(false);
-            hordeManager.decrementZombiesAlive(gameObject);
-            StartCoroutine(waiterToDestroy());
+            if (PhotonNetwork.IsMasterClient || !isOnline)
+            {
+                hordeManager.decrementZombiesAlive(gameObject);
+                StartCoroutine(waiterToDestroy());
+            }
         }
 
     }
@@ -210,7 +222,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
     IEnumerator waiterToDestroy()
     {
         yield return new WaitForSeconds(3);
-        Destroy(gameObject);
+        photonView.RPC("destoryForAllOnlinePlayers", RpcTarget.All);
     }
 
     public void ReceiveTemporarySlow(float time, float speed)
@@ -225,9 +237,13 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
             StartCoroutine(resetTemporarySpeed(time, baseSpeed));
         }
     }
-    
-    
 
+
+    [PunRPC]
+    public void destoryForAllOnlinePlayers()
+    {
+        Destroy(gameObject);
+    }
     public bool getIsSpecial()
     {
         return isSpecial;
@@ -253,6 +269,26 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
         return _enemyFollow;
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(isDead);
+            stream.SendNext(_life);
+            stream.SendNext(_speed);
+            stream.SendNext(_damage);
+  
+            
+        }
+        else
+        {
+            isDead = (bool)stream.ReceiveNext();
+            _life = (float)stream.ReceiveNext();
+            _speed = (float)stream.ReceiveNext();
+            _damage = (float)stream.ReceiveNext();
+     
+        }
+    }
 
     public void ReceiveTemporaryDamage(float time, float damage)
     {

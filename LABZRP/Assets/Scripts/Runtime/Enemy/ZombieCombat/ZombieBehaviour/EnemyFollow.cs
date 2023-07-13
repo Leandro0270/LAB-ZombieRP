@@ -1,13 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyFollow : MonoBehaviour
+public class EnemyFollow : MonoBehaviourPunCallbacks
 {
     public NavMeshAgent enemy;
-    
+    private bool isOnline = false;
     private GameObject[] players;
     private GameObject[] CoffeMachines;
     private GameObject target;
@@ -26,8 +27,8 @@ public class EnemyFollow : MonoBehaviour
         players = GameObject.FindGameObjectsWithTag("Player");
         if (isCoffeMachineEvent)
         {
-            
-
+            CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
+            target = GetTarget(CoffeMachines);
 
         }
         else
@@ -44,6 +45,7 @@ public class EnemyFollow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (followPlayers)
         {
 
@@ -69,14 +71,14 @@ public class EnemyFollow : MonoBehaviour
                         target = GetTarget(aux);
                     }
 
-                    if (canWalk)
-                    {
-                        enemy.isStopped = false;
-                        enemy.SetDestination(target.transform.position);
-                    }
-                    else
-                    {
-                        enemy.isStopped = true;
+                    if(!isOnline || PhotonNetwork.IsMasterClient){
+                        if (canWalk)
+                        {
+                            enemy.isStopped = false;
+                            enemy.SetDestination(target.transform.position);
+                        }
+                        else
+                            enemy.isStopped = true;
                     }
 
                     float distance = Vector3.Distance(target.transform.position, transform.position);
@@ -162,6 +164,11 @@ public class EnemyFollow : MonoBehaviour
     public void setCanWalk(bool canWalk)
     {
         this.canWalk = canWalk;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
     }
 
     private void resetCanWalk()

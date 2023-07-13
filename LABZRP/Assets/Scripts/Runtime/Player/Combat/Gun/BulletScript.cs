@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
-public class BulletScript : MonoBehaviour
+public class BulletScript : MonoBehaviourPunCallbacks
 {
     [SerializeField] private bool haveKnockback = false;
     [SerializeField] private float knockbackForce = 10f;
@@ -28,6 +29,7 @@ public class BulletScript : MonoBehaviour
 
     private void Start()
     {
+        
         _rb = GetComponent<Rigidbody>();
         StartCoroutine(waiter());
         

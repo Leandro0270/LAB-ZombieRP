@@ -25,7 +25,7 @@ MonoBehaviour:
   isShotgun: 0
   isSniper: 0
   range: 100
-  speedBullet: 80
+  speedBullet: 1000
   haveKnockback: 0
   knockbackForce: 0
   hitableEnemies: 1

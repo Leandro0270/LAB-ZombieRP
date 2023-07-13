@@ -156,6 +156,14 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
                 _isBurning = false;
             }
         }
+
+        if (_isOnline && !photonView.IsMine)
+        {
+            if(_isWalking)
+                _playerAnimationManager.setMovement(true);
+            else
+                _playerAnimationManager.setMovement(false);
+        }
     }
 
 //======================================================================================================
@@ -327,8 +335,9 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     }
     public void setIsWalking(bool isWalking)
     {
-        _playerAnimationManager.setMovement(isWalking);
         _isWalking = isWalking;
+        _playerAnimationManager.setMovement(_isWalking);
+        
     }
     public ThrowablePlayerStats getThrowablePlayerStats()
     {

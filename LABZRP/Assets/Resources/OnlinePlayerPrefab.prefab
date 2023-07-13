@@ -171,7 +171,6 @@ GameObject:
   - component: {fileID: -294461941703932716}
   - component: {fileID: 554684332481843621}
   - component: {fileID: 1879370835576843484}
-  - component: {fileID: -8201662427984948167}
   m_Layer: 0
   m_Name: OnlinePlayerPrefab
   m_TagString: Player
@@ -216,6 +215,7 @@ MonoBehaviour:
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   armaSpawn: {fileID: 4110660743618978061}
+  _photonView: {fileID: -294461941703932716}
   reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
@@ -421,6 +421,8 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 554684332481843621}
+  - {fileID: 4110660743282712487}
+  - {fileID: 4110660743282712484}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -470,23 +472,6 @@ MonoBehaviour:
   m_DefaultActionMap: Gameplay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &-8201662427984948167
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4110660743282712483}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Animator: {fileID: 972973158037288966}
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters: []
-  m_SynchronizeLayers: []
 --- !u!1 &4110660743618978061
 GameObject:
   m_ObjectHideFlags: 0
@@ -918,11 +903,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3857840240969519102}
   m_SourcePrefab: {fileID: 100100000, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
---- !u!95 &972973158037288966 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
-  m_PrefabInstance: {fileID: 6695203684995679639}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1751075680383047673 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4276389627041721746, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
