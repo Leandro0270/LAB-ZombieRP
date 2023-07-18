@@ -246,20 +246,18 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     if (isSpecialZombie && currentHorde > 3)
                     {
                         int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
-                        zombie = PhotonNetwork.InstantiateSceneObject(enemyPrefabNames[specialZombieIndex], visibleSpawnPoints[0].transform.position,
+                        zombie = PhotonNetwork.Instantiate(enemyPrefabNames[specialZombieIndex], visibleSpawnPoints[0].transform.position,
                             visibleSpawnPoints[0].transform.rotation);
-                        zombie.GetComponent<EnemyStatus>().setIsOnlineRPC(true);
                     }
                     else
                     {
                         zombie = PhotonNetwork.Instantiate("NormalZombiePrefab", visibleSpawnPoints[spawnPointIndex].transform.position,
                             visibleSpawnPoints[spawnPointIndex].transform.rotation);
-                        zombie.GetComponent<EnemyStatus>().setIsOnlineRPC(true);
                         if (haveBaseZombieLifeIncrement)
                         {
                             EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                            ZombieStatus.setTotalLifeOnline(currentZombieLife);
-                            ZombieStatus.setLifeOnline(currentZombieLife);
+                            ZombieStatus.setTotalLife(currentZombieLife);
+                            ZombieStatus.setCurrentLife(currentZombieLife);
                         }
 
                         if (isCoffeeMachineEvent)

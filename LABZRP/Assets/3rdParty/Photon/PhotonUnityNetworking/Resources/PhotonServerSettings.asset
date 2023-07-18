@@ -56,6 +56,28 @@ MonoBehaviour:
   - updateBulletsUi
   - setIsOnline
   - destoryForAllOnlinePlayers
+  - updateText
+  - IncapacitatePlayerRPC
+  - takeDamage
+  - CapacitateOnlinePlayer
+  - disableOnlineCharacterControllerRPC
+  - changeTransformParentRPC
+  - OnlineCharacterControllerRPC
+  - PuxarJogadorRPC
+  - changePlayerBuyerGun
+  - changePlayerBuyerGunOnline
+  - setItemSpecsOnline
+  - setPointsUiRPC
+  - setStartItemRPC
+  - ShowError
+  - setAttackRPC
+  - setDowningRPC
+  - setDownRPC
+  - setMovementRPC
+  - setShooterOnline
+  - disableBulletOnline
+  - MasterClientHandleDamageRPC
+  - AnimationHandlerRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

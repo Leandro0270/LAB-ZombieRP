@@ -383,6 +383,8 @@ MonoBehaviour:
   pointsPerNormalZombie: 10
   pointsMultiplier: 1.5
   isMultiplierActive: 0
+  isOnline: 0
+  photonView: {fileID: 0}
 --- !u!143 &2607379241762753282
 CharacterController:
   m_ObjectHideFlags: 0
@@ -420,9 +422,10 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 554684332481843621}
-  - {fileID: 4110660743282712487}
   - {fileID: 4110660743282712484}
+  - {fileID: 4110660743282712487}
+  - {fileID: 1921763957812739907}
+  - {fileID: 554684332481843621}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -903,6 +906,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3857840240969519102}
   m_SourcePrefab: {fileID: 100100000, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+--- !u!95 &972973158037288966 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+  m_PrefabInstance: {fileID: 6695203684995679639}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1751075680383047673 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4276389627041721746, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
@@ -928,6 +936,60 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
   m_PrefabInstance: {fileID: 6695203684995679639}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3643295637772404191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776796256810629318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 5941111720470294485}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
+--- !u!114 &5941111720470294485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776796256810629318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 972973158037288966}
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 2
+    Name: Walking
+  - Type: 4
+    SynchronizeType: 2
+    Name: isDown
+  - Type: 9
+    SynchronizeType: 2
+    Name: Melee
+  - Type: 9
+    SynchronizeType: 2
+    Name: Downing
+  m_SynchronizeLayers:
+  - SynchronizeType: 2
+    LayerIndex: 0
 --- !u!114 &7704960691108931514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -940,6 +1002,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a77111fbdeb5db4cb835a3aa81319dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 972973158037288966}
+  photonView: {fileID: 3643295637772404191}
+  isOnline: 1
 --- !u!1 &6071763367816855199 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

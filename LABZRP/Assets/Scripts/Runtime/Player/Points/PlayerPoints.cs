@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerPoints : MonoBehaviour
+public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private int pointsPerNormalZombie = 10;
     [SerializeField] private float pointsMultiplier = 1.5f;
@@ -10,6 +11,8 @@ public class PlayerPoints : MonoBehaviour
     private Points_UI pointsUI;
     private int totalPointsInGame = 0;
     private int points = 0;
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private PhotonView photonView;
 
     public void addPointsNormalZombieKilled()
     {
@@ -39,7 +42,24 @@ public class PlayerPoints : MonoBehaviour
 
     public void removePoints(int points)
     {
-        this.points -= points;
+
+        if (isOnline)
+        {
+            if(photonView.IsMine)
+                this.points -= points;
+            photonView.RPC("setPointsUiRPC", RpcTarget.All, points);
+        }
+        else
+        {
+            pointsUI.setPoints(this.points);
+        }
+    }
+
+    [PunRPC]
+    public void setPointsUiRPC(int points)
+    {
+        if(photonView.IsMine)
+            this.points -= points;
         pointsUI.setPoints(this.points);
     }
 
@@ -70,4 +90,17 @@ public class PlayerPoints : MonoBehaviour
         return totalPointsInGame;
     }
 
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(points);
+            stream.SendNext(totalPointsInGame);
+        }
+        else
+        {
+            points = (int)stream.ReceiveNext();
+            totalPointsInGame = (int)stream.ReceiveNext();
+        }
+    }
 }

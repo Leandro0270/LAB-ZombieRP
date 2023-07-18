@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -1064830645140989802}
   - component: {fileID: 2178725125881703349}
   - component: {fileID: -2961481106175652407}
+  - component: {fileID: 2329390222117145449}
   m_Layer: 2
   m_Name: bullet
   m_TagString: Bullet
@@ -140,6 +141,8 @@ MonoBehaviour:
   distancia: 0
   velocidadeBala: 20
   hitableEnemies: 1
+  _isOnline: 1
+  _isBulletOwner: 0
 --- !u!108 &7305771011970772335
 Light:
   m_ObjectHideFlags: 0
@@ -240,7 +243,10 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 2344096171901005769}
+  - {fileID: -2961481106175652407}
+  - {fileID: 2329390222117145449}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -260,6 +266,22 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &2329390222117145449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5061847425937321451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1001 &7693938797611419243
 PrefabInstance:
   m_ObjectHideFlags: 0

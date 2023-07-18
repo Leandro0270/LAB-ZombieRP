@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class EnemyStatus : MonoBehaviourPunCallbacks
+public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
 {
     public ScObEnemyStats _status;
     private HordeManager hordeManager;
@@ -28,7 +28,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
     private float timeBurning = 0;
     private bool _isSpeedSlowed = false;
     
-    private bool isOnline = false;
+    [SerializeField] private bool isOnline = false;
     [SerializeField] PhotonView photonView;
     
     //Special events
@@ -51,38 +51,6 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
     }
 
     // Update is called once per frame
-    public void setIsOnlineRPC(bool isOnline)
-    {
-        photonView.RPC("setIsOnline", RpcTarget.All, isOnline);
-    }
-    
-    [PunRPC]
-    public void setIsOnline(bool isOnline)
-    {
-        this.isOnline = isOnline;
-        _enemyFollow.setIsOnline(isOnline);
-    }
-    
-    [PunRPC]
-    public void setTotalLifeRPC(float totalLife)
-    {
-        this.totalLife = totalLife;
-    }
-    [PunRPC]
-    public void setLifeRPC(float life)
-    {
-        this._life = life;
-    }
-    
-    public void setLifeOnline(float life)
-    {
-        photonView.RPC("setLifeRPC", RpcTarget.All, life);
-    }
-    
-    public void setTotalLifeOnline(float totalLife)
-    {
-        photonView.RPC("setTotalLifeRPC", RpcTarget.All, totalLife);
-    }
     private void Start()
     {
         _enemyFollow.getEnemy().speed = _speed;
@@ -123,36 +91,47 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
         }
     }
 
+    
+    [PunRPC]
+    public void MasterClientHandleDamageRPC(float damage)
+    {
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+        takeDamage(damage);
+    }
     public bool takeDamage(float damage)
     {
-        _life -= damage;
-        if (_specialZombiesAttacks)
-        {
-            _specialZombiesAttacks.setLife(_life);
-        }
-
-        //instancia o objeto blood1 na posição do inimigo
         GameObject NewBloodParticle = Instantiate(blood1, new Vector3(transform.position.x, 57, transform.position.z),
             blood1.transform.rotation);
-        //destroi o objeto blood1 depois de 4 segundos
         Destroy(NewBloodParticle, 8f);
-
-        if (_life <= 0)
+        if (isOnline && !PhotonNetwork.IsMasterClient)
         {
-            killEnemy();
-            return true;
+            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage);
         }
         else
         {
-            return false;
+            _life -= damage;
+            if (_specialZombiesAttacks)
+            {
+                _specialZombiesAttacks.setLife(_life);
+            }
         }
-}
+        
+
+        if (_life <= 0)
+        {
+            if(PhotonNetwork.IsMasterClient || !isOnline)
+                killEnemy();
+            return true;
+        }
+        return false;
+    }
 
     public void killEnemy()
     {
         if (isOnExplosiveEvents)
         {
-            Destroy(GetComponent<CapsuleCollider>());
+            GetComponent<CapsuleCollider>().enabled = false;
             GetComponent<BoxCollider>().enabled = true;
             isDead = true;
             GetComponent<EnemyFollow>().setIsAlive(false);
@@ -165,12 +144,15 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
             Instantiate(randomExplosive, position, Quaternion.identity);
             GameObject effectInstantiate = Instantiate(explosiveDeathEffect, position, Quaternion.identity);
             Destroy(effectInstantiate, 2f);
-            Destroy(gameObject);
+            if(isOnline && PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Destroy(gameObject);
+            else if (!isOnline)
+                Destroy(gameObject);
         }
         else
         {
 
-            Destroy(GetComponent<CapsuleCollider>());
+            GetComponent<CapsuleCollider>().enabled = false;
             GetComponent<BoxCollider>().enabled = true;
             isDead = true;
             GameObject NewBloodParticle = Instantiate(blood2,
@@ -178,7 +160,11 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
                 blood2.transform.rotation);
             Destroy(NewBloodParticle, 8f);
             _animator.setTarget(false);
-            _animator.triggerDown();
+            if (isOnline)
+            {
+                photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
+            }else
+                _animator.triggerDown();
             GetComponent<EnemyFollow>().setIsAlive(false);
             if (PhotonNetwork.IsMasterClient || !isOnline)
             {
@@ -189,7 +175,13 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
 
     }
     
-    
+    [PunRPC]
+    public void AnimationHandlerRPC(string trigger)
+    {
+        if(trigger == "triggerDown"){
+            _animator.triggerDown();
+        }
+    }
     public void setNewDestination(Vector3 destination)
     {
         _enemyFollow.setFollowPlayers(false);
@@ -222,7 +214,10 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
     IEnumerator waiterToDestroy()
     {
         yield return new WaitForSeconds(3);
-        photonView.RPC("destoryForAllOnlinePlayers", RpcTarget.All);
+        if(isOnline && PhotonNetwork.IsMasterClient)
+            PhotonNetwork.Destroy(gameObject);
+        else if(!isOnline)
+            Destroy(gameObject);
     }
 
     public void ReceiveTemporarySlow(float time, float speed)
@@ -237,13 +232,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks
             StartCoroutine(resetTemporarySpeed(time, baseSpeed));
         }
     }
-
-
-    [PunRPC]
-    public void destoryForAllOnlinePlayers()
-    {
-        Destroy(gameObject);
-    }
+    
     public bool getIsSpecial()
     {
         return isSpecial;

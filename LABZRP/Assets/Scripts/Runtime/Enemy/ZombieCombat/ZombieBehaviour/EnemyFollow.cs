@@ -8,7 +8,7 @@ using UnityEngine.AI;
 public class EnemyFollow : MonoBehaviourPunCallbacks
 {
     public NavMeshAgent enemy;
-    private bool isOnline = false;
+    [SerializeField] private bool isOnline = false;
     private GameObject[] players;
     private GameObject[] CoffeMachines;
     private GameObject target;
@@ -19,77 +19,48 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
     private bool canAttack = true;
     private bool isCoffeMachineEvent = false;
     private bool isEvent = false;
+    [SerializeField] private PhotonView photonView;
 
     public ZombieAnimationController animation;
     // Start is called before the first frame update
     void Start()
     {
-        players = GameObject.FindGameObjectsWithTag("Player");
-        if (isCoffeMachineEvent)
+        if (PhotonNetwork.IsMasterClient || !PhotonNetwork.IsConnected)
         {
-            CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
-            target = GetTarget(CoffeMachines);
+            players = GameObject.FindGameObjectsWithTag("Player");
+            if (isCoffeMachineEvent)
+            {
+                CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
+                target = GetTarget(CoffeMachines);
 
-        }
-        else
-        {
-            target = GetTarget(players);
+            }
+            else
+            {
+                target = GetTarget(players);
 
+            }
+
+            if (animation == null)
+                animation = GetComponentInChildren<ZombieAnimationController>();
+            animation.setTarget(true);
         }
-        if (animation == null)
-            animation = GetComponentInChildren<ZombieAnimationController>();
-        animation.setTarget(true);
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if (followPlayers)
+        if (PhotonNetwork.IsMasterClient || !isOnline)
         {
-
-            if (isAlive)
+            if (followPlayers)
             {
-                if (!isEvent)
+
+                if (isAlive)
                 {
-                    PlayerStats _playerstats = target.GetComponent<PlayerStats>();
-                    if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
+                    if (!isEvent)
                     {
-                        //usa uma lista auxiliar sem o player que morreu para definir um novo target
-                        GameObject[] aux = new GameObject[players.Length - 1];
-                        foreach (GameObject player in players)
-                        {
-                            int i = 0;
-                            if (player != target)
-                            {
-                                aux[i] = player;
-                                i++;
-                            }
-                        }
-
-                        target = GetTarget(aux);
-                    }
-
-                    if(!isOnline || PhotonNetwork.IsMasterClient){
-                        if (canWalk)
-                        {
-                            enemy.isStopped = false;
-                            enemy.SetDestination(target.transform.position);
-                        }
-                        else
-                            enemy.isStopped = true;
-                    }
-
-                    float distance = Vector3.Distance(target.transform.position, transform.position);
-                    if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated() && canAttack)
-                    {
-
-                        animation.setAttack();
-                        canWalk = false;
-                        _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
-                        Invoke("resetCanWalk", 1f);
-                        if (_playerstats.verifyDown())
+                        PlayerStats _playerstats = target.GetComponent<PlayerStats>();
+                        if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
                         {
                             //usa uma lista auxiliar sem o player que morreu para definir um novo target
                             GameObject[] aux = new GameObject[players.Length - 1];
@@ -105,43 +76,89 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
 
                             target = GetTarget(aux);
                         }
-                    }
 
-
-
-                }
-                else
-                {
-                    if (isCoffeMachineEvent)
-                    {
-                        CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
-                        target = GetTarget(CoffeMachines);
-                        ChallengeCoffeeMachine _challengeCoffeeMachine = target.GetComponent<ChallengeCoffeeMachine>();
-
-                        if (canWalk)
+                        if (!isOnline || PhotonNetwork.IsMasterClient)
                         {
-                            enemy.isStopped = false;
-                            enemy.SetDestination(target.transform.position);
-                        }
-                        else
-                        {
-                            enemy.isStopped = true;
+                            if (canWalk)
+                            {
+                                enemy.isStopped = false;
+                                enemy.SetDestination(target.transform.position);
+                            }
+                            else
+                                enemy.isStopped = true;
                         }
 
                         float distance = Vector3.Distance(target.transform.position, transform.position);
-                        if (distance < 4f && canWalk && canAttack)
+                        if (distance < 4f && canWalk && !_playerstats.getIsIncapacitated() && canAttack)
                         {
+
                             animation.setAttack();
                             canWalk = false;
-                            _challengeCoffeeMachine.takeHit(GetComponent<EnemyStatus>().getDamage());
+                            if (isOnline)
+                            {
+                                _playerstats.takeOnlineDamage(GetComponent<EnemyStatus>().getDamage());
+                            }
+                            else
+                            {
+                                _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
+                            }
+
                             Invoke("resetCanWalk", 1f);
+                            if (_playerstats.verifyDown())
+                            {
+                                //usa uma lista auxiliar sem o player que morreu para definir um novo target
+                                GameObject[] aux = new GameObject[players.Length - 1];
+                                foreach (GameObject player in players)
+                                {
+                                    int i = 0;
+                                    if (player != target)
+                                    {
+                                        aux[i] = player;
+                                        i++;
+                                    }
+                                }
+
+                                target = GetTarget(aux);
+                            }
+                        }
+
+
+
+                    }
+                    else
+                    {
+                        if (isCoffeMachineEvent)
+                        {
+                            CoffeMachines = GameObject.FindGameObjectsWithTag("CoffeeMachine");
+                            target = GetTarget(CoffeMachines);
+                            ChallengeCoffeeMachine _challengeCoffeeMachine =
+                                target.GetComponent<ChallengeCoffeeMachine>();
+
+                            if (canWalk)
+                            {
+                                enemy.isStopped = false;
+                                enemy.SetDestination(target.transform.position);
+                            }
+                            else
+                            {
+                                enemy.isStopped = true;
+                            }
+
+                            float distance = Vector3.Distance(target.transform.position, transform.position);
+                            if (distance < 4f && canWalk && canAttack)
+                            {
+                                animation.setAttack();
+                                canWalk = false;
+                                _challengeCoffeeMachine.takeHit(GetComponent<EnemyStatus>().getDamage());
+                                Invoke("resetCanWalk", 1f);
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                enemy.isStopped = true;
+                else
+                {
+                    enemy.isStopped = true;
+                }
             }
         }
     }
@@ -240,6 +257,7 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
         isEvent = isCoffeMachineEvent;
         this.isCoffeMachineEvent = isCoffeMachineEvent;
     }
+    
 }
 
 

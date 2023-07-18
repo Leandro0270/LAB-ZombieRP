@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 
-public class SpecialZombiesAttacks : MonoBehaviour
+public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
 {
     private float zombieLife;
     private EnemyStatus zumbi;
@@ -14,7 +15,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
     private GameObject alvo;
     private NavMeshAgent navMeshAgent;
     private Rigidbody rb;
-
+    [SerializeField] private PhotonView _photonView;
     [SerializeField] private GameObject Effect;
     [SerializeField] private float damage = 10f;
     [SerializeField] private GameObject CoffeProjectile;
@@ -35,6 +36,8 @@ public class SpecialZombiesAttacks : MonoBehaviour
     private bool canAttack = true;
     private bool downedPlayer;
     private bool auxBool = false;
+    [SerializeField] private bool isOnline = false;
+    private int targetPhotonViewID;
 
     private enum SpecialType
     {
@@ -52,9 +55,9 @@ public class SpecialZombiesAttacks : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         enemyFollow = GetComponent<EnemyFollow>();
-        players = GameObject.FindGameObjectsWithTag("Player");
         zumbi = GetComponent<EnemyStatus>();
-        // Substitua com a lógica para obter a referência do jogador ou alvo.
+        players = GameObject.FindGameObjectsWithTag("Player");
+        
         tempoPoderesAtual = tempoEntrePoderes;
         alvo = GetTarget(players);
         navMeshAgent = GetComponent<NavMeshAgent>();
@@ -66,265 +69,342 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
     private void Update()
     {
-        if (!playerStats)
-            playerStats = alvo.GetComponent<PlayerStats>();
-
-
-        if (Vector3.Distance(transform.position, alvo.transform.position) < distanciaAtivacaoPoder)
-            PlayerIsInRange = true;
-        else
-            PlayerIsInRange = false;
-
-
-        if (tempoAtaqueAtual > 0)
-            tempoAtaqueAtual -= Time.deltaTime;
-        else
-            canAttack = true;
-
-        if (tempoPoderesAtual > 0)
-            tempoPoderesAtual -= Time.deltaTime;
-        else
-            canSpecialAttack = true;
-
-
-        if ((playerStats.getIsIncapacitated() && !downedPlayer)|| playerStats.verifyDown())
+        if (PhotonNetwork.IsMasterClient || !isOnline)
         {
-            FindNewTarget();
-            enemyFollow.setTarget(alvo);
-        }
-        
-       
+            if (!playerStats)
+                playerStats = alvo.GetComponent<PlayerStats>();
 
 
-        switch (tipoDePoder)
-        {
+            if (Vector3.Distance(transform.position, alvo.transform.position) < distanciaAtivacaoPoder)
+                PlayerIsInRange = true;
+            else
+                PlayerIsInRange = false;
 
-            //COFFEE CLASS ================================================================
-            case SpecialType.Arremesso:
-                if (!zumbi.isDeadEnemy())
-                {
-                    if (!PlayerIsInRange)
+
+            if (tempoAtaqueAtual > 0)
+                tempoAtaqueAtual -= Time.deltaTime;
+            else
+                canAttack = true;
+
+            if (tempoPoderesAtual > 0)
+                tempoPoderesAtual -= Time.deltaTime;
+            else
+                canSpecialAttack = true;
+
+
+            if ((playerStats.getIsIncapacitated() && !downedPlayer) || playerStats.verifyDown())
+            {
+                FindNewTarget();
+                enemyFollow.setTarget(alvo);
+            }
+
+
+
+
+            switch (tipoDePoder)
+            {
+
+                //COFFEE CLASS ================================================================
+                case SpecialType.Arremesso:
+                    if (!zumbi.isDeadEnemy())
                     {
-                        enemyFollow.setIsStoped(false);
-                        enemyFollow.setFollowPlayers(true);
-                    }
-                    else
-                    {
-                        if (Vector3.Distance(transform.position, alvo.transform.position) > distanciaFuga)
-                        {
-                            enemyFollow.setIsStoped(true);
-                            enemyFollow.setFollowPlayers(false);
-                            if (canSpecialAttack && !zumbi.isDeadEnemy())
-                            {
-                                tempoPoderesAtual = tempoEntrePoderes;
-                                canSpecialAttack = false;
-                                StartCoroutine(StopBeforeSpecialAttack());
-                            }
-                        }
-                        else
+                        if (!PlayerIsInRange)
                         {
                             enemyFollow.setIsStoped(false);
-                            navMeshAgent.SetDestination(posicaoFuga());
-                        }
-                    }
-                }
-                else
-                {
-                    enemyFollow.setIsStoped(true);
-                    enemyFollow.setFollowPlayers(false);
-                }
-
-                break;
-
-            //FROG CLASS ============================================================================================================================================
-
-            case SpecialType.Frog:
-                if (PlayerIsInRange && canSpecialAttack)
-                {
-                    if (!downedPlayer && !playerStats.getIsIncapacitated())
-                    {
-                        playerStats.IncapacitatePlayer(gameObject);
-                        playerStats.takeDamage(damage);
-                        alvo.transform.SetParent(transform);
-                        alvo.transform.localPosition = Vector3.zero;
-                        downedPlayer = true;
-                        alvo.GetComponent<CharacterController>().enabled = false;
-
-                        enemyFollow.setFollowPlayers(false);
-                    }
-                    else
-                    {
-                        navMeshAgent.speed = 5;
-                        if (!zumbi.isDeadEnemy())
-                        {
-                            if (canAttack)
-                            {
-                                playerStats.takeDamage(damage);
-                                tempoAtaqueAtual = tempoEntreAtaques;
-                                canAttack = false;
-                            }
-
-                            if (playerStats.verifyDown())
-                            {
-                                alvo.transform.SetParent(null);
-                                downedPlayer = false;
-                                alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
-                                    alvo.transform.position.z);
-                                enemyFollow.setFollowPlayers(true);
-                                GameObject[] aux = new GameObject[players.Length - 1];
-                                foreach (GameObject player in players)
-                                {
-                                    int i = 0;
-                                    if (player != alvo)
-                                    {
-                                        aux[i] = player;
-                                        i++;
-                                    }
-                                }
-
-                                alvo = GetTarget(aux);
-
-                            }
-                            navMeshAgent.SetDestination(posicaoFuga());
+                            enemyFollow.setFollowPlayers(true);
                         }
                         else
                         {
-                            alvo.transform.SetParent(null);
-                            alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
-                                alvo.transform.position.z);
-                            playerStats.CapacitatePlayer();
+                            if (Vector3.Distance(transform.position, alvo.transform.position) > distanciaFuga)
+                            {
+                                enemyFollow.setIsStoped(true);
+                                enemyFollow.setFollowPlayers(false);
+                                if (canSpecialAttack && !zumbi.isDeadEnemy())
+                                {
+                                    tempoPoderesAtual = tempoEntrePoderes;
+                                    canSpecialAttack = false;
+                                    StartCoroutine(StopBeforeSpecialAttack());
+                                }
+                            }
+                            else
+                            {
+                                enemyFollow.setIsStoped(false);
+                                navMeshAgent.SetDestination(posicaoFuga());
+                            }
                         }
-                    }
-                }
-
-                break;
-
-
-
-            //BOOOMER CLASS ================================================================
-            case SpecialType.Booomer:
-                enemyFollow.setIsStoped(false);
-                if (zombieLife <= 0)
-                {
-                    Explode();
-                }
-                else
-                {
-                    Vector3 pontoMedio = PontoMedioJogadoresProximos();
-                    Vector3 posFinal = Vector3.zero;
-                    if (pontoMedio != Vector3.zero)
-                    {
-                        posFinal = pontoMedio;
-                        enemyFollow.setFollowPlayers(false);
-                        
-                        navMeshAgent.SetDestination(pontoMedio);
                     }
                     else
                     {
-                        posFinal = alvo.transform.position;
-                        enemyFollow.setFollowPlayers(true);
+                        enemyFollow.setIsStoped(true);
+                        enemyFollow.setFollowPlayers(false);
                     }
 
-                    if (Vector3.Distance(transform.position, posFinal) <= distanciaAtivacaoPoder)
+                    break;
+
+                //FROG CLASS ============================================================================================================================================
+
+                case SpecialType.Frog:
+                    if (PlayerIsInRange && canSpecialAttack)
+                    {
+                        if (!downedPlayer && !playerStats.getIsIncapacitated())
+                        {
+                            if (isOnline)
+                            {
+                                playerStats.incapacitateOnline(photonView.ViewID);
+                                playerStats.takeOnlineDamage(damage);
+                            }
+                            else
+                            {
+                                playerStats.IncapacitatePlayer(gameObject);
+                                playerStats.takeDamage(damage);
+                            }
+
+                            if (isOnline)
+                            {
+                                playerStats.changeTransformParent(photonView.ViewID, true, false);
+                            }
+                            else
+                            {
+                                alvo.transform.SetParent(transform);
+                                alvo.transform.localPosition = Vector3.zero;
+                            }
+                            downedPlayer = true;
+                            if(isOnline)
+                                playerStats.OnlineCharacterController(false);
+                            else
+                                alvo.GetComponent<CharacterController>().enabled = false;
+
+                            enemyFollow.setFollowPlayers(false);
+                        }
+                        else
+                        {
+                            navMeshAgent.speed = 5;
+                            if (!zumbi.isDeadEnemy())
+                            {
+                                if (canAttack)
+                                {
+                                    if (isOnline)
+                                    {
+                                        playerStats.takeOnlineDamage(damage);
+                                    }
+                                    else
+                                    {
+                                        playerStats.takeDamage(damage);
+                                    }
+
+                                    tempoAtaqueAtual = tempoEntreAtaques;
+                                    canAttack = false;
+                                }
+
+                                if (playerStats.verifyDown())
+                                {
+                                    if (isOnline)
+                                    {
+                                        playerStats.changeTransformParent(0,false,true);
+                                    }
+                                    else
+                                    {
+                                        alvo.transform.SetParent(null);
+                                        downedPlayer = false;
+                                        alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
+                                            alvo.transform.position.z);
+                                    }
+                                    
+                                    enemyFollow.setFollowPlayers(true);
+                                    GameObject[] aux = new GameObject[players.Length - 1];
+                                    foreach (GameObject player in players)
+                                    {
+                                        int i = 0;
+                                        if (player != alvo)
+                                        {
+                                            aux[i] = player;
+                                            i++;
+                                        }
+                                    }
+
+                                    alvo = GetTarget(aux);
+
+                                }
+
+                                navMeshAgent.SetDestination(posicaoFuga());
+                            }
+                            else
+                            {
+                                if (isOnline)
+                                {
+                                    playerStats.changeTransformParent(0,false,true);
+                                    playerStats.CapacitateOnlinePlayer();
+
+                                }
+                                else
+                                {
+                                    alvo.transform.SetParent(null);
+                                    alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
+                                        alvo.transform.position.z);
+                                    playerStats.CapacitatePlayer();
+                                }
+                            }
+                        }
+                    }
+
+                    break;
+
+
+
+                //BOOOMER CLASS ================================================================
+                case SpecialType.Booomer:
+                    enemyFollow.setIsStoped(false);
+                    if (zombieLife <= 0)
                     {
                         Explode();
                     }
-                }
-
-                break;
-
-
-
-
-            //HUNTER CLASS ================================================================
-            case SpecialType.Jumper:
-
-                if (!zumbi.isDeadEnemy())
-                {
-
-                    if (!auxBool && !playerStats.getIsIncapacitated() && !downedPlayer && canSpecialAttack)
+                    else
                     {
-                        if (PlayerIsInRange)
+                        Vector3 pontoMedio = PontoMedioJogadoresProximos();
+                        Vector3 posFinal = Vector3.zero;
+                        if (pontoMedio != Vector3.zero)
                         {
-                            enemyFollow.enabled = false;
-                            StartCoroutine(StopBeforeSpecialAttack());
-                        }
-                    }
+                            posFinal = pontoMedio;
+                            enemyFollow.setFollowPlayers(false);
 
-                    if (downedPlayer)
-                    {
-                        if (playerStats.verifyDown())
-                        {
-                            downedPlayer = false;
-                            StartCoroutine(ReativarNavMeshAgentComAtraso(1f));
+                            navMeshAgent.SetDestination(pontoMedio);
                         }
                         else
                         {
+                            posFinal = alvo.transform.position;
+                            enemyFollow.setFollowPlayers(true);
+                        }
 
-                            if (canAttack)
+                        if (Vector3.Distance(transform.position, posFinal) <= distanciaAtivacaoPoder)
+                        {
+                            Explode();
+                        }
+                    }
+
+                    break;
+
+
+
+
+                //HUNTER CLASS ================================================================
+                case SpecialType.Jumper:
+
+                    if (!zumbi.isDeadEnemy())
+                    {
+
+                        if (!auxBool && !playerStats.getIsIncapacitated() && !downedPlayer && canSpecialAttack)
+                        {
+                            if (PlayerIsInRange)
                             {
-                                playerStats.takeDamage(damage);
-                                tempoAtaqueAtual = tempoEntreAtaques;
-                                canAttack = false;
+                                enemyFollow.enabled = false;
+                                StartCoroutine(StopBeforeSpecialAttack());
                             }
                         }
-                    }
 
-                }
-
-                else
-                {
-                    if (downedPlayer && !playerStats.verifyDown())
-                        playerStats.CapacitatePlayer();
-                }
-
-                break;
-            //SMOKER CLASS ================================================================
-            case SpecialType.Fisher:
-                if (!downedPlayer)
-                {
-                    if (!playerStats.getIsIncapacitated())
-                    {
-                        if (PosicaoVisivel())
+                        if (downedPlayer)
                         {
-                            enemyFollow.setFollowPlayers(false);
-                            enemyFollow.setIsStoped(true);
-                            StartCoroutine(StopBeforeSpecialAttack());
-                        }
-                    }
-
-                }
-                else
-                {
-                    if (zombieLife > 0)
-                    {
-                        PuxarJogador(0.2f);
-                        
-                        if (canSpecialAttack)
-                        {
-                            playerStats.takeDamage(damage);
                             if (playerStats.verifyDown())
                             {
-                                enemyFollow.setIsStoped(false);
                                 downedPlayer = false;
+                                StartCoroutine(ReativarNavMeshAgentComAtraso(1f));
                             }
+                            else
+                            {
 
-                            tempoPoderesAtual = tempoEntrePoderes;
-                            canSpecialAttack = false;
+                                if (canAttack)
+                                {
+                                    if (isOnline)
+                                    {
+                                        playerStats.takeOnlineDamage(damage);
+                                    }
+                                    else
+                                    {
+                                        playerStats.takeDamage(damage);
+
+                                    }
+                                    tempoAtaqueAtual = tempoEntreAtaques;
+                                    canAttack = false;
+                                }
+                            }
                         }
+
+                    }
+
+                    else
+                    {
+                        if (downedPlayer && !playerStats.verifyDown())
+                            if (isOnline)
+                            {
+                                playerStats.CapacitateOnlinePlayer();
+                            }
+                            else
+                            {
+                                playerStats.CapacitatePlayer();
+                            }
+                    }
+
+                    break;
+                //SMOKER CLASS ================================================================
+                case SpecialType.Fisher:
+                    if (!downedPlayer)
+                    {
+                        if (!playerStats.getIsIncapacitated())
+                        {
+                            if (PosicaoVisivel())
+                            {
+                                enemyFollow.setFollowPlayers(false);
+                                enemyFollow.setIsStoped(true);
+                                StartCoroutine(StopBeforeSpecialAttack());
+                            }
+                        }
+
                     }
                     else
                     {
-                        playerStats.CapacitatePlayer();
+                        if (zombieLife > 0)
+                        {
+                            if (isOnline)
+                            {
+                                alvo.GetComponent<PhotonView>().RPC("PuxarJogadorRPC", RpcTarget.All, transform.position, 0.2f);
+                            }
+                            else
+                            {
+                                PuxarJogador(0.2f);
+
+                            }
+
+                            if (canSpecialAttack)
+                            {
+                                if(isOnline)
+                                    playerStats.takeOnlineDamage(damage);
+                                else
+                                    playerStats.takeDamage(damage);
+                                if (playerStats.verifyDown())
+                                {
+                                    enemyFollow.setIsStoped(false);
+                                    downedPlayer = false;
+                                }
+
+                                tempoPoderesAtual = tempoEntrePoderes;
+                                canSpecialAttack = false;
+                            }
+                        }
+                        else
+                        { 
+                            if(isOnline)
+                                playerStats.CapacitateOnlinePlayer();
+                            else
+                                playerStats.CapacitatePlayer();
+                        }
                     }
-                }
 
-                break;
+                    break;
 
 
-            //Error ================================================================
-            default:
-                throw new ArgumentOutOfRangeException();
+                //Error ================================================================
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 
@@ -350,6 +430,7 @@ public class SpecialZombiesAttacks : MonoBehaviour
 
         playerStats = target.GetComponent<PlayerStats>();
         enemyFollow.setTarget(target);
+        targetPhotonViewID = target.GetComponent<PhotonView>().ViewID;
         return target;
     }
 
@@ -398,10 +479,21 @@ public class SpecialZombiesAttacks : MonoBehaviour
     {        
         zumbi.killEnemy();
         var position = transform.position;
-        Instantiate(CoffeProjectile, position, Quaternion.identity);
-        GameObject effectInstantiate = Instantiate(Effect, position, Quaternion.identity);
-        Destroy(effectInstantiate, 2f);
-        Destroy(gameObject);
+        if (isOnline)
+        {
+            PhotonNetwork.Instantiate("bombZombieExplosion", position, Quaternion.identity);
+            GameObject effectInstantiate = PhotonNetwork.Instantiate("bombZombieExplosionEffect", position, Quaternion.identity);
+            Destroy(effectInstantiate, 2f);
+            PhotonNetwork.Destroy(gameObject);
+        }
+        else
+        {
+            Instantiate(CoffeProjectile, position, Quaternion.identity);
+            GameObject effectInstantiate = Instantiate(Effect, position, Quaternion.identity);
+            Destroy(effectInstantiate, 2f);
+            Destroy(gameObject);
+        }
+        
     }
 
     private Vector3 PontoMedioJogadoresProximos()
@@ -454,6 +546,15 @@ public class SpecialZombiesAttacks : MonoBehaviour
         return false;
     }
 
+    [PunRPC]
+    void PuxarJogadorRPC(Vector3 position, float velocidadePuxar)
+    {
+        float distanciaJogador = Vector3.Distance(transform.position, position);
+        if (distanciaJogador > 4f)
+            transform.position = Vector3.Lerp(transform.position,
+                new Vector3(position.x, transform.position.y, position.z),
+                Time.deltaTime * velocidadePuxar);
+    }
     private void FindNewTarget()
     {
         {
@@ -486,7 +587,10 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     if (objetoDeColisao.gameObject == alvo)
                     {
                         downedPlayer = true;
-                        playerStats.IncapacitatePlayer(gameObject);
+                        if(isOnline)
+                            playerStats.incapacitateOnline(photonView.ViewID);
+                        else
+                            playerStats.IncapacitatePlayer(gameObject);
                     }
                     else
                     {
@@ -538,10 +642,19 @@ public class SpecialZombiesAttacks : MonoBehaviour
         if (zumbi.isDeadEnemy() == false)
         {
             switch (tipoDePoder)
-            {
+            { 
                 case SpecialType.Arremesso:
-                    GameObject projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
-                        Quaternion.identity);
+                    GameObject projétil;
+                    if (isOnline)
+                    {
+                        projétil = PhotonNetwork.Instantiate("CoffeeProjectile", pontoDeLançamento.position, Quaternion.identity);
+                    }
+                    else
+                    {
+                        projétil = Instantiate(CoffeProjectile, pontoDeLançamento.position,
+                            Quaternion.identity);
+                    }
+
                     Rigidbody rb = projétil.GetComponent<Rigidbody>();
                     Vector3 trajetoria =
                         CalculaTrajetoriaParabolica(pontoDeLançamento.position, alvo.transform.position,
@@ -556,7 +669,10 @@ public class SpecialZombiesAttacks : MonoBehaviour
                     if (PlayerIsInRange)
                     {
                         downedPlayer = true;
-                        playerStats.IncapacitatePlayer(gameObject);
+                        if(isOnline)
+                            playerStats.incapacitateOnline(photonView.ViewID);
+                        else
+                            playerStats.IncapacitatePlayer(gameObject);
                     }
                     else
                     {
@@ -585,7 +701,51 @@ public class SpecialZombiesAttacks : MonoBehaviour
     {
         return points;
     }
-
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(zombieLife);
+            stream.SendNext(damage);
+            stream.SendNext(distanciaAtivacaoPoder);
+            stream.SendNext(distanciaFuga);
+            stream.SendNext(tempoEntrePoderes);
+            stream.SendNext(tempoEntreAtaques);
+            stream.SendNext(delayLocknShoot);
+            stream.SendNext(points);
+            stream.SendNext(tempoPoderesAtual);
+            stream.SendNext(tempoAtaqueAtual);
+            stream.SendNext(PlayerIsInRange);
+            stream.SendNext(canSpecialAttack);
+            stream.SendNext(downedPlayer);
+            stream.SendNext(canAttack);
+            stream.SendNext(auxBool);
+            
+            
+            
+        }
+        else
+        {
+            zombieLife = (float) stream.ReceiveNext();
+            damage = (float) stream.ReceiveNext();
+            distanciaAtivacaoPoder = (float) stream.ReceiveNext();
+            distanciaFuga = (float) stream.ReceiveNext();
+            tempoEntrePoderes = (float) stream.ReceiveNext();
+            tempoEntreAtaques = (float) stream.ReceiveNext();
+            delayLocknShoot = (float) stream.ReceiveNext();
+            points = (int) stream.ReceiveNext();
+            tempoPoderesAtual = (float) stream.ReceiveNext();
+            tempoAtaqueAtual = (float) stream.ReceiveNext();
+            PlayerIsInRange = (bool) stream.ReceiveNext();
+            canSpecialAttack = (bool) stream.ReceiveNext();
+            downedPlayer = (bool) stream.ReceiveNext();
+            canAttack = (bool) stream.ReceiveNext();
+            auxBool = (bool) stream.ReceiveNext();
+        }
+    }
+    
+  
 }
 
 

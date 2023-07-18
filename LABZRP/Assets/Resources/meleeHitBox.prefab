@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 655831150207542014}
   - component: {fileID: -7472331543052687953}
   - component: {fileID: -6759312732879565802}
+  - component: {fileID: 7579936234526401564}
   m_Layer: 0
   m_Name: meleeHitBox
   m_TagString: Bullet
@@ -85,6 +86,7 @@ MonoBehaviour:
   distancia: 5
   velocidadeBala: 20
   hitableEnemies: 1
+  _isOnline: 1
 --- !u!114 &-7472331543052687953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,7 +105,10 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 655831150207542014}
+  - {fileID: -6759312732879565802}
+  - {fileID: 7579936234526401564}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -123,3 +128,19 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &7579936234526401564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6581161099807880674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3

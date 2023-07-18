@@ -194,6 +194,16 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _isWalking = (bool)stream.ReceiveNext();
         }
     }
+
+    public void takeOnlineDamage(float damage)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("takeDamage", RpcTarget.All, damage);
+        }
+    }
+    
+    [PunRPC]
     public void takeDamage(float damage)
     {
         if (!_isDown && !_isDead)
@@ -240,6 +250,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
     }
 
+    
     public void Revived()
     {
         if (_isDown && !_isDead)
@@ -325,6 +336,58 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             fireEffect.SetActive(true);
             _timeBurning = time;
         
+    }
+
+    public void incapacitateOnline(int enemyPhotonID)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("IncapacitatePlayerRPC", RpcTarget.All, enemyPhotonID);
+        }
+    }
+
+    public void OnlineCharacterController(bool isEnabled)
+    {
+        photonView.RPC("OnlineCharacterControllerRPC", RpcTarget.All, isEnabled);
+    }
+
+    [PunRPC]
+    public void OnlineCharacterControllerRPC(bool isEnabled)
+    {
+        if (photonView.IsMine)
+        {
+            GetComponent<CharacterController>().enabled = isEnabled;
+        }
+    }
+
+    public void changeTransformParent(int PhotonIDParent, bool resetVector3, bool changeToNull)
+    
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("changeTransformParentRPC", RpcTarget.All, PhotonIDParent, resetVector3, changeToNull);
+        }
+    }
+    
+    [PunRPC]
+    public void changeTransformParentRPC(int PhotonIDParent, bool resetVector3, bool changeToNull)
+    {
+        if (photonView.IsMine)
+        {
+            if (changeToNull)
+            {
+                transform.SetParent(null);
+                transform.position = new Vector3(transform.position.x, 59,
+                    transform.position.z);
+            }
+            else{
+                GameObject parent = PhotonView.Find(PhotonIDParent).gameObject;
+                gameObject.transform.SetParent(parent.transform);
+
+                if (resetVector3)
+                    transform.localPosition = Vector3.zero;
+            }
+        }
     }
     
     //================================================================================================
@@ -465,7 +528,19 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     {
         return _playerMovement;
     }
+
     
+    [PunRPC]
+    public void IncapacitatePlayerRPC(int enemyPhotonID)
+    {
+        EnemyInCapacitator = PhotonView.Find(enemyPhotonID).gameObject;
+        _isIncapatitated = true;
+        _weaponSystem.SetIsIncapacitated(true);
+        _characterController.enabled = false;
+        _playerMovement.setCanMove(false);
+        _playerRotation.setCanRotate(false);
+        _weaponSystem.SetGunVisable(false);
+    }
     public void IncapacitatePlayer(GameObject enemy)
     { 
         EnemyInCapacitator = enemy;
@@ -477,6 +552,14 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         _weaponSystem.SetGunVisable(false);
     }
 
+    [PunRPC]
+    public void CapacitateOnlinePlayer()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("CapacitatePlayer", RpcTarget.All);
+        }
+    }
     public void CapacitatePlayer()
     {
         
@@ -538,4 +621,5 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     {
         return _name;
     }
+    
 }

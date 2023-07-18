@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
-public class Points_UI : MonoBehaviour
+public class Points_UI : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private TextMeshProUGUI texto;
 
@@ -18,5 +19,20 @@ public class Points_UI : MonoBehaviour
     public void updateText()
     {
         texto.text = "$|" + points;
+    }
+    
+    
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(points);
+        }
+        else
+        {
+            points = (int) stream.ReceiveNext();
+            updateText();
+        }
     }
 }

@@ -138,19 +138,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 if (_isOnline)
                 {
                         GameObject meleeHitBox = PhotonNetwork.Instantiate("meleeHitBox", canoDaArma.position, canoDaArma.rotation);
-                        int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
-                        int bulletPhotonViewId = meleeHitBox.GetComponent<PhotonView>().ViewID;
-                        photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
-                                false,
-                                _danoMelee,
-                                _distancia,
-                                1,
-                                true,
-                                true,
-                                10,
-                                photonviewid,
-                                false,
-                                bulletPhotonViewId);
+                        hitboxMelee = meleeHitBox.GetComponent<BulletScript>();
+                        hitboxMelee.SetDamage(_danoMelee);
+                        hitboxMelee.setMelee(true);
+                        hitboxMelee.setShooter(this);
 
                 }
                 else
@@ -229,20 +220,15 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         //Spawn da bala
                         if (_isOnline)
                         {
-                                GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, canoDaArma.rotation);
-                                int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
-                                int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
-                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
-                                        isCritical
-                                        ,_dano
-                                        ,_distancia
-                                        ,_hitableEnemies
-                                        ,false
-                                        ,_haveKnockback
-                                        ,_ForcaKnockback
-                                        ,photonviewid
-                                        ,_mirando
-                                        ,bulletPhotonViewId);
+                                GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
+                                BulletScript bala = bullet.GetComponent<BulletScript>();
+                                bala.setDistancia(_distancia);
+                                bala.setVelocidadeBalas(_velocidadeBala);
+                                bala.setIsAiming(_mirando);
+                                bala.SetDamage(currentDamage);
+                                bala.setShooter(this);
+                                bala.setHitableEnemies(_hitableEnemies);
+                                bala.setIsCritical(isCritical);
                         }
                         else
                         {
@@ -287,19 +273,14 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 if (_isOnline)
                                 {
                                         GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
-                                                int photonviewid = this.gameObject.GetComponent<PhotonView>().ViewID;
-                                                int bulletPhotonViewId = bullet.GetComponent<PhotonView>().ViewID;
-                                                photonView.RPC("setOnlineAttackSpecs", RpcTarget.All, 
-                                                        isCritical
-                                                        ,_dano
-                                                        ,_distancia
-                                                        ,_hitableEnemies
-                                                        ,false
-                                                        ,_haveKnockback
-                                                        ,_ForcaKnockback
-                                                        ,photonviewid
-                                                        ,_mirando
-                                                        ,bulletPhotonViewId);
+                                        BulletScript bala = bullet.GetComponent<BulletScript>();
+                                        bala.setDistancia(_distancia);
+                                        bala.setVelocidadeBalas(_velocidadeBala);
+                                        bala.setIsAiming(_mirando);
+                                        bala.SetDamage(currentDamage);
+                                        bala.setShooter(this);
+                                        bala.setHitableEnemies(_hitableEnemies);
+                                        bala.setIsCritical(isCritical);
                                 }
                                 else
                                 {

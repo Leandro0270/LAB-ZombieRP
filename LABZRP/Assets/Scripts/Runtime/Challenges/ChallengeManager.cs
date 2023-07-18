@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -23,6 +24,7 @@ public class ChallengeManager : MonoBehaviour
 
 
     //GENERAL VARIABLES
+    private bool _isOnline = false;
     private float challengeTime;
     private List<GameObject> players;
     private String challengeName;
@@ -37,6 +39,7 @@ public class ChallengeManager : MonoBehaviour
     
     
     //Other components
+    [SerializeField] private PhotonView _photonView;
     [SerializeField] private MainGameManager mainGameManager;
     [SerializeField] private HordeManager hordeManager;
 
