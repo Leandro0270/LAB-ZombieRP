@@ -19,7 +19,11 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        onlinePlayerConfigurationManager = GameObject.FindGameObjectWithTag("OnlinePlayerConfigurationManager").GetComponent<OnlinePlayerConfigurationManager>();
+        GameObject gameObjectonlinePlayerConfigurationManager = GameObject.FindGameObjectWithTag("OnlinePlayerConfigurationManager");
+        if (gameObjectonlinePlayerConfigurationManager != null)
+        {
+            onlinePlayerConfigurationManager = gameObjectonlinePlayerConfigurationManager.GetComponent<OnlinePlayerConfigurationManager>();
+        }
     }
 
     void Start()

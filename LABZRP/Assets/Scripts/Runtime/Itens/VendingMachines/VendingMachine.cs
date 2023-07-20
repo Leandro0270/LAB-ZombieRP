@@ -61,7 +61,9 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         {
             isMasterClient = true;
             setRandomItem();
-        }
+        } else if (!isOnline)
+            setRandomItem();
+
     }
     
     public void setIsMasterClient(bool isMasterClient)
