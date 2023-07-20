@@ -313,10 +313,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 528197af854f082489fa3e1c52a161a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  throwableSpecsList:
+  - {fileID: 11400000, guid: e7caa55c48cb9e048975623f503b941a, type: 2}
+  - {fileID: 11400000, guid: cf0cffc5116c55b4b9d070055c1eff32, type: 2}
+  - {fileID: 11400000, guid: 7d61fa8abda0f0649bb85aa0abe366f4, type: 2}
+  - {fileID: 11400000, guid: 015f934bf34d4c148841d3a4e0e6b06e, type: 2}
   explosionArea: {fileID: 1519424236948069790, guid: d8a96f033f9c18649bcea42fad860f1d, type: 3}
   ThrowerHand: {fileID: 3431554702415488595}
   DecalSpawnPoint: {fileID: 5597692463332652274}
   coolDownBetweenThrows: 1.5
+  isOnline: 1
+  photonView: {fileID: -294461941703932716}
   throwableItemPrefab: {fileID: 2216045802385621327, guid: d5d2cd53e6d08d5498ddbe99c0d8d96f, type: 3}
 --- !u!65 &3281851553285552828
 BoxCollider:
@@ -383,8 +390,8 @@ MonoBehaviour:
   pointsPerNormalZombie: 10
   pointsMultiplier: 1.5
   isMultiplierActive: 0
-  isOnline: 0
-  photonView: {fileID: 0}
+  isOnline: 1
+  photonView: {fileID: -294461941703932716}
 --- !u!143 &2607379241762753282
 CharacterController:
   m_ObjectHideFlags: 0
@@ -979,16 +986,16 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: Walking
   - Type: 4
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: isDown
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Melee
   - Type: 9
-    SynchronizeType: 2
+    SynchronizeType: 1
     Name: Downing
   m_SynchronizeLayers:
-  - SynchronizeType: 2
+  - SynchronizeType: 0
     LayerIndex: 0
 --- !u!114 &7704960691108931514
 MonoBehaviour:

@@ -16,52 +16,50 @@ public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
 
     public void addPointsNormalZombieKilled()
     {
-        if(isMultiplierActive){
-            points += (int)(pointsPerNormalZombie * pointsMultiplier);
-            totalPointsInGame += (int)(pointsPerNormalZombie * pointsMultiplier);
+        if (!isOnline || photonView.IsMine)
+        {
+            if (isMultiplierActive)
+            {
+                points += (int)(pointsPerNormalZombie * pointsMultiplier);
+                totalPointsInGame += (int)(pointsPerNormalZombie * pointsMultiplier);
+            }
+            else
+            {
+                points += pointsPerNormalZombie;
+                totalPointsInGame += pointsPerNormalZombie;
+            }
+            pointsUI.setPoints(points);
         }
-        else{
-            points += pointsPerNormalZombie;
-            totalPointsInGame += pointsPerNormalZombie;
-        }
-        pointsUI.setPoints(points);
     }
 
     public void addPointsSpecialZombiesKilled(int points)
     {
-        if(isMultiplierActive){
-            this.points += (int)(points * pointsMultiplier);
-            totalPointsInGame += (int)(points * pointsMultiplier);
-        }else{
-            
-            totalPointsInGame += points;
-            this.points += points;
+        if (!isOnline || photonView.IsMine)
+        {
+            if (isMultiplierActive)
+            {
+                this.points += (int)(points * pointsMultiplier);
+                totalPointsInGame += (int)(points * pointsMultiplier);
+            }
+            else
+            {
+                totalPointsInGame += points;
+                this.points += points;
+            }
+            pointsUI.setPoints(this.points);
         }
-        pointsUI.setPoints(this.points);
     }
 
     public void removePoints(int points)
     {
 
-        if (isOnline)
+        if (!isOnline || photonView.IsMine)
         {
-            if(photonView.IsMine)
-                this.points -= points;
-            photonView.RPC("setPointsUiRPC", RpcTarget.All, points);
-        }
-        else
-        {
+            this.points -= points;
             pointsUI.setPoints(this.points);
         }
     }
-
-    [PunRPC]
-    public void setPointsUiRPC(int points)
-    {
-        if(photonView.IsMine)
-            this.points -= points;
-        pointsUI.setPoints(this.points);
-    }
+    
 
     public int getPoints()
     {
@@ -77,7 +75,8 @@ public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
     public void addChallengePoints(int points)
     {
         this.points += points;
-        pointsUI.setPoints(this.points);
+        pointsUI.setPoints(points);
+        
     }
     
     public void setPointsUI(Points_UI pointsUI)

@@ -12,6 +12,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool haveKnockback = false;
     [SerializeField] private float knockbackForce = 10f;
     [SerializeField] private bool isMelee = false;
+    [SerializeField] private bool isWallBang = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     public GameObject bloodParticle;
@@ -27,6 +28,13 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool _isOnline = false;
     private bool _isBulletOwner = false;
 
+    
+    [SerializeField] private BoxCollider _collider;
+    [SerializeField] private UniversalAdditionalLightData _UAlightD;
+    [SerializeField] private Light _light;
+    [SerializeField] private MeshRenderer _meshRenderer;
+    [SerializeField] private ParticleSystem _particleSystem;
+    
 
     private void Start()
     {
@@ -71,39 +79,29 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 PhotonNetwork.Destroy(gameObject);
 
         }
-
-
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
-
-
         if (_status != null)
         {
+            enemiesHitted++;
+            GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
+                objetoDeColisao.transform.rotation);
+            Destroy(NewBloodParticle, 4f);
             if (!_status.isDeadEnemy())
             {
+                
                 hitted = true;
                 enemiesHitted++;
-                if (isCritical)
-                {
-                    Debug.Log("Critico!");
-                }
-
-                GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
-                    objetoDeColisao.transform.rotation);
-                Destroy(NewBloodParticle, 4f);
-
-                //A função takeDamage retorna true se o zumbi morreu
-                if (_status.takeDamage(damage))
+                _status.takeDamage(damage);
+                if (_status.isDeadEnemy())
                 {
                     if (_isAiming)
                     {
-                        Debug.Log("Matou mirando");
                         PlayerShooter.addKilledZombieWithAim();
 
                     }
 
                     else if (isMelee)
                     {
-                        Debug.Log("Matou com melee");
                         PlayerShooter.addKilledZombieWithMelee();
 
 
@@ -127,7 +125,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                         rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
                     }
                 }
-
+                
                 if (enemiesHitted < hitableEnemies)
                 {
                     enemiesHitted++;
@@ -135,7 +133,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 else
                 {
                     destroyBullet();
-                    if(_isOnline)
+                    if(_isOnline && _isBulletOwner)
                         PhotonNetwork.Destroy(gameObject);
                     else if(!_isOnline)
                         Destroy(gameObject, 2f);
@@ -152,6 +150,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
+            enemiesHitted++;
             if (_isOnline)
             {
                 status.takeOnlineDamage(damage * 0.5f);
@@ -160,6 +159,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
             {
                 status.takeDamage(damage * 0.5f);
             }
+            
             if (enemiesHitted < hitableEnemies)
             {
                 enemiesHitted++;
@@ -167,12 +167,11 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
             else
             {
                 destroyBullet();
-                if(_isBulletOwner)
+                if(photonView.IsMine)
                     PhotonNetwork.Destroy(gameObject);
                 else if(!_isOnline)
                     Destroy(gameObject, 2f);
             }
-
 
         }
 
@@ -201,6 +200,10 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void setHitableEnemies(int hitableEnemies)
     {
+        if (hitableEnemies > 1)
+        {
+            isWallBang = true;
+        }
         this.hitableEnemies = hitableEnemies;
     }
 
@@ -222,7 +225,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         else if (!_isOnline)
         {
             PlayerShooter = shooter;
-            _isBulletOwner = true;
         }
     }
     
@@ -263,7 +265,14 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (_isOnline)
         {
-            photonView.RPC("disableBulletOnline", RpcTarget.All, PlayerShooter.gameObject.GetComponent<PhotonView>().ViewID);
+
+            _collider.enabled = false;
+            _UAlightD.enabled = false;
+            _light.enabled = false;
+            _meshRenderer.enabled = false;
+            _particleSystem.Stop();
+            
+            
         }
         else
         {
@@ -275,46 +284,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
             Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
         }
     }
-
-    [PunRPC]
-    public void disableBulletOnline(int shooterID)
-    {
-        // Para desabilitar MeshFilter (alterando a visibilidade)
-        MeshRenderer meshRenderer = gameObject.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-        {
-            meshRenderer.enabled = false;
-        }
-
-        // Para desabilitar BoxCollider
-        BoxCollider boxCollider = gameObject.GetComponent<BoxCollider>();
-        if (boxCollider != null)
-        {
-            boxCollider.enabled = false;
-        }
-
-        // Para desabilitar UniversalAdditionalLightData
-        UniversalAdditionalLightData lightData = gameObject.GetComponent<UniversalAdditionalLightData>();
-        if (lightData != null)
-        {
-            lightData.enabled = false;
-        }
-
-        // Para desabilitar Light
-        Light light = gameObject.GetComponent<Light>();
-        if (light != null)
-        {
-            light.enabled = false;
-        }
-
-        // Para desabilitar ParticleSystem
-        ParticleSystem particleSystem = gameObject.GetComponentInChildren<ParticleSystem>();
-        if (particleSystem != null)
-        {
-            particleSystem.Stop();
-        }
-    }
-
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
 

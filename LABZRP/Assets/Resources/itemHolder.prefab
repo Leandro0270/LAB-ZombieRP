@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e96fff53b480422479f0eab03b454f05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itens: []
+  isOnline: 1
+  photonView: {fileID: 7217429151059032668}
   isThrowable: 0
   ItemScOB: {fileID: 0}
 --- !u!65 &4801422697681108123
@@ -97,7 +98,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: -6888621083998511204}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

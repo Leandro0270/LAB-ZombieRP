@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4c1d233a0f31041bbac9711dbb20e1, type: 3}
   m_Name: Stun
   m_EditorClassIdentifier: 
+  throwableId: 3
   throwableType: 2
   throwablePrefab3DModel: {fileID: 1436712184682533955, guid: cb72b606b0c0bb54bb263aba921fce33, type: 3}
   visualEffect: {fileID: 100010, guid: 94819784f48e7c040acd8ca15362edda, type: 3}

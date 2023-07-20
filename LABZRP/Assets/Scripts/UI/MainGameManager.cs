@@ -56,9 +56,19 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         return itens.Count;
     }
-    
+    [PunRPC]
+    public void removeDownedPlayerRPC(int photonViewID)
+    {
+        GameObject player = PhotonView.Find(photonViewID).gameObject;
+        removeDownedPlayer(player);
+    }
     public void removeDownedPlayer(GameObject player)
     {
+        if (isOnline && !isMasterClient)
+        {
+            int photonViewID = player.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("removeDownedPlayerRPC", RpcTarget.MasterClient, photonViewID);
+        }
         if (alivePlayers.Contains(player))
         {
             alivePlayers.Remove(player);
@@ -220,7 +230,11 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         this.onlinePlayerConfigurationManager = onlinePlayerConfigurationManager;
     }
-    
+
+    public ChallengeManager getChallengeManager()
+    {
+        return challengeManager;
+    }
     public GameObject getOnlinePlayerConfigurationManager()
     {
         return onlinePlayerConfigurationManager;

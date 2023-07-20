@@ -27,12 +27,11 @@ public class Points_UI : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(points);
+            stream.SendNext(texto.text);
         }
         else
         {
-            points = (int) stream.ReceiveNext();
-            updateText();
+            texto.text = (string) stream.ReceiveNext();
         }
     }
 }

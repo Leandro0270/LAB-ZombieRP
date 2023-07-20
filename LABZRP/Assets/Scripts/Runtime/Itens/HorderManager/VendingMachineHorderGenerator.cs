@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Photon.Pun;
+using UnityEngine.Serialization;
 
 public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
 {
     
     private int playersCount = 0;
     [SerializeField] private GameObject VendingMachinePrefab;
-    [SerializeField] private int VendingMachinesRespawnHound = 3;
+    [FormerlySerializedAs("VendingMachinesRespawnHound")] [SerializeField] private int VendingMachinesRespawnRound = 3;
     [SerializeField] private Transform[] VendingMachinesSpawnPoints;
     [SerializeField] private int VendingMachinesPerPlayer = 3; 
     [SerializeField] private Camera mainCamera;
@@ -45,13 +46,17 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
         {
 
 
-            if (atualHorde % VendingMachinesRespawnHound == 0 || atualHorde == 1)
+            if (atualHorde % VendingMachinesRespawnRound == 0 || atualHorde == 1)
             {
                 if (spawnedVendingMachines.Count > 0)
                 {
                     foreach (GameObject vendingMachine in spawnedVendingMachines)
                     {
-                        Destroy(vendingMachine.gameObject);
+                        if (isOnline)
+                            PhotonNetwork.Destroy(vendingMachine.gameObject);
+                        
+                        else
+                            Destroy(vendingMachine.gameObject);
                     }
                 }
 
@@ -113,5 +118,5 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
         }
     }
     
-
+    
 }

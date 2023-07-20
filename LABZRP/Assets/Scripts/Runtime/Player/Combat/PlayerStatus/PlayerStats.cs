@@ -136,6 +136,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         if (_isBurning)
         {
+            fireEffect.SetActive(true);
             if (_burnTickDamage)
             {
                 takeDamage(_playerStatus.burnDamagePerSecond);
@@ -181,7 +182,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             stream.SendNext(_downLife);
             stream.SendNext(_interacting);
             stream.SendNext(_isWalking);
-            
+            stream.SendNext(_isSpeedSlowed);
+            stream.SendNext(_isStunned);
+            stream.SendNext(_isBurning);
+
         }
         else
         {
@@ -192,63 +196,135 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _downLife = (float)stream.ReceiveNext();
             _interacting = (bool)stream.ReceiveNext();
             _isWalking = (bool)stream.ReceiveNext();
+            _isSpeedSlowed = (bool)stream.ReceiveNext();
+            _isStunned = (bool)stream.ReceiveNext();
+            _isBurning = (bool)stream.ReceiveNext();
+
         }
     }
 
     public void takeOnlineDamage(float damage)
     {
-        if (PhotonNetwork.IsMasterClient)
+        photonView.RPC("takeDamage", RpcTarget.All, damage);
+    }
+
+    [PunRPC]
+    public void instantiateBlood(Vector3 spawnPosition, bool isDown)
+    {
+        if (!isDown)
         {
-            photonView.RPC("takeDamage", RpcTarget.All, damage);
+            GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
+            Destroy(_bloodSplash, 2f);
+            GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
+            Destroy(_blood1, 15f);
+            
         }
+        else
+        {
+            GameObject _blood2 = Instantiate(blood2,
+                new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
+                blood2.transform.rotation);
+            Destroy(_blood2, 15f);
+            _weaponSystem.SetIsIncapacitated(true);
+            _characterController.enabled = false;
+            GetComponent<BoxCollider>().enabled = true;
+            _camera.removePlayer(gameObject);
+            _playerMovement.setCanMove(false);
+            _playerRotation.setCanRotate(false);
+            _playerAnimationManager.setDowning();
+            _playerAnimationManager.setDown(true);
+            _weaponSystem.SetGunVisable(false);
+            _healthBarUi.setColor(Color.gray);
+            GetComponent<ReviveScript>().addDownCount();
+        }
+
+
+
     }
     
     [PunRPC]
     public void takeDamage(float damage)
     {
-        if (!_isDown && !_isDead)
-        {
-            if (_challengeInProgress)
+        if(photonView.IsMine){
+            if (!_isDown && !_isDead)
             {
-                _challengeManager.setTakedHit(true);
-            }
-            life -= damage;
-            _healthBarUi.SetHealth((int)life);
-            float y = Random.Range(-dispersaoSangue, dispersaoSangue);
-            float x = Random.Range(-dispersaoSangue, dispersaoSangue);
-            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
-                transform.position.z + x);
-            if (_delayBloodTimer <= 0)
-            {                
-                _delayBloodTimer = delayBlood;
-                GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
-                Destroy(_blood1, 15f);
-                GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
-                Destroy(_bloodSplash, 2f);
-            }
+                if (_challengeInProgress)
+                {
+                    _challengeManager.setTakedHit(true);
+                }
+                life -= damage;
+              
+                    if (_isOnline)
+                    {                      
+                        photonView.RPC("updateHealthBar", RpcTarget.All, life);
+                        if (!_isBurning)
+                        {
+                            float y = Random.Range(-dispersaoSangue, dispersaoSangue);
+                            float x = Random.Range(-dispersaoSangue, dispersaoSangue);
+                            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
+                                transform.position.z + x);
+                            if (_delayBloodTimer <= 0)
+                            {
+                                _delayBloodTimer = delayBlood;
+                                photonView.RPC("instantiateBlood", RpcTarget.All, spawnPosition, false);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _healthBarUi.SetHealth((int)life);
+                        if (!_isBurning)
+                        {
+                            float y = Random.Range(-dispersaoSangue, dispersaoSangue);
+                            float x = Random.Range(-dispersaoSangue, dispersaoSangue);
+                            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
+                                transform.position.z + x);
+                            if (_delayBloodTimer <= 0)
+                            {
+                                _delayBloodTimer = delayBlood;
+                                GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
+                                Destroy(_blood1, 15f);
+                                GameObject _bloodSplash =
+                                    Instantiate(bloodSplash, transform.position, transform.rotation);
+                                Destroy(_bloodSplash, 2f);
+                            }
+                        }
+                    }
+                
 
-            if (life < 1)
-            {
-                _isDown = true;
-                GameObject _blood2 = Instantiate(blood2,
-                    new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
-                    blood2.transform.rotation);
-                Destroy(_blood2, 15f);
-                _weaponSystem.SetIsIncapacitated(true);
-                _characterController.enabled = false;
-                GetComponent<BoxCollider>().enabled = true;
-                _camera.removePlayer(gameObject);
-                _playerMovement.setCanMove(false);
-                _playerRotation.setCanRotate(false);
-                _playerAnimationManager.setDowning();
-                _playerAnimationManager.setDown(true);
-                _weaponSystem.SetGunVisable(false);
-                _healthBarUi.setColor(Color.gray);
-                GetComponent<ReviveScript>().addDownCount();
-                _mainGameManager.removeDownedPlayer(this.gameObject);
+                if (life < 1)
+                {
+                    _isDown = true;
+                    if (_isOnline)
+                    {
+                        Vector3 spawnpoint = new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z);
+                        photonView.RPC("instantiateBlood", RpcTarget.All, spawnpoint, true);
+                    }
+                    else
+                    {
+                        GameObject _blood2 = Instantiate(blood2,
+                            new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
+                            blood2.transform.rotation);
+                        Destroy(_blood2, 15f);
+                        _weaponSystem.SetIsIncapacitated(true);
+                        _characterController.enabled = false;
+                        GetComponent<BoxCollider>().enabled = true;
+                        _camera.removePlayer(gameObject);
+                        _playerMovement.setCanMove(false);
+                        _playerRotation.setCanRotate(false);
+                        _playerAnimationManager.setDowning();
+                        _playerAnimationManager.setDown(true);
+                        _weaponSystem.SetGunVisable(false);
+                        _healthBarUi.setColor(Color.gray);
+                        GetComponent<ReviveScript>().addDownCount();
+                    }
+                    _mainGameManager.removeDownedPlayer(this.gameObject);
+                }
             }
         }
     }
+    
+    
 
     
     public void Revived()
@@ -268,7 +344,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _camera.addPlayer(gameObject);
             _weaponSystem.SetGunVisable(true);
             _healthBarUi.setColor(_characterColor);
-            _healthBarUi.SetHealth((int)life);
+            if(_isOnline)
+                photonView.RPC("updateHealthBar", RpcTarget.All, life);
+            else
+                _healthBarUi.SetHealth((int)life);
         }
         
     }
@@ -284,14 +363,33 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     
     public void ReceiveHeal(float heal)
     {
-        if (!_isDown && !_isDead)
-            life += heal;
-        if (life > totalLife)
-            life = totalLife;
-        _healthBarUi.SetHealth((int)life);
+        
+        if (_isOnline)
+        {
+            if (photonView.IsMine)
+            {
+                if (!_isDown && !_isDead)
+                    life += heal;
+                if (life > totalLife)
+                    life = totalLife;
+            }
+            photonView.RPC("updateHealthBar", RpcTarget.All, life);
+        }
+        else
+        {
+            _healthBarUi.SetHealth((int)life);
+            if (!_isDown && !_isDead)
+                life += heal;
+            if (life > totalLife)
+                life = totalLife;
+        }
 
     }
-    
+    [PunRPC]
+    public void updateHealthBar(float lifeOnline)
+    {
+        _healthBarUi.SetHealth((int)lifeOnline);
+    }
     private void _InitializePlayerSpecs()
     {
         _weaponSystem = GetComponent<WeaponSystem>();
@@ -313,36 +411,68 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         _meleeDamage = _playerStatus.meleeDamage;
         _vendingMachineHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<VendingMachineHorderGenerator>();
         _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
-
         _vendingMachineHorderGenerator.addPlayer(gameObject);
         _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
         _camera.addPlayer(gameObject);
         _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
-        GameObject findCanvaHud = GameObject.FindGameObjectWithTag("PlayersUI");
+        GameObject findCanvaHud = GameObject.FindGameObjectWithTag("PlayersUiSpawn");
         if (findCanvaHud == null)
             Debug.LogError("Não foi encontrado o Canvas HUD, posicione ele na cena");
-        PlayerUiHandler playerUiConfig = Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
-        playerUiConfig.transform.parent = findCanvaHud.transform;
-        playerUiConfig.setPlayer(this.gameObject);
+        PlayerUiHandler playerUiConfig;
+        if (_isOnline)
+        {
+            if (photonView.IsMine)
+            {
+                playerUiConfig = PhotonNetwork
+                    .Instantiate("PlayerUI", findCanvaHud.transform.position, Quaternion.identity)
+                    .GetComponent<PlayerUiHandler>();
+                playerUiConfig.setOnlinePlayer(this.gameObject);
+                int photonID = playerUiConfig.GetComponent<PhotonView>().ViewID;
+                // Invoke the RPC to set the parent on all clients
+                photonView.RPC("SetParent", RpcTarget.All, photonID);
+            }
+
+        }
+        else
+        {
+            playerUiConfig =
+                Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
+            playerUiConfig.transform.parent = findCanvaHud.transform;
+            playerUiConfig.setPlayer(this.gameObject);
+        }
+
+
         _playerIndicator.material = _playerStatus.PlayerIndicator;
         _throwablePlayerStats.setMaxCapacity(_maxThrowableItens);
     }
 
-
+    [PunRPC]
+    void SetParent(int photonID)
+    {
+        GameObject child = PhotonView.Find(photonID).gameObject;
+        GameObject parent = PhotonView.Find(888).gameObject;
+    
+        if (parent != null && child != null)
+        {
+            child.transform.parent = parent.transform;
+        }
+    }
+    
     public void BurnPlayer(float time)
     {
-       
+        if (_isOnline && photonView.IsMine)
+        {
             _isBurning = true;
-            fireEffect.SetActive(true);
             _timeBurning = time;
-        
+        }
     }
 
     public void incapacitateOnline(int enemyPhotonID)
     {
-        if (PhotonNetwork.IsMasterClient)
+        GameObject enemy = PhotonView.Find(enemyPhotonID).gameObject;
+        if (photonView.IsMine)
         {
-            photonView.RPC("IncapacitatePlayerRPC", RpcTarget.All, enemyPhotonID);
+            IncapacitatePlayer(enemy);
         }
     }
 
@@ -439,14 +569,17 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     
     public void ReceiveTemporarySlow(float time, float speed)
     {
-        if (!_isSpeedSlowed)
+        if (photonView.IsMine || !_isOnline)
         {
-            _isSpeedSlowed = true;
-            float updatedSpeed = _speed - speed;
-            float baseSpeed = _speed;
-            _speed = updatedSpeed;
-            _playerMovement.setSpeed(updatedSpeed);
-            StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+            if (!_isSpeedSlowed)
+            {
+                _isSpeedSlowed = true;
+                float updatedSpeed = _speed - speed;
+                float baseSpeed = _speed;
+                _speed = updatedSpeed;
+                _playerMovement.setSpeed(updatedSpeed);
+                StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+            }
         }
     }
     private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
@@ -530,17 +663,8 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     }
 
     
-    [PunRPC]
-    public void IncapacitatePlayerRPC(int enemyPhotonID)
-    {
-        EnemyInCapacitator = PhotonView.Find(enemyPhotonID).gameObject;
-        _isIncapatitated = true;
-        _weaponSystem.SetIsIncapacitated(true);
-        _characterController.enabled = false;
-        _playerMovement.setCanMove(false);
-        _playerRotation.setCanRotate(false);
-        _weaponSystem.SetGunVisable(false);
-    }
+
+    
     public void IncapacitatePlayer(GameObject enemy)
     { 
         EnemyInCapacitator = enemy;
@@ -555,9 +679,9 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void CapacitateOnlinePlayer()
     {
-        if (PhotonNetwork.IsMasterClient)
+        if (photonView.IsMine)
         {
-            photonView.RPC("CapacitatePlayer", RpcTarget.All);
+            CapacitatePlayer();
         }
     }
     public void CapacitatePlayer()
@@ -574,12 +698,15 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     
     public void StunPlayer(float time)
     {
-        _isStunned = true;
-        _playerMovement.setCanMove(false);
-        _playerRotation.setCanRotate(false);
-        _weaponSystem.SetIsIncapacitated(true);
-        _weaponSystem.SetGunVisable(false);
-        StartCoroutine(StunPlayerCounting(time));
+        if (!_isOnline || photonView.IsMine)
+        {
+            _isStunned = true;
+            _playerMovement.setCanMove(false);
+            _playerRotation.setCanRotate(false);
+            _weaponSystem.SetIsIncapacitated(true);
+            _weaponSystem.SetGunVisable(false);
+            StartCoroutine(StunPlayerCounting(time));
+        }
     }
     
     

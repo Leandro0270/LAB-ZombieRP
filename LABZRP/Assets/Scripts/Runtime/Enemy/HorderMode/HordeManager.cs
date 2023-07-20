@@ -72,7 +72,6 @@ public class HordeManager : MonoBehaviourPunCallbacks
             Itemgenerator.setIsOnline(true);
             if (isMasterClient)
             {
-                Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
                 Itemgenerator.setIsMasterClient(true);
             }
 
@@ -128,16 +127,16 @@ public class HordeManager : MonoBehaviourPunCallbacks
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
-                    string text = "Horder: " + (currentHorde + 1) + " | Zombies: " +
+                    string text = "Horde: " + (currentHorde + 1) + " | Zombies: " +
                                   (currentHordeZombies - killedZombiesInHorde);
                     photonView.RPC("setHordeText", RpcTarget.All, text);
                 }
             }
             else
             {
-                HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
+                HorderText.text = "Horde: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             }
-            if (zombiesAlive == 0)
+            if (killedZombiesInHorde == currentHordeZombies)
             {
                 currentHorde++;
                 if (currentHorde == nextHorde && zombiesAlive <= 0)

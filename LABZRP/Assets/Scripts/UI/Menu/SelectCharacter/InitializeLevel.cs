@@ -32,6 +32,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
             mainGameManager.setOnlinePlayerConfigurationManager(onlinePlayerConfigurationManager.gameObject);
             pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
             mainGameManager.getHordeManager().setIsOnline(true);
+            mainGameManager.getChallengeManager().setIsOnline(true);
             if (!PhotonNetwork.LocalPlayer.IsMasterClient)
             {
                 photonView.RPC("sceneLoaded", RpcTarget.MasterClient);

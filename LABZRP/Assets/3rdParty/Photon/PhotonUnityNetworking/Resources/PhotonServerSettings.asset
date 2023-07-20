@@ -78,6 +78,40 @@ MonoBehaviour:
   - disableBulletOnline
   - MasterClientHandleDamageRPC
   - AnimationHandlerRPC
+  - disableCapsuleColliderRPC
+  - setInOnHordeCooldownOnline
+  - HandleItemTypeOneOnlineRPC
+  - HandleItemTypeZeroOnlineRPC
+  - updateChallengeTextRPC
+  - startChallengesRPC
+  - updateChallengeTime
+  - finishChallenge
+  - addZombieKilled
+  - destroyCoffeeMachine
+  - missedShot
+  - setTakedHit
+  - Model3dChallengeMachine
+  - setIsActivatedRPC
+  - addZombieKilledRPC
+  - CoffeeMachineTakeHit
+  - missedShotRPC
+  - setTakedHitRPC
+  - setTargetRPC
+  - triggerDownRPC
+  - setIsInArea
+  - instantiateExplosiveEffect
+  - applyThrowableSpecs
+  - Explode
+  - applyExplosion
+  - updateHealthBar
+  - instantiateBlood
+  - burnEnemyRPC
+  - ReceiveTemporarySlowRPC
+  - StunEnemyRPC
+  - removeDownedPlayerRPC
+  - setOnlinePlayerRPC
+  - SetParent
+  - MasterClientDestroyItemHolder
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

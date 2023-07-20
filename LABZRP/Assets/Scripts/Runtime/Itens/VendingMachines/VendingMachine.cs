@@ -31,8 +31,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     
     //In game objects
     [SerializeField] private GameObject ItemSpawnPoint;
-    [SerializeField]
-    private GameObject ItemShowHolder;
+    [SerializeField] private GameObject ItemShowHolder;
     public GameObject itemHolder;
     public GameObject itemShow;
     private GameObject StartItem;
@@ -58,8 +57,11 @@ public class VendingMachine : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-
-        setRandomItem();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            isMasterClient = true;
+            setRandomItem();
+        }
     }
     
     public void setIsMasterClient(bool isMasterClient)
@@ -100,7 +102,10 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 }
                 return;
             }
-            HandleItemTypeZero(other.gameObject, playerStats);
+            if(isOnline)
+                HandleItemTypeZeroOnline(other.gameObject, playerStats);
+            else
+                HandleItemTypeZero(other.gameObject, playerStats);
         }
         else if (itemType <= (guns.Length + itens.Length - 1))
         {
@@ -116,12 +121,56 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 }
                 return;
             }
-            HandleItemTypeOne(other.gameObject, playerStats);
+            if(isOnline)
+                HandleItemTypeOneOnline(other.gameObject, playerStats);
+            else
+                HandleItemTypeOne(other.gameObject, playerStats);
         }
     }
 
+    [PunRPC]
+    public void HandleItemTypeZeroOnlineRPC()
+    {
+        isOnCooldown = true;
+        ScreenPoints.text = " ";
+        if (isMasterClient)
+        {
+            PhotonNetwork.Destroy(StartItem);
+            PhotonNetwork.Destroy(ItemShowHolder);
+            StartCoroutine(VendingMachineItemCoolDown());
+
+        }
+    }
+    [PunRPC]
+    public void HandleItemTypeOneOnlineRPC()
+    {
+        isOnCooldown = true;
+        ScreenPoints.text = " ";
+        if (isMasterClient)
+        {
+            PhotonNetwork.Destroy(StartItem);
+            PhotonNetwork.Destroy(ItemShowHolder);
+            StartCoroutine(VendingMachineItemCoolDown());
+        }
+    }
+
+    public void HandleItemTypeZeroOnline(GameObject player, PlayerStats playerStats)
+    {
+        itemSpawn(player);
+        playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
+        photonView.RPC("HandleItemTypeZeroOnlineRPC", RpcTarget.All);
+
+    }
+
+    public void HandleItemTypeOneOnline(GameObject player, PlayerStats playerStats)
+    {
+        itemSpawn(player);
+        playerStats.getPlayerPoints().removePoints(guns[randomItemIndex].Price);
+        photonView.RPC("HandleItemTypeZeroOnlineRPC", RpcTarget.All);
+    }
     private void HandleItemTypeZero(GameObject player, PlayerStats playerStats)
     {
+        
         isOnCooldown = true;
         itemSpawn(player);
         playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
@@ -206,7 +255,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
 
     private void setRandomItem()
     {
-        
+        Debug.Log("Setando item!");
         if(isOnline && !isMasterClient) return;
         //Randomizar se vai ser arma ou item
         var rotation = transform.rotation;
@@ -217,6 +266,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             
             if (isOnline)
             {
+                Debug.Log("Foi item online!");
                 photonView.RPC("setStartItemRPC", RpcTarget.All, randomItemIndex, false);
             }
             else
@@ -235,6 +285,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
 
             if (isOnline)
             {
+                Debug.Log("Foi arma online!");
                 photonView.RPC("setStartItemRPC", RpcTarget.All, randomItemIndex, true);
 
             }
@@ -281,7 +332,19 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     
     public void setIsOnHorderCooldown(bool isOnHordeCooldown)
     {
-        this.isOnHordeCooldown = isOnHordeCooldown;
+        if (isOnline)
+        {
+            photonView.RPC("setInOnHordeCooldownOnline", RpcTarget.All, isOnHordeCooldown);
+        }
+        else
+            this.isOnHordeCooldown = isOnHordeCooldown;
+    }
+    
+    
+    [PunRPC]
+    public void setInOnHordeCooldownOnline(bool isOnCooldown)
+    {
+        this.isOnHordeCooldown = isOnCooldown;
     }
 
     IEnumerator restartError()

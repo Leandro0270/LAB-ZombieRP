@@ -149,7 +149,13 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
                             {
                                 animation.setAttack();
                                 canWalk = false;
-                                _challengeCoffeeMachine.takeHit(GetComponent<EnemyStatus>().getDamage());
+                                if (isOnline)
+                                {
+                                    int photonIdCoffeeMachineTarget = _challengeCoffeeMachine.GetComponent<PhotonView>().ViewID;
+                                    photonView.RPC("CoffeeMachineTakeHit", RpcTarget.All, photonIdCoffeeMachineTarget);
+                                }
+                                else
+                                    _challengeCoffeeMachine.takeHit(GetComponent<EnemyStatus>().getDamage());
                                 Invoke("resetCanWalk", 1f);
                             }
                         }
@@ -162,6 +168,14 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
             }
         }
     }
+    
+    
+    [PunRPC]
+    public void CoffeeMachineTakeHit(int photonIdCoffeeMachineTarget)
+    {
+        PhotonView.Find(photonIdCoffeeMachineTarget).GetComponent<ChallengeCoffeeMachine>().takeHit(GetComponent<EnemyStatus>().getDamage());
+    }
+    
     
     GameObject GetTarget (GameObject[] players){
         GameObject target = null;

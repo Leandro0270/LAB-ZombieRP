@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class ExplosionArea : MonoBehaviour
+public class ExplosionArea : MonoBehaviourPunCallbacks
 {
     [SerializeField] private ScObThrowableSpecs _throwableSpecs;
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private PhotonView photonView;
     [SerializeField] private bool isManualSetup = false;
     private ScObThrowableSpecs.Type _throwableType;
     
@@ -54,6 +57,8 @@ public class ExplosionArea : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if(isOnline && !photonView.IsMine)
+            return;
         if (_setupComplete)
         {
             if (_affectAllies)
@@ -64,7 +69,10 @@ public class ExplosionArea : MonoBehaviour
 
                     if (_isDamage)
                     {
-                        playerStats.takeDamage(_damage * 0.5f);
+                        if(isOnline)
+                            playerStats.takeOnlineDamage(_damage*0.5f);
+                        else
+                            playerStats.takeDamage(_damage * 0.5f);
                     }
 
                     if (_isHeal)
@@ -125,6 +133,8 @@ public class ExplosionArea : MonoBehaviour
 
     private void OnCollisionStay(Collision collisionInfo)
     {
+        if(isOnline && !photonView.IsMine)
+            return;
         if (_affectAllies)
         {
             PlayerStats playerStats = collisionInfo.gameObject.GetComponent<PlayerStats>();

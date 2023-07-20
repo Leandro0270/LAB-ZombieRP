@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class ChallengeCoffeeMachine : MonoBehaviour
+public class ChallengeCoffeeMachine : MonoBehaviourPunCallbacks, IPunObservable
 {
     private ChallengeManager _challengeManager;
     [SerializeField] private GameObject orangeMug;
@@ -18,6 +19,7 @@ public class ChallengeCoffeeMachine : MonoBehaviour
     [SerializeField] private GameObject damageEffect;
     [SerializeField] private float StartLife = 100f;
     private float currentLife = 100f;
+    [SerializeField] private bool isOnline = false;
 
     private void Start()
     {
@@ -67,4 +69,21 @@ public class ChallengeCoffeeMachine : MonoBehaviour
     {
         challengeStarted = true;
     }
+    
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(currentLife);
+            
+            
+        }
+        else
+        {
+            currentLife = (float)stream.ReceiveNext();
+           
+        }
+    }
+
 }

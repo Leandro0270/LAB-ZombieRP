@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 7731260086498954267}
   - component: {fileID: 4687554036512629209}
   - component: {fileID: 417474907027889654}
+  - component: {fileID: 3513760723979310575}
   m_Layer: 0
   m_Name: NormalZombiePrefab
   m_TagString: Enemy
@@ -215,6 +216,7 @@ MonoBehaviour:
   photonView: {fileID: 4687554036512629209}
   explosivesPrefabs: []
   explosiveDeathEffect: {fileID: 0}
+  randomExplosiveName: []
 --- !u!65 &7731260086498954267
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -247,6 +249,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 1168015271937127255}
   - {fileID: 417474907027889654}
   sceneViewId: 0
   InstantiationId: 0
@@ -267,6 +270,22 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &3513760723979310575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6317069505473137892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 0
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!1001 &2002284106467118379
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -411,6 +430,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
+--- !u!95 &2684700840326687787 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6047579641533930501, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
+  m_PrefabInstance: {fileID: 8551395149691678766}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8332175961623672401 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 364085069070878335, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
@@ -433,3 +457,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4762d18431d513c4694b6e9bac3038d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 2684700840326687787}
+  _photonView: {fileID: 7350648734556172474}
+  isOnline: 1
+--- !u!114 &7350648734556172474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8712782238918438123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0

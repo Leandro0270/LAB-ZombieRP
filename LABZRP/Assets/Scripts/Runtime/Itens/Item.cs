@@ -1,9 +1,12 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Item : MonoBehaviour
+public class Item : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private PhotonView photonView;
     public bool isThrowable;
     public ScObItem ItemScOB;
     private GameObject StartItem;
@@ -39,9 +42,15 @@ public class Item : MonoBehaviour
                             {
                                 playerAmmo.ReceiveAmmo(ItemScOB.Balas);
                                 status.ReceiveHeal(ItemScOB.life);
-                                //acha o game object pela tag
-                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                Destroy(gameObject);
+                                if (isOnline)
+                                {
+                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                }
+                                else
+                                {
+                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                    Destroy(gameObject);
+                                }
                             }
                         }
                     }
@@ -56,8 +65,15 @@ public class Item : MonoBehaviour
                             if (status.GetLife() < status.GetTotalLife())
                             {
                                 status.ReceiveHeal(ItemScOB.life);
-                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                Destroy(gameObject);
+                                if (isOnline)
+                                {
+                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                }
+                                else
+                                {
+                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                    Destroy(gameObject);
+                                }
                             }
                         }
                     }
@@ -72,8 +88,15 @@ public class Item : MonoBehaviour
                             if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas())
                             {
                                 playerAmmo.ReceiveAmmo(ItemScOB.Balas);
-                                GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                Destroy(gameObject);
+                                if (isOnline)
+                                {
+                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                }
+                                else
+                                {
+                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                                    Destroy(gameObject);
+                                }
                             }
                         }
                     }
@@ -83,8 +106,16 @@ public class Item : MonoBehaviour
             {
                 if (status.addItemThrowable(ItemScOB.throwable))
                 {
-                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                    Destroy(gameObject);
+                    if (isOnline)
+                    {
+                        photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                    }
+                    else
+                    {
+                        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+
+                        Destroy(gameObject);
+                    }
                 }
             }
         }
@@ -107,7 +138,14 @@ public class Item : MonoBehaviour
             StartItem.transform.parent = transform;
             return StartItem;
         }
+    }
 
+
+    [PunRPC]
+    public void MasterClientDestroyItemHolder()
+    {
+        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+        PhotonNetwork.Destroy(this.gameObject);
     }
     
 }

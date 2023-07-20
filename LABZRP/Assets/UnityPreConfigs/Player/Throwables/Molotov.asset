@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4c1d233a0f31041bbac9711dbb20e1, type: 3}
   m_Name: Molotov
   m_EditorClassIdentifier: 
+  throwableId: 2
   throwableType: 1
   throwablePrefab3DModel: {fileID: 3676935445642508706, guid: 2409be972b55f6445bbcd46460528c99, type: 3}
   visualEffect: {fileID: 5726672401693897346, guid: 16e95ae4b9fab8740ae9b0e912cbb9c3, type: 3}

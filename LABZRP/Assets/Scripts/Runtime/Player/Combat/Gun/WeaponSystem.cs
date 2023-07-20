@@ -248,12 +248,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         }
                         _balasRestantes--;
                         _disparosAEfetuar--;
-                        if(!_isOnline)
-                                _bulletsUI.setBalasPente(_balasRestantes);
-                        else
-                        {
-                                _photonView.RPC("updateBulletsUi", RpcTarget.All);
-                        }
+                        _bulletsUI.setBalasPente(_balasRestantes);
+                       
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                         if (_disparosAEfetuar > 0 && _balasRestantes > 0)
                         {
@@ -298,12 +294,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
                         }
                         _balasRestantes -= _balasPorDisparo;
-                        if(!_isOnline)
-                                _bulletsUI.setBalasPente(_balasRestantes);
-                        else
-                        {
-                                _photonView.RPC("updateBulletsUi", RpcTarget.All);
-                        }
+                        _bulletsUI.setBalasPente(_balasRestantes);
+                       
                         Invoke("ResetarTiro", _tempoEntreDisparos);
                 }
         }
@@ -312,16 +304,16 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         {
                 if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando)
                 {
-                        if (_isOnline)
-                        {
-                                GameObject slide = PhotonNetwork.Instantiate("reloadSlider", transform.position, Quaternion.identity);
-                                _reloadSliderInstance = slide.GetComponent<Slider>();
-                                int reloadSliderPhotonId = slide.GetComponent<PhotonView>().ViewID;
-                                photonView.RPC("reloadSliderOnline", RpcTarget.All, reloadSliderPhotonId, _tempoRecarga);
-
-                        }
-                        else
-                        {
+                        // if (_isOnline)
+                        // {
+                        //         GameObject slide = PhotonNetwork.Instantiate("reloadSlider", transform.position, Quaternion.identity);
+                        //         _reloadSliderInstance = slide.GetComponent<Slider>();
+                        //         int reloadSliderPhotonId = slide.GetComponent<PhotonView>().ViewID;
+                        //         photonView.RPC("reloadSliderOnline", RpcTarget.All, reloadSliderPhotonId, _tempoRecarga);
+                        //
+                        // }
+                        // else
+                        // {
                                 _reloadSliderInstance =
                                         Instantiate(reloadSlider, transform.position, Quaternion.identity);
                                 _reloadSliderInstance.transform.SetParent(GameObject.Find("Canva").transform);
@@ -329,7 +321,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 _prontoParaAtirar = false;
                                 _recarregando = true;
                                 Invoke("ReloadTerminado", _tempoRecarga);
-                        }
+                        //}
                 }
         }
         
@@ -375,11 +367,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         
         }
 
-        [PunRPC]
-        public void updateBulletsUi()
-        {
-                _bulletsUI.setBalasPente(_balasRestantes);
-        }
+        
+        
         private void ReloadTerminado()
         {
                 _throwablePlayerStats.setCanceledThrow(false);
@@ -548,7 +537,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         //================================================================================================
         //Map interaction
-        
+
         public void ReceiveAmmo(int ammo)
         {
                 PlayerStats status = GetComponent<PlayerStats>();
@@ -558,6 +547,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         _totalBalas = _maxBalas;
                 _bulletsUI.setBalasPente(_balasRestantes);
                 _bulletsUI.setBalasTotal(_totalBalas);
+                
         }
         //================================================================================================
         //Getters and setters

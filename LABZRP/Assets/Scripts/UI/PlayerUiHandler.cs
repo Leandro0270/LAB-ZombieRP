@@ -1,20 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerUiHandler : MonoBehaviour
+public class PlayerUiHandler : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private PhotonView photonView;
     private bool setup = true;
     private GameObject _player;
     private PlayerStats _playerStats;
     private WeaponSystem _weaponSystem;
     private PlayerPoints _playerPoints;
-    private HealthBar_UI _healthBarUi;
-    private Points_UI _pointsUI;
-    private BULLETS_UI _bulletsUi;
+    [SerializeField] private HealthBar_UI _healthBarUi;
+    [SerializeField] private Points_UI _pointsUI;
+    [SerializeField] private BULLETS_UI _bulletsUi;
     public GameObject BulletText;
     public GameObject SliderComponentGameObject;
     public GameObject PointsText;
@@ -43,7 +45,18 @@ public class PlayerUiHandler : MonoBehaviour
     {
         return BulletText.GetComponent<BULLETS_UI>();
     }
-    
+
+    [PunRPC]
+    public void setOnlinePlayerRPC(int PhotonViewId)
+    {
+        GameObject player = PhotonView.Find(PhotonViewId).gameObject;
+        _player = player;
+    }
+    public void setOnlinePlayer(GameObject player)
+    {
+        int photonViewId = player.GetComponent<PhotonView>().ViewID;
+        photonView.RPC("setOnlinePlayerRPC", RpcTarget.All, photonViewId);
+    }
     public void setPlayer(GameObject player)
     {
         _player = player;
