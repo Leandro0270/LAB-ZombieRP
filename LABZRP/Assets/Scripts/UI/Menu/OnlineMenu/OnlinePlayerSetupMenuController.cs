@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -50,7 +52,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
 
     [SerializeField] private GameObject playerModel;
     [SerializeField] private Animator playerModelAnimator;
-
+    private bool _isReady;
     public void SetPlayerIndex(int pi, string ClientPlayerName)
     {
         PlayerIndex = pi;
@@ -63,6 +65,30 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     {
         playerStats = playerClass;
         readyClassButton.interactable = true;
+    }
+
+    public void OnCancel()
+    {
+        if (_isReady)
+        {
+                ClientCustomizationPanel.SetActive(true);
+                transform.SetParent(ClientCustomizationPanel.transform);
+                OnlineLobbyReady.SetActive(false);
+                CharacterCustomizePanel.SetActive(true);
+                readySkinButton.gameObject.SetActive(true);
+                ReadyPanel.SetActive(false);
+                OnlineLobbyReady.SetActive(false);
+                _isReady = false;
+                OnlinePlayerConfigurationManager.Instance.cancelReadyPlayer(PlayerIndex);
+        }
+        else if (playerStats != null)
+        {
+            CancelSelectClass();
+        }
+        else
+        {
+            OnlinePlayerConfigurationManager.Instance.showDisconnectWindow();
+        }
     }
 
     public void SetClass()
@@ -81,7 +107,8 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     {
         playerStats = null;
         CharacterCustomizePanel.SetActive(false);
-        readyClassButton.gameObject.SetActive(false);
+        readySkinButton.gameObject.SetActive(false);
+        readyClassButton.gameObject.SetActive(true);
         menuPanel.SetActive(true);
         playerModel.SetActive(false);
 
@@ -111,18 +138,11 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
         OnlineLobbyReady.SetActive(true);
         ClientCustomizationPanel.SetActive(false);
         transform.SetParent(OnlineLobbyReady.transform);
+        _isReady = true;
     }
 
-
-    public void cancelReadyPlayer()
-    {
-        ClientCustomizationPanel.SetActive(true);
-        transform.SetParent(ClientCustomizationPanel.transform);
-        OnlineLobbyReady.SetActive(false);
-        CharacterCustomizePanel.SetActive(true);
-        ReadyPanel.SetActive(false);
-        OnlineLobbyReady.SetActive(false);
-    }
+    
+    
 
     //================================================================================================
     //Player Customization

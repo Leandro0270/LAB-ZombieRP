@@ -113,6 +113,11 @@ MonoBehaviour:
   - SetParent
   - MasterClientDestroyItemHolder
   - disableFireDamageRPC
+  - clearAllconfigs
+  - cancelReadyPlayer
+  - cancelReadyPlayerRPC
+  - updateAvaiablesPlayerIndex
+  - verifyPlayerIndexAvailables
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

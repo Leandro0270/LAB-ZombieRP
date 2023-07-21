@@ -19,7 +19,6 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
         if(PhotonNetwork.InLobby == false)
             PhotonNetwork.JoinLobby();
         PhotonNetwork.JoinOrCreateRoom(ConnectedRoomCode, new Photon.Realtime.RoomOptions {MaxPlayers = 4}, null);
-        DontDestroyOnLoad(this);
 
 
     }
@@ -37,7 +36,6 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
     public override void OnJoinedLobby()
     {
         PhotonNetwork.JoinOrCreateRoom(ConnectedRoomCode, new Photon.Realtime.RoomOptions {MaxPlayers = 4}, null);
-        DontDestroyOnLoad(this);
         LoadScene("PlayerSetupOnline"); 
 
     }

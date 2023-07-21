@@ -45,7 +45,6 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
             {
                 photonView.RPC("sceneLoaded", RpcTarget.MasterClient);
                 mainGameManager.setIsMasterClient(true);
-                mainGameManager.getHordeManager().setSpecialEvent(true);
                 mainGameManager.getHordeManager().setIsMasterClient(true);
 
             }

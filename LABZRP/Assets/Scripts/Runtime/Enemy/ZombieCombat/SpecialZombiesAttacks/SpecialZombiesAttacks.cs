@@ -36,8 +36,8 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     private bool canAttack = true;
     private bool downedPlayer;
     private bool auxBool = false;
-    [SerializeField] private bool isOnline = false;
     private int targetPhotonViewID;
+    [SerializeField] private bool isOnline = false;
 
     private enum SpecialType
     {
@@ -71,9 +71,20 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient || !isOnline)
         {
+            if (alvo == null)
+            {
+                downedPlayer = false;
+                PlayerIsInRange = false;
+                canSpecialAttack = false;
+                canAttack = false;
+                auxBool = false;
+                players = GameObject.FindGameObjectsWithTag("Player");
+                FindNewTarget();
+                enemyFollow.setTarget(alvo);
+            }
+            
             if (!playerStats)
                 playerStats = alvo.GetComponent<PlayerStats>();
-
 
             if (Vector3.Distance(transform.position, alvo.transform.position) < distanciaAtivacaoPoder)
                 PlayerIsInRange = true;

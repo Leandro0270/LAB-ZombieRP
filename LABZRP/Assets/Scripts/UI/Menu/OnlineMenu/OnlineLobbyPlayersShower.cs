@@ -39,18 +39,48 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
     public void setIsReady(bool isReady)
     {
         this.isReady = isReady;
-        if (isReady)
-        {
-            playerModel.SetActive(true);
-            playerStatusText.gameObject.SetActive(false);
-            playerReadyText.gameObject.SetActive(true);
-            playerModelAnimator.SetBool("isReady", true);
-        }
+        playerModel.SetActive(this.isReady);
+            playerStatusText.gameObject.SetActive(!this.isReady);
+            playerReadyText.gameObject.SetActive(this.isReady);
+        
     }
     
     public void setPlayerName(string name)
     {
         playerNameText.text = name;
         this.name = name;
+    }
+
+    public void removePlayer()
+    {
+        if (isReady)
+        {
+            playerModel.SetActive(false);
+            playerStatusText.gameObject.SetActive(true);
+            playerReadyText.gameObject.SetActive(false);
+        }
+        playerStatusText.text = "Waiting for Player";
+        name = "Player";
+        playerNameText.text = name;
+        playerNameText.gameObject.SetActive(false);
+        PlayerIndex = -1;
+        isReady = false;
+    }
+
+
+
+    public int getPlayerIndex()
+    {
+        return PlayerIndex;
+    }
+    
+    public bool getIsReady()
+    {
+        return isReady;
+    }
+    
+    public string getPlayerName()
+    {
+        return name;
     }
 }

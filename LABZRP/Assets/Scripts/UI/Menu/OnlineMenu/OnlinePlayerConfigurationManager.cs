@@ -10,14 +10,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
 
- public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
+public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 {
      private List<int> playersIndexReady = new List<int>();
      private bool isMasterClient = false;
      private string roomCode;
      private string clientPlayerName;
      private int clientPlayerIndex;
+     private List<int> AvaiablesPlayersIndex = new List<int>(){1,2,3};
      [SerializeField] private TextMeshProUGUI roomCodeText;
      [SerializeField] private GameObject lobbyPanel;
      [SerializeField] private GameObject clientPanel;
@@ -32,25 +34,98 @@ using UnityEngine.SocialPlatforms;
      [SerializeField] private List<Material> pants;
      [SerializeField] private List<Material> Shoes;
      [SerializeField] private List<ScObPlayerStats> playerStats;
+     public static OnlinePlayerConfigurationManager Instance;
+     [SerializeField] private GameObject disconnectWindow;
+     [SerializeField] private Button firstSelectDisconectWindow;
+     [SerializeField] private Button quitButton;
+     private int localPlayerIndex;
+     private bool hideClientPanel = false;
      private Player[] playersNaSala;
      private int readyCount = 0;
      private int playersCount = 0;
-     
+     private bool gameStarted = false;
+     private bool initializedConfigs = false;
+     private int[] playersOnLobbyByActorNumber = new int[3];
+
+
+
+     // private void Update()
+     // {
+     //     Debug.Log("PlayersCount: " + playersCount + " ReadyCount: " + readyCount);
+     //     Debug.Log("playersOnLobbyByActorNumber: " + playersOnLobbyByActorNumber[0] + " " + playersOnLobbyByActorNumber[1] + " " + playersOnLobbyByActorNumber[2]);
+     //     Debug.Log("AvaiblePlayerIndex" + AvaiablesPlayersIndex[0] + " " + AvaiablesPlayersIndex[1] + " " + AvaiablesPlayersIndex[2]);
+     // }
      
      private void Awake()
      {
+         if (Instance != null && Instance != this)
+         {
+             Destroy(Instance.gameObject);
+         }
+         Instance = this;
          DontDestroyOnLoad(this);
          availableLobbyPlayersShower = lobbyPlayersShower;
          PhotonNetwork.AutomaticallySyncScene = true;
      }
-    public override void OnJoinedRoom(){
+
+     public void ResetGame()
+     {
+         playersIndexReady.Clear();
+         playerConfigs.Clear();
+         availableLobbyPlayersShower = lobbyPlayersShower;
+         readyCount = 0;
+         playersCount = 0;
+         initializeJoinedPlayer();
+     }
+
+     [PunRPC]
+     public void UpdateAvaiablesPlayerIndex(int[] avaiablesPlayersIndexArray, int[] playersOnLobbyByActorNumber)
+     {
+         AvaiablesPlayersIndex = new List<int>(avaiablesPlayersIndexArray);
+         this.playersOnLobbyByActorNumber = playersOnLobbyByActorNumber;
+         if(!initializedConfigs)
+             initializeJoinedPlayer();
+     }
+
+     [PunRPC]
+     public void VerifyPlayerIndexAvailables()
+     {
+         //Organiza a lista de availablesPlayersIndex em ordem crescente
+         AvaiablesPlayersIndex.Sort();
+
+         // Converta a lista para um array antes de enviar
+         int[] avaiablesPlayersIndexArray = AvaiablesPlayersIndex.ToArray();
     
-        playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+         photonView.RPC("UpdateAvaiablesPlayerIndex", RpcTarget.All, avaiablesPlayersIndexArray, playersOnLobbyByActorNumber);
+     }
+     public override void OnJoinedRoom(){ 
+         Debug.Log("Você é o player número: " + PhotonNetwork.LocalPlayer.ActorNumber);
+         Debug.Log("Você possui o nick: " + PhotonNetwork.LocalPlayer.NickName);
+         Debug.Log("Você está na sala: " + PhotonNetwork.CurrentRoom.Name);
+         Debug.Log("Há outros " + PhotonNetwork.CurrentRoom.PlayerCount + " players na sala");
+         playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+         isMasterClient = PhotonNetwork.IsMasterClient;
+         roomCode = PhotonNetwork.CurrentRoom.Name;
+         roomCodeText.text = "Código da sala: " + roomCode;
+         if(isMasterClient)
+             roomCodeText.text += "\n Você é o host da sala";
+         clientPlayerName = PhotonNetwork.LocalPlayer.NickName;
+         if (PhotonNetwork.LocalPlayer.ActorNumber > playersNaSala.Length && !isMasterClient)
+         {
+             photonView.RPC("VerifyPlayerIndexAvailables", RpcTarget.MasterClient);
+         }
+         else initializeJoinedPlayer();
+     }
+
+     public void initializeJoinedPlayer()
+     {
+         initializedConfigs = true;
+         int newPlayerIndex = AvaiablesPlayersIndex[0];
+         if(!isMasterClient)
+            AvaiablesPlayersIndex.RemoveAt(0);
+         playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
         isMasterClient = PhotonNetwork.IsMasterClient;
-        roomCode = PhotonNetwork.CurrentRoom.Name;
-        roomCodeText.text = "Código da sala: " + roomCode;
-        clientPlayerName = PhotonNetwork.LocalPlayer.NickName;
-        clientPlayerIndex = PhotonNetwork.LocalPlayer.ActorNumber;
+        clientPlayerIndex = newPlayerIndex;
         if (!isMasterClient)
         {
             foreach (var verificacaoDePlayer in playersNaSala)
@@ -84,12 +159,100 @@ using UnityEngine.SocialPlatforms;
             ClientPlayerSetupMenu.SetPlayerIndex(clientPlayerIndex, clientPlayerName);
             playerConfigs.Add(MasterLocalPlayer);
         }
+     }
 
-    }
-    
-    
-    public override void OnPlayerEnteredRoom(Player newPlayer)
+
+     public void showDisconnectWindow()
      {
+         disconnectWindow.SetActive(true);
+         firstSelectDisconectWindow.Select();
+         quitButton.gameObject.SetActive(false);
+
+         //if clientpanel is active, disable it
+         if (clientPanel.activeSelf)
+         {
+             hideClientPanel = true;
+             clientPanel.SetActive(false);
+         }
+         else
+                lobbyPanel.SetActive(false);
+     }
+     
+     public void hideDisconnectWindow()
+     {
+         disconnectWindow.SetActive(false);
+         quitButton.gameObject.SetActive(true);
+         quitButton.Select();
+         if (hideClientPanel)
+             clientPanel.SetActive(true);
+         else
+             lobbyPanel.SetActive(true);
+            
+
+     }
+
+
+     public override void OnDisconnected(DisconnectCause cause)
+     {
+         Debug.Log(cause);
+         SceneManager.LoadScene("OnlineConnection");
+         Destroy(gameObject);
+
+     }
+     public override void OnLeftRoom()
+     {
+         PhotonNetwork.Disconnect();
+     }
+     public void DisconnectButton()
+     {
+         PhotonNetwork.LeaveRoom();
+     }
+    
+     
+     public override void OnPlayerLeftRoom(Player otherPlayer)
+     {
+         OnlinePlayerConfiguration playerToRemove = playerConfigs.Find(config => Equals(config.player, otherPlayer));
+             if (playerToRemove != null)
+             {
+                 if (playerToRemove.isMasterClient)
+                 {
+                     Debug.Log("Master client se desconectou, retornando ao menu");
+                     PhotonNetwork.LeaveRoom();
+                     PhotonNetwork.Disconnect();
+                     SceneManager.LoadScene("OnlineConnection");
+                     Destroy(gameObject);
+                 }
+                 Debug.Log("O player de playerActorNumber " + playerToRemove.player.ActorNumber + " se desconectou");
+                 availableLobbyPlayersShower.Add(playerToRemove.lobbyPlayersShower);
+                 playerToRemove.lobbyPlayersShower.removePlayer();
+                 playersCount--;
+                 if(playerToRemove.isReady)
+                     readyCount--;
+                 AvaiablesPlayersIndex.Add(playerToRemove.PlayerIndex);
+                 AvaiablesPlayersIndex.Sort();
+                 playersOnLobbyByActorNumber[playerToRemove.PlayerIndex] = -1;
+                 playerConfigs.Remove(playerToRemove);
+
+             }
+         
+     }
+     
+     public void cancelReadyPlayer(int playerIndex)
+     {
+         photonView.RPC("cancelReadyPlayer", RpcTarget.All, playerIndex);
+     }
+     
+     
+     [PunRPC]
+     public void cancelReadyPlayerRPC(int playerIndex)
+     {
+         readyCount--;
+         playersIndexReady.Remove(playerIndex);
+         playerConfigs[playerIndex].isReady = false;
+         playerConfigs[playerIndex].lobbyPlayersShower.setIsReady(false);
+     }
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
          if(isMasterClient){
              foreach (int readyPlayerIndex in playersIndexReady)
              {
@@ -113,13 +276,23 @@ using UnityEngine.SocialPlatforms;
              }
          }
          playersNaSala.Append(newPlayer);
+         playersOnLobbyByActorNumber[AvaiablesPlayersIndex[0] - 1] = newPlayer.ActorNumber;
+         playersCount++;
          OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
          if (OnlineConfigPlayer != null)
          {
+             Debug.Log("LobbyPlayerShower é null???? " +(lobbyPlayersShower[0] == null));
+             Debug.Log("avaibleLobbyPlayerShower é null?????? " +(availableLobbyPlayersShower[0] == null));
+             Debug.Log("Index do player " + OnlineConfigPlayer.PlayerIndex);
+             Debug.Log("Nome do player " + OnlineConfigPlayer.playerName);
+             Debug.Log("ActorNumber do player " + OnlineConfigPlayer.player.ActorNumber);
+             AvaiablesPlayersIndex.RemoveAt(0);
              OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
              lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
              availableLobbyPlayersShower.RemoveAt(0);
              playerConfigs.Add(OnlineConfigPlayer);
+             playerConfigs = playerConfigs.OrderBy(playerConfig => playerConfig.PlayerIndex).ToList();
+
 
          }
      }
@@ -183,11 +356,13 @@ using UnityEngine.SocialPlatforms;
                  {
                      if(isMasterClient)
                          PhotonNetwork.LoadLevel("SampleScene");
+                     gameStarted = true;
                  }
                  
              }
          }
      }
+
      
      
     //PUNRPC CALLS=====================================
@@ -203,7 +378,25 @@ using UnityEngine.SocialPlatforms;
     
     private OnlinePlayerConfiguration HandlePlayerJoined(Player verificacaoDePlayer)
      {
-         var config = new OnlinePlayerConfiguration(verificacaoDePlayer);
+         OnlinePlayerConfiguration config = null;
+         if (verificacaoDePlayer.IsMasterClient)
+             config = new OnlinePlayerConfiguration(verificacaoDePlayer, 0);
+         else if (verificacaoDePlayer.IsLocal)
+             config = new OnlinePlayerConfiguration(verificacaoDePlayer, clientPlayerIndex);
+         else
+         {
+             for (int i = 0; i < playersOnLobbyByActorNumber.Length; i++)
+             {
+                 if(playersOnLobbyByActorNumber[i] == verificacaoDePlayer.ActorNumber){
+                     config = new OnlinePlayerConfiguration(verificacaoDePlayer, AvaiablesPlayersIndex[i]);
+                     break;
+                 }
+             }
+             
+         }
+         
+             
+         
          return config;
      }
     
@@ -244,17 +437,5 @@ using UnityEngine.SocialPlatforms;
 //     {
 //         photonView.RPC("CancelReadyPlayer", RpcTarget.All, index);
 //     }
-//
-//
 
-//  
-//
-//    
-//     }
-//         
-//     
-// 
-//
-//     
-//
 }

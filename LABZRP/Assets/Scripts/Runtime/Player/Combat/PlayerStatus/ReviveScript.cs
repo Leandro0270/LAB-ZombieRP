@@ -74,6 +74,7 @@ public class ReviveScript : MonoBehaviour
             {
                 if (_RevivalUIInstance != null)
                 {
+                    _playerStats.stopDeathCounting(false);
                     _isReviving = false;
                     _timeToRevive = MaxRevivalSpeed;
                     Destroy(_RevivalUIInstance.gameObject);

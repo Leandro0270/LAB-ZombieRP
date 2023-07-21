@@ -59,6 +59,11 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
                 {
                     if (!isEvent)
                     {
+                        if (target == null)
+                        {
+                            players = GameObject.FindGameObjectsWithTag("Player");
+                            target = GetTarget(players);
+                        }
                         PlayerStats _playerstats = target.GetComponent<PlayerStats>();
                         if (_playerstats.verifyDown() && !_playerstats.getIsIncapacitated() && !isSpecial)
                         {

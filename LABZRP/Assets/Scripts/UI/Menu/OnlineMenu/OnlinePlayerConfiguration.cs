@@ -12,10 +12,10 @@ using UnityEngine.SocialPlatforms;
 public class OnlinePlayerConfiguration
     {
         
-        public OnlinePlayerConfiguration(Player joinedPlayer)
+        public OnlinePlayerConfiguration(Player joinedPlayer, int playerIndex)
         {
             isMasterClient = joinedPlayer.IsMasterClient;
-            PlayerIndex = joinedPlayer.ActorNumber - 1;
+            PlayerIndex = playerIndex;
             player = joinedPlayer;
             playerName = joinedPlayer.NickName;
             isLocal = PhotonNetwork.LocalPlayer.ActorNumber == player.ActorNumber;
