@@ -344,6 +344,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         stream.SendNext(_balasRestantes);
                         stream.SendNext(_totalBalas);
                         stream.SendNext(_mirando);
+                        stream.SendNext(NormalZombiesKilled);
+                        stream.SendNext(SpecialZombiesKilled);
 
                 }
                 else
@@ -351,6 +353,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                        _balasRestantes = (int)stream.ReceiveNext();
                         _totalBalas = (int)stream.ReceiveNext();
                         _mirando = (bool)stream.ReceiveNext();
+                        NormalZombiesKilled = (int)stream.ReceiveNext();
+                        SpecialZombiesKilled = (int)stream.ReceiveNext();
                         
                 }
         }

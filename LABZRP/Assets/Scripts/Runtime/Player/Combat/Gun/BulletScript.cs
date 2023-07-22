@@ -91,7 +91,8 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 
                 hitted = true;
                 enemiesHitted++;
-                _status.takeDamage(damage);
+                if(_isBulletOwner)
+                    _status.takeDamage(damage);
                 if (_status.isDeadEnemy())
                 {
                     if (_isAiming)
@@ -150,29 +151,33 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
-            enemiesHitted++;
-            if (_isOnline)
-            {
-                status.takeOnlineDamage(damage * 0.5f);
-            }
-            else
-            {
-                status.takeDamage(damage * 0.5f);
-            }
-            
-            if (enemiesHitted < hitableEnemies)
+            if (!status.verifyDown())
             {
                 enemiesHitted++;
-            }
-            else
-            {
-                destroyBullet();
-                if(photonView.IsMine)
-                    PhotonNetwork.Destroy(gameObject);
-                else if(!_isOnline)
-                    Destroy(gameObject, 2f);
-            }
+                if (_isOnline)
+                {
+                    if(_isBulletOwner)
+                        status.takeOnlineDamage(damage * 0.5f);
+                }
+                else
+                {
+                    status.takeDamage(damage * 0.5f);
+                }
 
+                if (enemiesHitted < hitableEnemies)
+                {
+                    enemiesHitted++;
+                }
+                else
+                {
+                    destroyBullet();
+                    if (photonView.IsMine)
+                        PhotonNetwork.Destroy(gameObject);
+                    else if (!_isOnline)
+                        Destroy(gameObject, 2f);
+                }
+
+            }
         }
 
 

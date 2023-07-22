@@ -69,6 +69,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         {
             int photonViewID = player.GetComponent<PhotonView>().ViewID;
             photonView.RPC("removeDownedPlayerRPC", RpcTarget.MasterClient, photonViewID);
+            
         }
         if (alivePlayers.Contains(player))
         {
@@ -124,7 +125,30 @@ public class MainGameManager : MonoBehaviourPunCallbacks
             enemy.GetComponent<EnemyStatus>().killEnemy();
         }
     }
+
+    public void removeDisconnectedPlayer()
+    {
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine)
+            {
+                photonView.RPC("removePlayer", RpcTarget.All, player.GetComponent<PhotonView>().ViewID);
+                break;
+            }
+        }
+    }
     
+    [PunRPC]
+    public void removePlayer(int photonViewID)
+    {
+        GameObject player = PhotonView.Find(photonViewID).gameObject;
+        if(player == null){
+            return;
+        }
+        players.Remove(player);
+        alivePlayers.Remove(player);
+        downedPlayers.Remove(player);
+    }
     
     public void setIsMasterClient(bool isMasterClient)
     {
@@ -208,15 +232,41 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     private IEnumerator gameOver()
     {
         yield return new WaitForSeconds(2);
-        gameOverUI.gameObject.SetActive(true);
-        hordeManager.gameOver();
-        foreach (var zombie in enemies)
+        
+        if (isOnline)
         {
-            zombie.GetComponent<EnemyStatus>().gameIsOver();
+            photonView.RPC("showGameOverUI", RpcTarget.All);
+        }
+        else
+        {
+            gameOverUI.gameObject.SetActive(true);
+            hordeManager.gameOver();
+            foreach (var zombie in enemies)
+            {
+                zombie.GetComponent<EnemyStatus>().gameIsOver();
+            }
+            gameOverUI.gameOver();
+        }
+    }
+
+    
+    [PunRPC]
+    public void showGameOverUI()
+    {
+        gameOverUI.gameObject.SetActive(true);
+        gameOverUI.setIsOnline(true);
+        hordeManager.gameOver();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            hordeManager.updateHordeOnline();
+            foreach (var zombie in enemies)
+            {
+                zombie.GetComponent<EnemyStatus>().gameIsOver();
+            }
         }
         gameOverUI.gameOver();
     }
-    
+
     public void setPlayerConfigurationManager(GameObject playerConfigurationManager)
     {
         this.playerConfigurationManager = playerConfigurationManager;
@@ -224,7 +274,11 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     
     public GameObject getPlayerConfigurationManager()
     {
-        return playerConfigurationManager;
+        if (isOnline)
+            return onlinePlayerConfigurationManager;
+        else
+            return playerConfigurationManager;
+        
     }
     
     public void setOnlinePlayerConfigurationManager(GameObject onlinePlayerConfigurationManager)

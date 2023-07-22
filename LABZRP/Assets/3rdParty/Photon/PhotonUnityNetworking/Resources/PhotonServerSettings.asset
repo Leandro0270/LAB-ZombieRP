@@ -118,6 +118,14 @@ MonoBehaviour:
   - cancelReadyPlayerRPC
   - updateAvaiablesPlayerIndex
   - verifyPlayerIndexAvailables
+  - UpdateAvaiablesPlayerIndex
+  - VerifyPlayerIndexAvailables
+  - removePlayer
+  - updateHordeOnline
+  - updateName
+  - showGameOverUI
+  - returnToMenu
+  - backToMenuRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

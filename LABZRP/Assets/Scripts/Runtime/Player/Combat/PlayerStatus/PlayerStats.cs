@@ -390,6 +390,12 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     {
         _healthBarUi.SetHealth((int)lifeOnline);
     }
+    
+    [PunRPC]
+    public void updateName(string name)
+    {
+        _name = name;
+    }
     private void _InitializePlayerSpecs()
     {
         _weaponSystem = GetComponent<WeaponSystem>();
@@ -402,7 +408,14 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         _maxGunItens = _playerStatus.maxGunCapacity;
         _maxAuxiliaryItens = _playerStatus.maxAuxiliaryCapacity;
         _characterColor = _playerStatus.MainColor;
-        _name = _playerStatus.name;
+        if (_isOnline)
+        {
+            photonView.RPC("updateName", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);
+        }
+        else
+        {
+            _name = _playerStatus.name;
+        }
         _speed = _playerStatus.speed;
         totalLife = _playerStatus.health;
         life = totalLife;

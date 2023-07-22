@@ -21,6 +21,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     [SerializeField] private MainGameManager GameManager;
     //Horde Parameters==========================================================
     [SerializeField] private bool isHorderMode = true;
+    [SerializeField] private bool isIncrementalZombiesPerPlayer = true;
     [SerializeField] private bool haveBaseZombieLifeIncrement = true;
     [SerializeField] private float baseZombieLifeIncrement = 0.5f;
     [SerializeField] private float spawnTime = 2f;
@@ -122,18 +123,19 @@ public class HordeManager : MonoBehaviourPunCallbacks
         {
             GameManager.removeEnemy(zombie);
             zombiesAlive--;
-            killedZombiesInHorde++;
             if (isOnline)
             {
-                if (PhotonNetwork.IsMasterClient)
+                if (isOnline && PhotonNetwork.IsMasterClient)
                 {
+                    killedZombiesInHorde++;
                     string text = "Horde: " + (currentHorde + 1) + " | Zombies: " +
                                   (currentHordeZombies - killedZombiesInHorde);
                     photonView.RPC("setHordeText", RpcTarget.All, text);
                 }
             }
-            else
+            else if(!isOnline)
             {
+                killedZombiesInHorde++;
                 HorderText.text = "Horde: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             }
             if (killedZombiesInHorde == currentHordeZombies)
@@ -211,9 +213,9 @@ public class HordeManager : MonoBehaviourPunCallbacks
                 }
             }
             
-            if (isOnline)
+            if (isOnline && PhotonNetwork.IsMasterClient)
             {
-                string text = "Horder: " + (currentHorde + 1) + " | Zombies: " +
+                string text = "Horde: " + (currentHorde + 1) + " | Zombies: " +
                               (currentHordeZombies - killedZombiesInHorde);
                 photonView.RPC("setHordeText", RpcTarget.All, text);
                 if (isBossZombieAlive)
@@ -223,7 +225,9 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     int viewID = zombieBoss.GetComponent<PhotonView>().ViewID;
                     GameManager.addEnemyOnOnline(viewID);
                 }
-                
+
+                if (isIncrementalZombiesPerPlayer)
+                    currentHordeZombies = PhotonNetwork.PlayerList.Length * currentHordeZombies;
                 for (int i = 0; i < currentHordeZombies; i++)
                 {
                     yield return new WaitForSeconds(spawnTime);
@@ -280,7 +284,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
                 }
                 
             }
-            else
+            else if(!isOnline)
             {
 
                 if (haveBaseZombieLifeIncrement && currentHorde > 0)
@@ -415,6 +419,17 @@ public class HordeManager : MonoBehaviourPunCallbacks
         public int getCurrentHorde()
         {
             return currentHorde;
+        }
+
+        public void updateHordeOnline()
+        {
+            photonView.RPC("updateHordeOnline", RpcTarget.All, currentHorde);
+        }
+        
+        [PunRPC]
+        public void updateHordeOnline(int currentHorde)
+        {
+            this.currentHorde = currentHorde;
         }
 }
 

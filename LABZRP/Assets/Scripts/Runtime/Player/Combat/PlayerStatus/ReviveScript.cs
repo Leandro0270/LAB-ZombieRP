@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ReviveScript : MonoBehaviour
+public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     private PlayerStats _playerStats;
     private float _timeToRevive;
@@ -122,5 +123,19 @@ public class ReviveScript : MonoBehaviour
     public int getDownCount()
     {
         return _downs++;
+    }
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_downs);
+            stream.SendNext(_revives);
+        }
+        else
+        {
+            _downs = (int)stream.ReceiveNext();
+            _revives = (int)stream.ReceiveNext();
+        }
     }
 }
