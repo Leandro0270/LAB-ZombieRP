@@ -71,13 +71,23 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          PhotonNetwork.AutomaticallySyncScene = true;
          if (isReplay)
          {
-             isReplay = false;
              playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
              isMasterClient = PhotonNetwork.IsMasterClient;
              roomCode = PhotonNetwork.CurrentRoom.Name;
              roomCodeText.text = "Código da sala: " + roomCode;
-             if(isMasterClient)
+             if (isMasterClient)
+             {
                  roomCodeText.text += "\n Você é o host da sala";
+                 //for para adicionar os playersActorNumber na lista excluindo o master client
+                    for (int i = 0; i < playersNaSala.Length; i++)
+                    {
+                        if (playersNaSala[i].ActorNumber != PhotonNetwork.LocalPlayer.ActorNumber)
+                        {
+                            playersOnLobbyByActorNumber[i-1] = playersNaSala[i].ActorNumber;
+                        }
+                    }
+             }
+
              clientPlayerName = PhotonNetwork.LocalPlayer.NickName;
              if (PhotonNetwork.LocalPlayer.ActorNumber > playersNaSala.Length && !isMasterClient)
              {
@@ -139,6 +149,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 
      public void initializeJoinedPlayer()
      {
+         Debug.Log(isReplay);
          initializedConfigs = true;
          int newPlayerIndex = AvaiablesPlayersIndex[0];
          if(!isMasterClient)
@@ -146,11 +157,20 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
         isMasterClient = PhotonNetwork.IsMasterClient;
         clientPlayerIndex = newPlayerIndex;
-        if (!isMasterClient)
+        if (isMasterClient && !isReplay)
+        {
+            OnlinePlayerConfiguration MasterLocalPlayer = HandlePlayerJoined(playersNaSala[0]);
+            clientPlayerIndex = MasterLocalPlayer.PlayerIndex;
+            clientPlayerName = MasterLocalPlayer.playerName;
+            ClientPlayerSetupMenu.SetPlayerIndex(clientPlayerIndex, clientPlayerName);
+            playerConfigs.Add(MasterLocalPlayer);
+        }
+        else
         {
             foreach (var verificacaoDePlayer in playersNaSala)
             {
                 OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(verificacaoDePlayer);
+                Debug.Log(OnlineConfigPlayer.PlayerIndex);
                 if (OnlineConfigPlayer.isLocal == false)
                 {
                     OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
@@ -171,14 +191,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             //Vai organizar a lista de playerconfigs com base no playerindex
             playerConfigs = playerConfigs.OrderBy(playerConfig => playerConfig.PlayerIndex).ToList();
         }
-        else
-        {
-            OnlinePlayerConfiguration MasterLocalPlayer = HandlePlayerJoined(playersNaSala[0]);
-            clientPlayerIndex = MasterLocalPlayer.PlayerIndex;
-            clientPlayerName = MasterLocalPlayer.playerName;
-            ClientPlayerSetupMenu.SetPlayerIndex(clientPlayerIndex, clientPlayerName);
-            playerConfigs.Add(MasterLocalPlayer);
-        }
+
      }
 
 
