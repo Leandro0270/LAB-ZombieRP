@@ -16,6 +16,7 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     private NavMeshAgent navMeshAgent;
     private Rigidbody rb;
     [SerializeField] private PhotonView _photonView;
+    [SerializeField] private ZombieAnimationController animationController;
     [SerializeField] private GameObject Effect;
     [SerializeField] private float damage = 10f;
     [SerializeField] private GameObject CoffeProjectile;
@@ -123,6 +124,16 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                         {
                             enemyFollow.setIsStoped(false);
                             enemyFollow.setFollowPlayers(true);
+
+                            enemyFollow.setIsStoped(true);
+                            animationController.setAttack();
+                            enemyFollow.setFollowPlayers(false);
+                            if (canSpecialAttack && !zumbi.isDeadEnemy())
+                            {
+                                tempoPoderesAtual = tempoEntrePoderes;
+                                canSpecialAttack = false;
+                                StartCoroutine(StopBeforeSpecialAttack());
+                            }
                         }
                         else
                         {
