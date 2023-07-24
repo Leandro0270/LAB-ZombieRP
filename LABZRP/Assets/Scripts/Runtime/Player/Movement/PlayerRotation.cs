@@ -13,7 +13,8 @@ using Vector3 = UnityEngine.Vector3;
 //Esse comando faz com que seja necessario o objeto em que o script for aplicado tenha o componente RIGIDBODY
 public class PlayerRotation : MonoBehaviour
 {
-
+    private bool _canSwitchInputs = true;
+    private bool isOnlinePlayer;
     private PlayerStats _status;
     private Vector3 _inputRotation;
     private Vector3 _inputMouse;
@@ -37,7 +38,11 @@ public class PlayerRotation : MonoBehaviour
     {
         isGamepad = validation;
     }
-
+    
+    private void setCanSwitchInputs(bool canSwitch)
+    {
+        _canSwitchInputs = canSwitch;
+    }
     public void setRotationInput(Vector3 auxRotation)
     {
         _inputRotation.z = -auxRotation.x;
@@ -65,7 +70,7 @@ void Start()
                     transform.rotation = newRotation;
             }
         }
-        if(!isGamepad){
+        if(!isGamepad && !isOnlinePlayer){
             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _hit, 100, ground))
             {
                     //Nessa variavel está sendo feito a distância do player para onde o raycast está batendo
@@ -83,6 +88,11 @@ void Start()
     public void setCanRotate(bool valor)
     {
         _canRotate = valor;
+    }
+    
+    public void setIsOnlinePlayer(bool valor)
+    {
+        isOnlinePlayer = valor;
     }
 }
     

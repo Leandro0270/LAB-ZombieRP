@@ -4,6 +4,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Throwable")]
 public class ScObThrowableSpecs : ScriptableObject
 {
+
+   public int throwableId;
    public enum Type
    {
       Grenade,

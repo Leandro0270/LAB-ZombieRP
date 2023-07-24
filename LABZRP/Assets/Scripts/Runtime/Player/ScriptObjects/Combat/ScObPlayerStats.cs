@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Player")]
 public class ScObPlayerStats : ScriptableObject
 {
+    public int classIndex;
+    public String name;
     public int maxThrowableCapacity;
     public int maxAuxiliaryCapacity;
     public int maxGunCapacity;

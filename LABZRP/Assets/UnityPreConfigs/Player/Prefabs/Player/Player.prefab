@@ -212,6 +212,7 @@ MonoBehaviour:
   MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
   _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   armaSpawn: {fileID: 4110660743618978061}
+  _photonView: {fileID: 0}
   reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
@@ -233,9 +234,8 @@ MonoBehaviour:
   dispersaoSangue: 1
   totalLife: 0
   life: 0
-  PlayerUI: {fileID: 3552828503619246009, guid: cc4911e997beff04abc889ca68eb2606, type: 3}
+  PlayerUI: {fileID: 3552828503619246009, guid: 2fcfc9858337b484690ce36a42c2f4e3, type: 3}
   _playerHead: {fileID: 6071763367816855199}
-  _mainGameManager: {fileID: 0}
   _playerIndicator: {fileID: 8476164450946481546}
 --- !u!114 &4110660743282712486
 MonoBehaviour:
@@ -276,6 +276,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8adb12746eeef5e45b841ac9bcc14fd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _OnlinePlayerInput: {fileID: 0}
+  _photonView: {fileID: 0}
+  _move: {fileID: 0}
+  _rotate: {fileID: 0}
+  _attack: {fileID: 0}
+  _status: {fileID: 0}
+  _customize: {fileID: 0}
+  _throwableStats: {fileID: 0}
   delay: 1.5
 --- !u!114 &1534977132509532281
 MonoBehaviour:
@@ -302,10 +310,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 528197af854f082489fa3e1c52a161a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  throwableSpecsList: []
   explosionArea: {fileID: 1519424236948069790, guid: d8a96f033f9c18649bcea42fad860f1d, type: 3}
   ThrowerHand: {fileID: 3431554702415488595}
   DecalSpawnPoint: {fileID: 5597692463332652274}
   coolDownBetweenThrows: 1.5
+  isOnline: 0
+  photonView: {fileID: 0}
   throwableItemPrefab: {fileID: 2216045802385621327, guid: d5d2cd53e6d08d5498ddbe99c0d8d96f, type: 3}
 --- !u!65 &3281851553285552828
 BoxCollider:
@@ -372,6 +383,8 @@ MonoBehaviour:
   pointsPerNormalZombie: 10
   pointsMultiplier: 1.5
   isMultiplierActive: 0
+  isOnline: 0
+  photonView: {fileID: 0}
 --- !u!143 &2607379241762753282
 CharacterController:
   m_ObjectHideFlags: 0
@@ -858,6 +871,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a77111fbdeb5db4cb835a3aa81319dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 0}
+  photonView: {fileID: 0}
+  isOnline: 0
 --- !u!1 &6071763367816855199 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

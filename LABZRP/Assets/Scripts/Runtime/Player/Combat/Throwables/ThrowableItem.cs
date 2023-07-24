@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
-public class ThrowableItem : MonoBehaviour
+public class ThrowableItem : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject explosionArea;
+    [SerializeField] private PhotonView photonView;
+    [SerializeField] private bool isOnline = false;
     private ScObThrowableSpecs _throwableSpecs;
     private ScObThrowableSpecs.Type _throwableType;
     private GameObject _throwablePrefab3DModel;
@@ -35,7 +38,6 @@ public class ThrowableItem : MonoBehaviour
         if (setup)
         {
 
-
             if (!_explodeOnImpact)
             {
                 _currentTime += Time.deltaTime;
@@ -47,15 +49,18 @@ public class ThrowableItem : MonoBehaviour
             
             if(_attractEnemies)
             {
-                Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attactionRadius);
-                foreach (var hitCollider in hitColliders)
+                if (!isOnline || PhotonNetwork.IsMasterClient)
                 {
-                    if (hitCollider.gameObject.CompareTag("Enemy"))
+                    Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attactionRadius);
+                    foreach (var hitCollider in hitColliders)
                     {
-                        EnemyFollow enemyFollow = hitCollider.gameObject.GetComponent<EnemyFollow>();
-                        enemyFollow.setNewDestination(transform.position);
-                        enemyFollow.setCanAttack(false);
-                        StartCoroutine(resetEnemyTarget(enemyFollow));
+                        if (hitCollider.gameObject.CompareTag("Enemy"))
+                        {
+                            EnemyFollow enemyFollow = hitCollider.gameObject.GetComponent<EnemyFollow>();
+                            enemyFollow.setNewDestination(transform.position);
+                            enemyFollow.setCanAttack(false);
+                            StartCoroutine(resetEnemyTarget(enemyFollow));
+                        }
                     }
                 }
             }
@@ -72,15 +77,32 @@ public class ThrowableItem : MonoBehaviour
         }
     }
 
+    [PunRPC]
+    public void applyExplosion(int viewId)
+    {
+        GameObject explosion = PhotonView.Find(viewId).gameObject;
+        explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
+        SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
+        _sphereCollider.radius = _radius;
+    }
 
     private void Explode()
         {
             if (explosionArea != null)
             {
-                GameObject explosion = Instantiate(explosionArea, transform.position, transform.rotation);
-                explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
-                SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
-                _sphereCollider.radius = _radius;
+                if (isOnline)
+                {
+                    GameObject explosion = PhotonNetwork.Instantiate("explosionArea", transform.position, transform.rotation);
+                    int viewID = explosion.GetComponent<PhotonView>().ViewID;
+                    photonView.RPC("applyExplosion", RpcTarget.All, viewID);
+                }
+                else
+                {
+                    GameObject explosion = Instantiate(explosionArea, transform.position, transform.rotation);
+                    explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
+                    SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
+                    _sphereCollider.radius = _radius;
+                }
             }
 
             Destroy(gameObject);

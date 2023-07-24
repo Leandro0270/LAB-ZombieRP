@@ -1,20 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using Object = UnityEngine.Object;
 
-public class BulletScript : MonoBehaviour
+public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private bool haveKnockback = false;
     [SerializeField] private float knockbackForce = 10f;
     [SerializeField] private bool isMelee = false;
+    [SerializeField] private bool isWallBang = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     public GameObject bloodParticle;
-    public GameObject bloodParticleCritical;
     private Rigidbody _rb;
     private float damage;
     public float distancia;
@@ -24,13 +25,23 @@ public class BulletScript : MonoBehaviour
     private bool isCritical = false;
     private bool _isAiming = false;
     private bool hitted = false;
+    [SerializeField] private bool _isOnline = false;
+    private bool _isBulletOwner = false;
+
+    
+    [SerializeField] private BoxCollider _collider;
+    [SerializeField] private UniversalAdditionalLightData _UAlightD;
+    [SerializeField] private Light _light;
+    [SerializeField] private MeshRenderer _meshRenderer;
+    [SerializeField] private ParticleSystem _particleSystem;
     
 
     private void Start()
     {
+
         _rb = GetComponent<Rigidbody>();
         StartCoroutine(waiter());
-        
+
     }
 
 
@@ -47,60 +58,56 @@ public class BulletScript : MonoBehaviour
     {
         float tempo = distancia / velocidadeBala;
         yield return new WaitForSeconds(tempo);
-        if(!hitted)
+        if (!hitted && _isBulletOwner)
             PlayerShooter.missedShot();
-        Destroy(gameObject);
+        if(_isBulletOwner)
+            PhotonNetwork.Destroy(gameObject);
+        else if(!_isOnline)
+            Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider objetoDeColisao)
     {
         if (objetoDeColisao.gameObject.CompareTag("WALL"))
         {
-                GameObject NewBulletHole = Instantiate(BulletHole,
-                    objetoDeColisao.ClosestPointOnBounds(transform.position),
-                    transform.rotation);
-                Destroy(NewBulletHole, 20f);
-                destroyBullet();
-                Destroy(gameObject);
-            
+            GameObject NewBulletHole = Instantiate(BulletHole,
+                objetoDeColisao.ClosestPointOnBounds(transform.position),
+                transform.rotation);
+            Destroy(NewBulletHole, 20f);
+            destroyBullet();
+            if(_isBulletOwner)
+                PhotonNetwork.Destroy(gameObject);
+
         }
-        
-        
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
-        
-        
         if (_status != null)
         {
+            enemiesHitted++;
+            GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
+                objetoDeColisao.transform.rotation);
+            Destroy(NewBloodParticle, 4f);
             if (!_status.isDeadEnemy())
             {
+                
                 hitted = true;
                 enemiesHitted++;
-                if (isCritical)
+                if(_isBulletOwner)
+                    _status.takeDamage(damage);
+                if (_status.isDeadEnemy())
                 {
-                    GameObject NewBloodParticleCritical = Instantiate(bloodParticleCritical, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
-                    Destroy(NewBloodParticleCritical, 4f);
-
-                    Debug.Log("Critico!");
-                }else{
-                    GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position, objetoDeColisao.transform.rotation);
-                    Destroy(NewBloodParticle, 4f);
-                }            
-                //A função takeDamage retorna true se o zumbi morreu
-                if (_status.takeDamage(damage))
-                {
-                    if(_isAiming){
-                        Debug.Log("Matou mirando");
+                    if (_isAiming)
+                    {
                         PlayerShooter.addKilledZombieWithAim();
-                        
+
                     }
 
                     else if (isMelee)
                     {
-                        Debug.Log("Matou com melee");
                         PlayerShooter.addKilledZombieWithMelee();
 
 
                     }
+
                     if (_status.getIsSpecial())
                     {
                         int points = _status.getPoints();
@@ -108,7 +115,7 @@ public class BulletScript : MonoBehaviour
                     }
                     else
                         PlayerShooter.addKilledNormalZombie();
-                    
+
 
                 }
                 else
@@ -119,6 +126,7 @@ public class BulletScript : MonoBehaviour
                         rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
                     }
                 }
+                
                 if (enemiesHitted < hitableEnemies)
                 {
                     enemiesHitted++;
@@ -126,58 +134,84 @@ public class BulletScript : MonoBehaviour
                 else
                 {
                     destroyBullet();
-                    Destroy(gameObject,2f);
+                    if(_isOnline && _isBulletOwner)
+                        PhotonNetwork.Destroy(gameObject);
+                    else if(!_isOnline)
+                        Destroy(gameObject, 2f);
                 }
-                        
+
             }
         }
         else
         {
             PlayerShooter.missedShot();
         }
-        
+
 
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
-            status.takeDamage(damage * 0.5f);
-            if (enemiesHitted< hitableEnemies)
+            if (!status.verifyDown())
             {
                 enemiesHitted++;
-            }
-            else
-            {
-                destroyBullet();
-                Destroy(gameObject);
-            }
-            
+                if (_isOnline)
+                {
+                    if(_isBulletOwner)
+                        status.takeOnlineDamage(damage * 0.5f);
+                }
+                else
+                {
+                    status.takeDamage(damage * 0.5f);
+                }
 
+                if (enemiesHitted < hitableEnemies)
+                {
+                    enemiesHitted++;
+                }
+                else
+                {
+                    destroyBullet();
+                    if (photonView.IsMine)
+                        PhotonNetwork.Destroy(gameObject);
+                    else if (!_isOnline)
+                        Destroy(gameObject, 2f);
+                }
+
+            }
         }
-        
+
 
     }
-    
+
     public void setIsKnockback(bool knockback)
     {
         haveKnockback = knockback;
     }
-    
+
     public void setKnockbackForce(float knockbackForce)
     {
         this.knockbackForce = knockbackForce;
     }
+
     public void setDistancia(float distancia)
     {
         this.distancia = distancia;
     }
+
     public void setVelocidadeBalas(float velocidadeBala)
     {
         this.velocidadeBala = velocidadeBala;
     }
+
     public void setHitableEnemies(int hitableEnemies)
     {
+        if (hitableEnemies > 1)
+        {
+            isWallBang = true;
+        }
         this.hitableEnemies = hitableEnemies;
     }
+
     public void SetDamage(float damage)
     {
         this.damage = damage;
@@ -186,28 +220,107 @@ public class BulletScript : MonoBehaviour
 
     public void setShooter(WeaponSystem shooter)
     {
-        PlayerShooter = shooter;
+        if (_isOnline && photonView.IsMine)
+        {
+            PlayerShooter = shooter;
+            _isBulletOwner = true;
+            int shooterID = shooter.gameObject.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("setShooterOnline", RpcTarget.All, shooterID);
+        }
+        else if (!_isOnline)
+        {
+            PlayerShooter = shooter;
+        }
     }
     
+    
+    [PunRPC]
+    public void setShooterOnline(int shooterID)
+    {
+        GameObject shooter = PhotonView.Find(shooterID).gameObject;
+        PlayerShooter = shooter.GetComponent<WeaponSystem>();
+    }
+
     public void setMelee(bool melee)
     {
         isMelee = melee;
     }
+
+    public void setHaveKnockback(bool knockback)
+    {
+        haveKnockback = knockback;
+    }
+
+    public void setIsOnline(bool online)
+    {
+        _isOnline = online;
+    }
+
     public void setIsAiming(bool aiming)
     {
         _isAiming = aiming;
     }
-    
+
     public void setIsCritical(bool critical)
     {
         isCritical = critical;
     }
+
     private void destroyBullet()
     {
-        Destroy(gameObject.GetComponent<MeshFilter>());
-        Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
-        Destroy(gameObject.GetComponent<BoxCollider>());
-        Destroy(gameObject.GetComponent<Light>());
-        Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+        if (_isOnline)
+        {
+
+            _collider.enabled = false;
+            _UAlightD.enabled = false;
+            _light.enabled = false;
+            _meshRenderer.enabled = false;
+            _particleSystem.Stop();
+            
+            
+        }
+        else
+        {
+
+            Destroy(gameObject.GetComponent<MeshFilter>());
+            Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
+            Destroy(gameObject.GetComponent<BoxCollider>());
+            Destroy(gameObject.GetComponent<Light>());
+            Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+        }
+    }
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+
+        if (stream.IsWriting)
+        {
+            stream.SendNext(haveKnockback);
+            stream.SendNext(knockbackForce);
+            stream.SendNext(isMelee);
+            stream.SendNext(damage);
+            stream.SendNext(distancia);
+            stream.SendNext(velocidadeBala);
+            stream.SendNext(hitableEnemies);
+            stream.SendNext(enemiesHitted);
+            stream.SendNext(isCritical);
+            stream.SendNext(_isAiming);
+            stream.SendNext(hitted);
+
+        }
+        else
+        {
+            haveKnockback = (bool)stream.ReceiveNext();
+            knockbackForce = (float)stream.ReceiveNext();
+            isMelee = (bool)stream.ReceiveNext();
+            damage = (float)stream.ReceiveNext();
+            distancia = (float)stream.ReceiveNext();
+            velocidadeBala = (float)stream.ReceiveNext();
+            hitableEnemies = (int)stream.ReceiveNext();
+            enemiesHitted = (int)stream.ReceiveNext();
+            isCritical = (bool)stream.ReceiveNext();
+            _isAiming = (bool)stream.ReceiveNext();
+            hitted = (bool)stream.ReceiveNext();
+
+        }
     }
 }

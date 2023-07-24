@@ -1,15 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class ThrowablePlayerStats : MonoBehaviour
+public class ThrowablePlayerStats : MonoBehaviourPunCallbacks
 {
+    [SerializeField] private ScObThrowableSpecs[] throwableSpecsList;
     [SerializeField] private DecalProjector explosionArea;
     [SerializeField] private GameObject ThrowerHand;
     [SerializeField] private GameObject DecalSpawnPoint;
     [SerializeField] private float coolDownBetweenThrows = 1.5f;
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private PhotonView photonView;
     private int maxCapacity;
     private List<ScObThrowableSpecs> throwableInventory = new List<ScObThrowableSpecs>();
     private int itemIndex = 0;
@@ -147,14 +151,48 @@ public class ThrowablePlayerStats : MonoBehaviour
         }
     }
 
+
+
+
+    [PunRPC]
+    public void applyThrowableSpecs(int ThrowableSpecsID, int instancePhotonID)
+    {
+        ScObThrowableSpecs selectedThrowableSpecs = null;
+        //Irá procurar na lista de throwableSpecs o throwableSpecs com o ID passado como parâmetro
+        foreach (ScObThrowableSpecs throwableSpecs in throwableSpecsList)
+        {
+            if (throwableSpecs.throwableId == ThrowableSpecsID)
+            {
+                selectedThrowableSpecs = throwableSpecs;
+                break;
+            }
+        }
+
+        if (selectedThrowableSpecs != null)
+        {
+            GameObject throwableItemInstance = PhotonView.Find(instancePhotonID).gameObject;
+            throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(selectedThrowableSpecs);
+        }
+    }
     public void ThrowItem()
     {
         if (decalObject)
         {
-            GameObject throwableItemInstance =
-                Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
+            GameObject throwableItemInstance;
+            if (isOnline)
+            {
+                throwableItemInstance = PhotonNetwork.Instantiate("ThrowableItem", ThrowerHand.transform.position, Quaternion.identity);
+                int instancePhotonID = throwableItemInstance.GetComponent<PhotonView>().ViewID;
+                photonView.RPC("applyThrowableSpecs", RpcTarget.All, throwableInventory[itemIndex].throwableId, instancePhotonID);
+            }
+            else
+            {
+                throwableItemInstance =
+                    Instantiate(throwableItemPrefab, ThrowerHand.transform.position, Quaternion.identity);
+                throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(throwableInventory[itemIndex]);
+            }
+
             Rigidbody rb = throwableItemInstance.GetComponent<Rigidbody>();
-            throwableItemInstance.GetComponent<ThrowableItem>().setThrowableSpecs(throwableInventory[itemIndex]);
             Vector3 trajetoria =
                 CalculaTrajetoriaParabolica(ThrowerHand.transform.position, decalObject.transform.position,
                     9);
@@ -166,7 +204,6 @@ public class ThrowablePlayerStats : MonoBehaviour
             currentThrowDistance = 0f;
             isAiming = false;
             Destroy(decalObject);
-            
             coolDown();
         }
     }

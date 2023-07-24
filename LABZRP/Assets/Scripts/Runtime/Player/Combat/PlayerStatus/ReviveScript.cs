@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ReviveScript : MonoBehaviour
+public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     private PlayerStats _playerStats;
     private float _timeToRevive;
@@ -12,6 +13,8 @@ public class ReviveScript : MonoBehaviour
     private bool _isReviving = false;
     private Slider _RevivalUIInstance;
     private float MaxRevivalSpeed;
+    private int _revives = 0;
+    private int _downs = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -64,6 +67,7 @@ public class ReviveScript : MonoBehaviour
                     _isReviving = false;
                     Destroy(_RevivalUIInstance.gameObject);
                     _playerStats.Revived();
+                    ctx.GetComponent<ReviveScript>().addReviveCount();
                 }
             }
             
@@ -71,6 +75,7 @@ public class ReviveScript : MonoBehaviour
             {
                 if (_RevivalUIInstance != null)
                 {
+                    _playerStats.stopDeathCounting(false);
                     _isReviving = false;
                     _timeToRevive = MaxRevivalSpeed;
                     Destroy(_RevivalUIInstance.gameObject);
@@ -97,6 +102,40 @@ public class ReviveScript : MonoBehaviour
             GameObject canva = GameObject.FindGameObjectWithTag("Canva");
             _RevivalUIInstance = Instantiate(_RevivalSlider, (transform.position), Quaternion.identity);
             _RevivalUIInstance.gameObject.transform.SetParent(canva.transform);
+        }
+    }
+
+    public void addReviveCount()
+    {
+        _revives++;
+    }
+    
+    public int getReviveCount()
+    {
+        return _revives;
+    }
+    
+    public void addDownCount()
+    {
+        _downs++;
+    }
+    
+    public int getDownCount()
+    {
+        return _downs++;
+    }
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_downs);
+            stream.SendNext(_revives);
+        }
+        else
+        {
+            _downs = (int)stream.ReceiveNext();
+            _revives = (int)stream.ReceiveNext();
         }
     }
 }

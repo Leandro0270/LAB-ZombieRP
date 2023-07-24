@@ -1,19 +1,25 @@
 using System;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public class PlayerInputHandler : MonoBehaviour
+public class PlayerInputHandler : MonoBehaviourPunCallbacks
 {
+    
+    [SerializeField] PlayerInput _OnlinePlayerInput;
+    [SerializeField] PhotonView _photonView;
     private PlayerController _controls;
     private PauseMenu _pause;
+    private OnlinePlayerConfiguration _OnlinePlayerConfig;
     private PlayerConfiguration _playerConfig;
-    private PlayerMovement _move;
-    private PlayerRotation _rotate;
-    private WeaponSystem _attack;
-    private PlayerStats _status;
-    private CustomizePlayerInGame _customize;
-    private ThrowablePlayerStats _throwableStats;
+    
+    [SerializeField] private PlayerMovement _move;
+    [SerializeField] private PlayerRotation _rotate;
+    [SerializeField] private WeaponSystem _attack;
+    [SerializeField] private PlayerStats _status;
+    [SerializeField] private CustomizePlayerInGame _customize;
+    [SerializeField] private ThrowablePlayerStats _throwableStats;
     private MainGameManager _mainGameManager;
     public float delay = 2f;
     private float delayTimer = 0f;
@@ -29,6 +35,7 @@ public class PlayerInputHandler : MonoBehaviour
         _throwableStats = GetComponent<ThrowablePlayerStats>();
     }
 
+    
     private void Start()
     {
         _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
@@ -43,7 +50,42 @@ public class PlayerInputHandler : MonoBehaviour
             delayTimer -= Time.deltaTime;
         }
     }
+    
+    public void InitializeOnlinePlayer(OnlinePlayerConfiguration pc)
+    {
+        _OnlinePlayerConfig = pc;
+        if (_photonView.IsMine)
+        {
+            _OnlinePlayerInput.onActionTriggered += Input_onActionTriggered;
+        }
+        else
+        {
+            _rotate.setIsOnlinePlayer(true);
+        }
 
+        if (_status != null)
+        {
+            _status = GetComponent<PlayerStats>();
+            _status.setIsOnline(true);
+            _status.setPlayerStats(_OnlinePlayerConfig.playerStats);
+        }
+
+        if (_attack != null)
+        {
+            _attack = GetComponent<WeaponSystem>();
+            _attack.setIsOnline(true);
+            _attack.SetGunStatus(_OnlinePlayerConfig.playerStats.startGun);
+        }
+
+        if (_customize != null)
+        {
+            _customize = GetComponent<CustomizePlayerInGame>();
+            _customize.SetSkin(_OnlinePlayerConfig.playerCustom);
+        }
+    }
+        
+    
+    
     public void InitializePlayer(PlayerConfiguration pc)
     {
         _playerConfig = pc;

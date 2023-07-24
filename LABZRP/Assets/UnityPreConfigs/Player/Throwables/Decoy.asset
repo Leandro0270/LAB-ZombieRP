@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b4c1d233a0f31041bbac9711dbb20e1, type: 3}
   m_Name: Decoy
   m_EditorClassIdentifier: 
+  throwableId: 4
   throwableType: 3
   throwablePrefab3DModel: {fileID: 8845999055220628774, guid: add85971020327e45a97cdfe7827cc74, type: 3}
   visualEffect: {fileID: 100000, guid: e1a244474427c7d49a2358702a6212aa, type: 3}

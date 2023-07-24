@@ -1,25 +1,35 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class MainGameManager : MonoBehaviour
+public class MainGameManager : MonoBehaviourPunCallbacks
 {
-   
+    private bool isMasterClient = false;
+    private bool isOnline = false;
     private List<GameObject> players;
     private List<GameObject> alivePlayers;
     private List<GameObject> downedPlayers;
     private List<GameObject> enemies;
     private List<GameObject> itens;
+    [SerializeField] private PhotonView photonView;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private Camera miniMapCamera;
     [SerializeField] private HordeManager hordeManager;
     [SerializeField] private ChallengeManager challengeManager;
+    [SerializeField] private HordeModeGameOverManager gameOverUI;
+    [SerializeField] private GameObject playerConfigurationManager;
+    [SerializeField] private GameObject onlinePlayerConfigurationManager;
+    [SerializeField] private Camera minimapCamera;
+
+
+    public bool _killAllPlayers = false;
     
     
     
-    
+   
     public void Start()
     {
         players = new List<GameObject>();
@@ -28,7 +38,15 @@ public class MainGameManager : MonoBehaviour
         enemies = new List<GameObject>();
         itens = new List<GameObject>();
     }
-    
+
+    private void Update()
+    {
+        if(_killAllPlayers){
+            killAllPlayers();
+            _killAllPlayers = false;
+        }
+    }
+
     public void addItem(GameObject item)
     {
         itens.Add(item);
@@ -39,13 +57,37 @@ public class MainGameManager : MonoBehaviour
     {
         return itens.Count;
     }
-    
+    [PunRPC]
+    public void removeDownedPlayerRPC(int photonViewID)
+    {
+        GameObject player = PhotonView.Find(photonViewID).gameObject;
+        removeDownedPlayer(player);
+    }
     public void removeDownedPlayer(GameObject player)
     {
-        alivePlayers.Remove(player);
-        downedPlayers.Add(player);
+        if (isOnline && !isMasterClient)
+        {
+            int photonViewID = player.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("removeDownedPlayerRPC", RpcTarget.MasterClient, photonViewID);
+            
+        }
+        if (alivePlayers.Contains(player))
+        {
+            alivePlayers.Remove(player);
+            downedPlayers.Add(player);
+            if (downedPlayers.Count == players.Count)
+            {
+                
+                StartCoroutine(gameOver());
+            }
+        }
+        
+        
     }
-    
+    public Camera getMiniMapCamera()
+    {
+        return minimapCamera;
+    }
     
     public void addDownedPlayer(GameObject player)
     {
@@ -64,11 +106,60 @@ public class MainGameManager : MonoBehaviour
         enemies.Add(enemy);
     }
     
+    public void addEnemyOnOnline(int PhotonViewID)
+    {
+        photonView.RPC("addEnemyOnOnlineRPC", RpcTarget.All, PhotonViewID);
+    }
+    
+    [PunRPC]
+    public void addEnemyOnOnlineRPC(int PhotonViewID)
+    {
+        GameObject enemy = PhotonView.Find(PhotonViewID).gameObject;
+        enemies.Add(enemy);
+    }
+    
     public void killAllEnemies()
     {
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<EnemyStatus>().killEnemy();
+        }
+    }
+
+    public void removeDisconnectedPlayer()
+    {
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<PhotonView>().IsMine)
+            {
+                photonView.RPC("removePlayer", RpcTarget.All, player.GetComponent<PhotonView>().ViewID);
+                break;
+            }
+        }
+    }
+    
+    [PunRPC]
+    public void removePlayer(int photonViewID)
+    {
+        GameObject player = PhotonView.Find(photonViewID).gameObject;
+        if(player == null){
+            return;
+        }
+        players.Remove(player);
+        alivePlayers.Remove(player);
+        downedPlayers.Remove(player);
+    }
+    
+    public void setIsMasterClient(bool isMasterClient)
+    {
+        this.isMasterClient = isMasterClient;
+    }
+    
+    public void killAllPlayers()
+    {
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerStats>().takeDamage(100000);
         }
     }
 
@@ -124,6 +215,10 @@ public class MainGameManager : MonoBehaviour
             enemy.GetComponent<EnemyFollow>().setNearPlayerDestination();
         }
     }
+    public HordeManager getHordeManager()
+    {
+        return hordeManager;
+    }
 
     public void cancelCoffeeMachineEvent()
     {
@@ -133,10 +228,78 @@ public class MainGameManager : MonoBehaviour
         }
         resetZombiesTarget();
     }
-
-    public Camera getMiniMapCamera()
+    
+    private IEnumerator gameOver()
     {
-        return miniMapCamera;
+        yield return new WaitForSeconds(2);
+        
+        if (isOnline)
+        {
+            photonView.RPC("showGameOverUI", RpcTarget.All);
+        }
+        else
+        {
+            gameOverUI.gameObject.SetActive(true);
+            hordeManager.gameOver();
+            foreach (var zombie in enemies)
+            {
+                zombie.GetComponent<EnemyStatus>().gameIsOver();
+            }
+            gameOverUI.gameOver();
+        }
+    }
+
+    
+    [PunRPC]
+    public void showGameOverUI()
+    {
+        gameOverUI.gameObject.SetActive(true);
+        gameOverUI.setIsOnline(true);
+        hordeManager.gameOver();
+        if (PhotonNetwork.IsMasterClient)
+        {
+            hordeManager.updateHordeOnline();
+            foreach (var zombie in enemies)
+            {
+                zombie.GetComponent<EnemyStatus>().gameIsOver();
+            }
+        }
+        gameOverUI.gameOver();
+    }
+
+    public void setPlayerConfigurationManager(GameObject playerConfigurationManager)
+    {
+        this.playerConfigurationManager = playerConfigurationManager;
     }
     
+    public GameObject getPlayerConfigurationManager()
+    {
+        if (isOnline)
+            return onlinePlayerConfigurationManager;
+        else
+            return playerConfigurationManager;
+        
+    }
+    
+    public void setOnlinePlayerConfigurationManager(GameObject onlinePlayerConfigurationManager)
+    {
+        this.onlinePlayerConfigurationManager = onlinePlayerConfigurationManager;
+    }
+
+    public ChallengeManager getChallengeManager()
+    {
+        return challengeManager;
+    }
+    public GameObject getOnlinePlayerConfigurationManager()
+    {
+        return onlinePlayerConfigurationManager;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+
+
+
 }

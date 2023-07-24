@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f3758f8f58fdef43803eb9be1df0608, type: 3}
+  m_Name: PhotonServerSettings
+  m_EditorClassIdentifier: 
+  AppSettings:
+    AppIdRealtime: 531c93b4-3572-4746-a691-b1ad1e698c45
+    AppIdFusion: 
+    AppIdChat: 
+    AppIdVoice: 
+    AppVersion: 
+    UseNameServer: 1
+    FixedRegion: 
+    Server: 
+    Port: 0
+    ProxyServer: 
+    Protocol: 0
+    EnableProtocolFallback: 1
+    AuthMode: 0
+    EnableLobbyStatistics: 0
+    NetworkLogging: 1
+  DevRegion: sa
+  PunLogging: 0
+  EnableSupportLogger: 0
+  RunInBackground: 1
+  StartInOfflineMode: 0
+  RpcList:
+  - ClickRpc
+  - DestroyRpc
+  - DestroySpaceship
+  - Fire
+  - RespawnSpaceship
+  - instantiatePlayer
+  - ReadyPlayer
+  - RequestPlayerInstantiation
+  - sceneLoaded
+  - setConfigsToplayer
+  - SetPlayerName
+  - SetPlayerSkin
+  - addEnemyOnOnlineRPC
+  - setHordeText
+  - setTotalLifeRPC
+  - setLifeRPC
+  - SetScObPlayerStats
+  - reloadSliderOnline
+  - setOnlineAttackSpecs
+  - updateBulletsUi
+  - setIsOnline
+  - destoryForAllOnlinePlayers
+  - updateText
+  - IncapacitatePlayerRPC
+  - takeDamage
+  - CapacitateOnlinePlayer
+  - disableOnlineCharacterControllerRPC
+  - changeTransformParentRPC
+  - OnlineCharacterControllerRPC
+  - PuxarJogadorRPC
+  - changePlayerBuyerGun
+  - changePlayerBuyerGunOnline
+  - setItemSpecsOnline
+  - setPointsUiRPC
+  - setStartItemRPC
+  - ShowError
+  - setAttackRPC
+  - setDowningRPC
+  - setDownRPC
+  - setMovementRPC
+  - setShooterOnline
+  - disableBulletOnline
+  - MasterClientHandleDamageRPC
+  - AnimationHandlerRPC
+  - disableCapsuleColliderRPC
+  - setInOnHordeCooldownOnline
+  - HandleItemTypeOneOnlineRPC
+  - HandleItemTypeZeroOnlineRPC
+  - updateChallengeTextRPC
+  - startChallengesRPC
+  - updateChallengeTime
+  - finishChallenge
+  - addZombieKilled
+  - destroyCoffeeMachine
+  - missedShot
+  - setTakedHit
+  - Model3dChallengeMachine
+  - setIsActivatedRPC
+  - addZombieKilledRPC
+  - CoffeeMachineTakeHit
+  - missedShotRPC
+  - setTakedHitRPC
+  - setTargetRPC
+  - triggerDownRPC
+  - setIsInArea
+  - instantiateExplosiveEffect
+  - applyThrowableSpecs
+  - Explode
+  - applyExplosion
+  - updateHealthBar
+  - instantiateBlood
+  - burnEnemyRPC
+  - ReceiveTemporarySlowRPC
+  - StunEnemyRPC
+  - removeDownedPlayerRPC
+  - setOnlinePlayerRPC
+  - SetParent
+  - MasterClientDestroyItemHolder
+  - disableFireDamageRPC
+  - clearAllconfigs
+  - cancelReadyPlayer
+  - cancelReadyPlayerRPC
+  - updateAvaiablesPlayerIndex
+  - verifyPlayerIndexAvailables
+  - UpdateAvaiablesPlayerIndex
+  - VerifyPlayerIndexAvailables
+  - removePlayer
+  - updateHordeOnline
+  - updateName
+  - showGameOverUI
+  - returnToMenu
+  - backToMenuRPC
+  DisableAutoOpenWizard: 1
+  ShowSettings: 1
+  DevRegionSetOnce: 1

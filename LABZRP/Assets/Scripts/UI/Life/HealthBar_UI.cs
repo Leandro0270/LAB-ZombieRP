@@ -1,20 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
-public class HealthBar_UI : MonoBehaviour
+public class HealthBar_UI : MonoBehaviourPunCallbacks, IPunObservable
 {
+    [SerializeField] PhotonView photonView;
+    [SerializeField] private bool isOnline = false;
     private Color _color;
     public GameObject Fill;
-    private Slider _slider;
-    private Image _fill;
-    // Start is called before the first frame update
-    private void Start()
-    {
-        _fill = Fill.GetComponent<Image>();
-        _slider = GetComponent<Slider>();
-    }
+    [SerializeField] private Slider _slider;
+    [SerializeField] private Image _fill;
 
     public void setMaxHealth(int health)
     {
@@ -35,5 +32,22 @@ public class HealthBar_UI : MonoBehaviour
     public Color getColor()
     {
         return _fill.color;
+    }
+    
+    
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_slider.maxValue);
+            stream.SendNext(_slider.value);
+        }
+        else
+        {
+            _slider.maxValue = (float)stream.ReceiveNext();
+            _slider.value = (float)stream.ReceiveNext();
+            
+
+        }
     }
 }

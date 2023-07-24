@@ -1,12 +1,18 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class PlayerAnimationManager : MonoBehaviour
+public class PlayerAnimationManager : MonoBehaviourPunCallbacks
 {
-    private Animator _animator;
+    [SerializeField] private Animator _animator;
+    [SerializeField] private PhotonView photonView;
+    [SerializeField] private bool isOnline = false;
     // Start is called before the first frame update
     void Start()
     {
-        _animator = GetComponent<Animator>();
+        if(_animator == null)
+            _animator = GetComponent<Animator>();
+        if(photonView == null)
+            photonView = GetComponent<PhotonView>();
     }
     
     public void setMovement(bool walking)
@@ -26,5 +32,7 @@ public class PlayerAnimationManager : MonoBehaviour
     {
         _animator.SetTrigger("Downing");
     }
+    
+    
     
 }

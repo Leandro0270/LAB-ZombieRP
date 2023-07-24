@@ -3,22 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Photon.Pun;
+using UnityEngine.Serialization;
 
-public class VendingMachineHorderGenerator : MonoBehaviour
+public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
 {
     
     private int playersCount = 0;
     [SerializeField] private GameObject VendingMachinePrefab;
-    [SerializeField] private int VendingMachinesRespawnHound = 3;
+    [FormerlySerializedAs("VendingMachinesRespawnHound")] [SerializeField] private int VendingMachinesRespawnRound = 3;
     [SerializeField] private Transform[] VendingMachinesSpawnPoints;
     [SerializeField] private int VendingMachinesPerPlayer = 3; 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager mainGameManager;
     private List<GameObject> spawnedVendingMachines = new List<GameObject>();
+    private bool isOnline = false;
+    private bool isMasterClient = false;
 
     public void addPlayer(GameObject player)
     {
         playersCount++;
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
+    }
+    
+    public void setIsMasterClient(bool isMasterClient)
+    {
+        this.isMasterClient = isMasterClient;
     }
     
     public void removePlayer(GameObject player)
@@ -28,33 +42,59 @@ public class VendingMachineHorderGenerator : MonoBehaviour
 
     public void verifySpawnVendingMachine(int atualHorde)
     {
-        if (atualHorde % VendingMachinesRespawnHound == 0 || atualHorde == 1)
+        if (!isOnline || PhotonNetwork.IsMasterClient)
         {
-            if (spawnedVendingMachines.Count > 0)
+
+
+            if (atualHorde % VendingMachinesRespawnRound == 0 || atualHorde == 1)
             {
-                foreach (GameObject vendingMachine in spawnedVendingMachines)
+                if (spawnedVendingMachines.Count > 0)
                 {
-                    Destroy(vendingMachine.gameObject);
+                    foreach (GameObject vendingMachine in spawnedVendingMachines)
+                    {
+                        if (isOnline)
+                            PhotonNetwork.Destroy(vendingMachine.gameObject);
+                        
+                        else
+                            Destroy(vendingMachine.gameObject);
+                    }
                 }
-            }
-            List<Transform> NotVisibleSpawnPoints = new List<Transform>();
-            foreach (Transform spawnPoint in VendingMachinesSpawnPoints)
-            {
+
+                List<Transform> NotVisibleSpawnPoints = new List<Transform>();
+                foreach (Transform spawnPoint in VendingMachinesSpawnPoints)
+                {
                     if (!IsVisibleByCamera(spawnPoint))
                     {
                         NotVisibleSpawnPoints.Add(spawnPoint);
                     }
-            }
+                }
 
-            for (int i = 0; i < playersCount * VendingMachinesPerPlayer; i++)
-            {
+                for (int i = 0; i < playersCount * VendingMachinesPerPlayer; i++)
+                {
 
                     int randomSpawnPoint = Random.Range(0, NotVisibleSpawnPoints.Count);
-                    GameObject NewVendingMachine = Instantiate(VendingMachinePrefab,
-                        NotVisibleSpawnPoints[randomSpawnPoint].transform.position,
-                        NotVisibleSpawnPoints[randomSpawnPoint].transform.rotation);
-                    spawnedVendingMachines.Add(NewVendingMachine);
-                    NotVisibleSpawnPoints.RemoveAt(randomSpawnPoint);
+                    GameObject NewVendingMachine;
+
+                    if (isOnline)
+                    {
+                        NewVendingMachine = PhotonNetwork.Instantiate("VendingMachinePrefab",
+                            NotVisibleSpawnPoints[randomSpawnPoint].transform.position,
+                            NotVisibleSpawnPoints[randomSpawnPoint].transform.rotation);
+                    }
+                    else
+                    {
+                        NewVendingMachine = Instantiate(VendingMachinePrefab,
+                            NotVisibleSpawnPoints[randomSpawnPoint].transform.position,
+                            NotVisibleSpawnPoints[randomSpawnPoint].transform.rotation);
+                    }
+
+                    if (NewVendingMachine != null)
+                    {
+                        NewVendingMachine.GetComponent<VendingMachine>().setIsMasterClient(true);
+                        spawnedVendingMachines.Add(NewVendingMachine);
+                        NotVisibleSpawnPoints.RemoveAt(randomSpawnPoint);
+                    }
+                }
             }
         }
     }
@@ -73,10 +113,10 @@ public class VendingMachineHorderGenerator : MonoBehaviour
     {
         foreach (var vendingMachine in spawnedVendingMachines)
         {
-            if(vendingMachine != null)
-                vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown);
+                if (vendingMachine != null)
+                    vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown);
         }
     }
     
-
+    
 }

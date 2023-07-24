@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class ChallengeMachine : MonoBehaviour
+public class ChallengeMachine : MonoBehaviourPunCallbacks
 {
     [SerializeField] private Transform ModelSpawnPoint;
     private ChallengeManager _challengeManager;
@@ -23,13 +24,16 @@ public class ChallengeMachine : MonoBehaviour
     private GameObject _current3dModel;
     [SerializeField] private TextMeshPro ScreenPoints;
     [SerializeField] private bool changeChallenges = false;
+    [SerializeField] private bool isOnline = false;
+    [SerializeField] private PhotonView photonView;
 
 
     private void Start()
     {
-
         _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
-        InitializeChallengeMachine();
+        if(!isOnline || PhotonNetwork.IsMasterClient){
+            InitializeChallengeMachine();
+        }
         
     }
 
@@ -43,37 +47,75 @@ public class ChallengeMachine : MonoBehaviour
 
     public void InitializeChallengeMachine()
     {
-        if(_current3dModel)
-            Destroy(_current3dModel);
         _currentChallenge = Random.Range(0, _challenges.Length);
-        _current3dModel = Instantiate(_challenges[_currentChallenge].Model3dChallengeMachine, ModelSpawnPoint.position, ModelSpawnPoint.rotation);
-        _current3dModel.transform.parent = transform;
-        ScreenPoints.text = _challenges[_currentChallenge].ChallengeReward.ToString();
+        if(isOnline){
+            if(_current3dModel)
+                photonView.RPC("Model3dChallengeMachine", RpcTarget.All, true, _currentChallenge);
+            else
+            {
+                photonView.RPC("Model3dChallengeMachine", RpcTarget.All, false, _currentChallenge);
+            }
+
+        }
+        else
+        {
+            if (_current3dModel)
+                Model3dChallengeMachine(true, _currentChallenge);
+            else
+                Model3dChallengeMachine(false, _currentChallenge);
+        }
+    }
+
+    [PunRPC]
+    public void Model3dChallengeMachine(bool destroy, int _currentChallengeRPC)
+    {
+        if(destroy)
+            Destroy(_current3dModel);
+        else
+        {
+            _current3dModel = Instantiate(_challenges[_currentChallengeRPC].Model3dChallengeMachine,
+                ModelSpawnPoint.position, ModelSpawnPoint.rotation);
+            _current3dModel.transform.parent = transform;
+            ScreenPoints.text = _challenges[_currentChallengeRPC].ChallengeReward.ToString();
+        }
     }
 
 
     private void OnTriggerStay(Collider other)
     {
-        PlayerStats playerStats = other.GetComponent<PlayerStats>();
-        if(playerStats && _isActivated)
+        if (!isOnline || PhotonNetwork.IsMasterClient)
         {
-            if (playerStats.getInteracting() && !playerStats.verifyDown())
+            PlayerStats playerStats = other.GetComponent<PlayerStats>();
+            if (playerStats && _isActivated)
             {
-                if(_challengeManager.StartChallenge(_challenges[_currentChallenge], this))
+                if (playerStats.getInteracting() && !playerStats.verifyDown())
                 {
-                    _isActivated = false;
-                    _isStarted = true;
-                    ScObChallengesSpecs challenge = _challenges[_currentChallenge];
-                    challenge.zombiesToKill = (_challenges[_currentChallenge].zombiesToKill * difficulty) + (_challengeManager.getPlayerCount() * 15);
-                    challenge.ChallengeReward = (_challenges[_currentChallenge].ChallengeReward * difficulty);
-                    _challengeManager.StartChallenge(_challenges[_currentChallenge], this);
+                    if (_challengeManager.StartChallenge(_challenges[_currentChallenge], this))
+                    {
+                        _isActivated = false;
+                        _isStarted = true;
+                        ScObChallengesSpecs challenge = _challenges[_currentChallenge];
+                        challenge.zombiesToKill = (_challenges[_currentChallenge].zombiesToKill * difficulty) +
+                                                  (_challengeManager.getPlayerCount() * 15);
+                        challenge.ChallengeReward = (_challenges[_currentChallenge].ChallengeReward * difficulty);
+                        _challengeManager.StartChallenge(_challenges[_currentChallenge], this);
 
+                    }
                 }
             }
         }
     }
 
     public void setIsActivated(bool value)
+    {
+        if (isOnline)
+            photonView.RPC("setIsActivatedRPC", RpcTarget.All, value);
+        else
+            _isActivated = value;
+    }
+    
+    [PunRPC]
+    public void setIsActivatedRPC(bool value)
     {
         _isActivated = value;
     }
