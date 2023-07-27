@@ -106,7 +106,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
                 {
                     if (_isDamage)
                     {
-                        enemyStatus.takeDamage(_damage);
+                        enemyStatus.takeDamage(_damage,null, false, false);
                     }
                     
 

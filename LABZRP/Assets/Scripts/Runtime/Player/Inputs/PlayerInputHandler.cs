@@ -13,7 +13,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     private PauseMenu _pause;
     private OnlinePlayerConfiguration _OnlinePlayerConfig;
     private PlayerConfiguration _playerConfig;
-    
+    private bool gameIsPaused = false;
     [SerializeField] private PlayerMovement _move;
     [SerializeField] private PlayerRotation _rotate;
     [SerializeField] private WeaponSystem _attack;
@@ -34,13 +34,12 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         _controls = new PlayerController();
         _throwableStats = GetComponent<ThrowablePlayerStats>();
     }
-
-    
     private void Start()
     {
         _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
         _mainGameManager.addPlayer(gameObject);
-        
+        _pause = _mainGameManager.getPauseMenu();
+
     }
 
     private void Update()
@@ -109,68 +108,91 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     {
         if (obj.action.name == _controls.Gameplay.Move.name)
         {
-            OnMove(obj);
+            if(!gameIsPaused)
+                OnMove(obj);
         }
 
         if (obj.action.name == _controls.Gameplay.Rotation.name)
         {
-            OnJoinRotation(obj);
+            if(!gameIsPaused)
+                OnJoinRotation(obj);
         }
 
         if (obj.action.name == _controls.Gameplay.Reload.name)
         {
-            OnReload();
+            if(!gameIsPaused)
+                OnReload();
         }
 
         if (obj.action.name == _controls.Gameplay.Melee.name)
         {
-            if (delayTimer <= 0)
+            if (!gameIsPaused)
             {
-                OnMelee();
-                delayTimer = delay;
+                if (delayTimer <= 0)
+                {
+                    OnMelee();
+                    delayTimer = delay;
+                }
             }
 
         }
 
         if (obj.action.name == _controls.Gameplay.ShootHold.name)
         {
-
-            OnShootPress(obj);
+            if(!gameIsPaused)
+                OnShootPress(obj);
         }
 
         if (obj.action.name == _controls.Gameplay.Aim.name)
         {
-            OnAimPress(obj);
+            if(!gameIsPaused)
+                OnAimPress(obj);
         }
 
         if (obj.action.name == _controls.Gameplay.ChangeThrowable.name)
         {
-            onChangeThrowable();
+            if(!gameIsPaused)
+                onChangeThrowable();
+        }
+
+        if (obj.action.name == _controls.Gameplay.Pause.name)
+        {
+            if (delayTimer <= 0)
+            {
+                OnPause();
+                delayTimer = delay;
+            }
         }
 
         if (obj.action.name == _controls.Gameplay.Select.name)
         {
-            switch (obj.phase)
+            if (!gameIsPaused)
             {
-                case InputActionPhase.Started:
-                    OnSelect(true);
-                    break;
-                case InputActionPhase.Canceled:
-                    OnSelect(false);
-                    break;
+                switch (obj.phase)
+                {
+                    case InputActionPhase.Started:
+                        OnSelect(true);
+                        break;
+                    case InputActionPhase.Canceled:
+                        OnSelect(false);
+                        break;
+                }
             }
         }
 
         if (obj.action.name == _controls.Gameplay.Throwable.name)
         {
-            switch (obj.phase)
+            if (!gameIsPaused)
             {
-                case InputActionPhase.Started:
-                    onAimThrowable(true);
-                    break;
-                case InputActionPhase.Canceled:
-                    onAimThrowable(false);
-                    break;
+                switch (obj.phase)
+                {
+                    case InputActionPhase.Started:
+                        onAimThrowable(true);
+                        break;
+                    case InputActionPhase.Canceled:
+                        onAimThrowable(false);
+                        break;
+                }
             }
 
         }
@@ -184,7 +206,12 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
 
 
 
-
+    private void OnPause()
+    {
+        _pause.gameObject.SetActive(true);
+        gameIsPaused = _pause.EscButton();
+    }
+    
     private void OnMove(CallbackContext context)
     {
         if (_move != null)

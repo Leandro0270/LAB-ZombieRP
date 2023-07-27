@@ -5,22 +5,22 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Level/Scenes/PlayerSetup.unity
     guid: 91f14ce6ef35c4b4fbcc8347748c7bad
   - enabled: 1
-    path: Assets/Level/Scenes/SampleScene.unity
-    guid: f6dcde262ce93c3468f59221a2b9a93d
-  - enabled: 1
+    path: Assets/Level/Scenes/MainMenu.unity
+    guid: 3a71e90facb42c4458be1733d39beaab
+  - enabled: 0
     path: Assets/Level/Scenes/OnlineConnection.unity
     guid: f511dcccf5fba8b4ab29f1ab7edbe3e2
   - enabled: 1
-    path: Assets/Level/Scenes/MainMenu.unity
-    guid: 3a71e90facb42c4458be1733d39beaab
+    path: Assets/Level/Scenes/PlayerSetupOnline.unity
+    guid: e625ecf6e9575a342bdf2a6f147d18cd
   - enabled: 1
     path: Assets/Level/Scenes/PlayerSetupLocalMultiplayer.unity
     guid: a15f2a5cf9d817447b5a886477709a69
   - enabled: 1
-    path: Assets/Level/Scenes/PlayerSetupOnline.unity
-    guid: e625ecf6e9575a342bdf2a6f147d18cd
+    path: Assets/Level/Scenes/SampleScene.unity
+    guid: f6dcde262ce93c3468f59221a2b9a93d
   m_configObjects: {}

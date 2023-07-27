@@ -73,7 +73,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
             FireDamage.SetActive(true);
             if (burnTickDamage && !isDead)
             {
-                takeDamage(_status.burnDamagePerSecond);
+                takeDamage(_status.burnDamagePerSecond,null,false,false);
                 burnTickTime = 0;
                 burnTickDamage = false;
             }
@@ -97,7 +97,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
 
     
     [PunRPC]
-    public void MasterClientHandleDamageRPC(float damage)
+    public void MasterClientHandleDamageRPC(float damage, int photonid, bool isAiming, bool isMelee)
     {
         _life -= damage;
         if (_specialZombiesAttacks)
@@ -105,13 +105,76 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
             _specialZombiesAttacks.setLife(_life);
         }
 
-        if (_life <= 0)
+        if (_life <= 0 && isDead==false)
         {
             killEnemy();
+            isDead = true;
+            photonView.RPC("rewardPlayerShooterRPC", RpcTarget.All, photonid, isAiming,
+                isMelee);
         }
     }
-    public void takeDamage(float damage)
+
+    public void rewardPlayerShooter(WeaponSystem playerShooter, bool isAiming, bool isMelee)
     {
+
+        if (isAiming)
+        {
+            playerShooter.addKilledZombieWithAim();
+
+        }
+
+        else if (isMelee)
+        {
+            playerShooter.addKilledZombieWithMelee();
+
+        }
+
+        if (getIsSpecial())
+        {
+            int points = getPoints();
+            playerShooter.addKilledSpecialZombie(points);
+        }
+        else
+        {
+            playerShooter.addKilledNormalZombie();
+
+        }
+    }
+    
+    [PunRPC]
+    public void rewardPlayerShooterRPC(int photonId, bool isAiming, bool isMelee)
+    {
+        WeaponSystem playerShooter = PhotonView.Find(photonId).GetComponent<WeaponSystem>();
+        if (playerShooter.photonView.IsMine)
+        {
+            if (isAiming)
+            {
+                playerShooter.addKilledZombieWithAim();
+
+            }
+
+            else if (isMelee)
+            {
+                playerShooter.addKilledZombieWithMelee();
+
+            }
+
+            if (getIsSpecial())
+            {
+                int points = getPoints();
+                playerShooter.addKilledSpecialZombie(points);
+            }
+            else
+            {
+                playerShooter.addKilledNormalZombie();
+
+            }
+        }
+    }
+
+    public void takeDamage(float damage, WeaponSystem playerShooter, bool isAiming, bool isMelee)
+    {
+        
         if (!isBurning)
         {
             GameObject NewBloodParticle = Instantiate(blood1,
@@ -120,8 +183,11 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
             Destroy(NewBloodParticle, 8f);
         }
 
-        if(isOnline && !PhotonNetwork.IsMasterClient)
-            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage);
+        if (isOnline && !PhotonNetwork.IsMasterClient)
+        {
+            int photonid = playerShooter.photonView.ViewID;
+            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage, photonid, isAiming,isMelee);
+        }
         else
         {
             _life -= damage;
@@ -130,12 +196,20 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
                 _specialZombiesAttacks.setLife(_life);
             }
         }
-
+        
         if (_life <= 0)
         {
-            if(PhotonNetwork.IsMasterClient || !isOnline)
-                killEnemy();
+            if (playerShooter != null)
+            {
+                if (!isOnline || PhotonNetwork.IsMasterClient)
+                {
+                    killEnemy();
+                    rewardPlayerShooter(playerShooter, isAiming, isMelee);
+                }
+            }
+
         }
+        
     }
 
     [PunRPC]

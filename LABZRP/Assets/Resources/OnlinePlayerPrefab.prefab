@@ -431,6 +431,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 4110660743282712484}
   - {fileID: 4110660743282712487}
+  - {fileID: 1534977132509532281}
   - {fileID: 1921763957812739907}
   - {fileID: 554684332481843621}
   sceneViewId: 0
@@ -557,6 +558,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fd3c99f17b4c2843ac6666f28bcc95b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerStats: {fileID: 4110660743282712487}
   corLaser: {r: 1, g: 0, b: 0, a: 1}
   DistanciaDoLaser: 100
   LarguraInicial: 0.02

@@ -126,6 +126,14 @@ MonoBehaviour:
   - showGameOverUI
   - returnToMenu
   - backToMenuRPC
+  - updateReadyCountResponse
+  - updateReadyCountTextRequest
+  - readyPlayerRequest
+  - readyPlayerResponse
+  - updateReadyPlayerRequest
+  - addKilledNormalZombieOnline
+  - addKilledSpecialZombieOnline
+  - rewardPlayerShooterRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

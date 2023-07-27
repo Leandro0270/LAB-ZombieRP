@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LaserSight : MonoBehaviour
 {
-    
+    [SerializeField] PlayerStats playerStats;
     public Color corLaser = Color.red;
     public int DistanciaDoLaser = 100;
     public float LarguraInicial = 0.02f, LarguraFinal = 0.1f;
@@ -31,6 +31,11 @@ public class LaserSight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (playerStats.verifyDown() || playerStats.verifyDeath())
+        {
+            playerStats.getWeaponSystem().cancelAim();
+        }
+        
         Vector3 PontoFinalDoLaser = transform.position + (transform.forward * DistanciaDoLaser);
         RaycastHit PontoDeColisao;
         LayerMask layer = ~(1 << 2);
