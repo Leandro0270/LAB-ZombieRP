@@ -286,14 +286,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
             }
             else if(!isOnline)
             {
-
-                if (haveBaseZombieLifeIncrement && currentHorde > 0)
-                {
-                    currentZombieLife += (currentZombieLife * baseZombieLifeIncrement);
-                }
-
-                HorderText.text = "Horder: " + (currentHorde + 1) + " | Zombies: " +
-                                  (currentHordeZombies - killedZombiesInHorde);
+                
                 if (isBossZombieAlive)
                 {
                     GameObject bossZombie = Instantiate(FinalBosses, visibleSpawnPoints[0].transform.position,
@@ -371,6 +364,11 @@ public class HordeManager : MonoBehaviourPunCallbacks
         IEnumerator HorderBreakManager()
         {
             yield return new WaitForSeconds(timeBetweenHordes);
+            if (haveBaseZombieLifeIncrement && currentHorde > 0)
+            {
+                currentZombieLife += (currentZombieLife * baseZombieLifeIncrement);
+            }
+            
             StartCoroutine(SpawnZombie());
         }
 

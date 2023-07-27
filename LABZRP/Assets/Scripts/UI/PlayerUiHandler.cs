@@ -85,13 +85,13 @@ public class PlayerUiHandler : MonoBehaviourPunCallbacks
                     _weaponSystem.setBullets_UI(_bulletsUi);
                 }
                 
-                if(_InstantiatePlayerHead == null)
-                {
-                    GameObject originalPlayerHead = _playerStats.getPlayerHead();
-                    _InstantiatePlayerHead = Instantiate(originalPlayerHead, _playerHeadSpawnPostion.transform.position, _playerHeadSpawnPostion.transform.rotation);
-                    _InstantiatePlayerHead = Instantiate(_playerStats.getPlayerHead(), _playerHeadSpawnPostion.transform.position, _playerHeadSpawnPostion.transform.rotation);
-                    _InstantiatePlayerHead.transform.SetParent(_playerHeadSpawnPostion.transform);
-                }
+                // if(_InstantiatePlayerHead == null)
+                // {
+                //     GameObject originalPlayerHead = _playerStats.getPlayerHead();
+                //     _InstantiatePlayerHead = Instantiate(originalPlayerHead, _playerHeadSpawnPostion.transform.position, _playerHeadSpawnPostion.transform.rotation);
+                //     _InstantiatePlayerHead = Instantiate(_playerStats.getPlayerHead(), _playerHeadSpawnPostion.transform.position, _playerHeadSpawnPostion.transform.rotation);
+                //     _InstantiatePlayerHead.transform.SetParent(_playerHeadSpawnPostion.transform);
+                // }
 
                 if (_playerStats != null && _weaponSystem != null && _playerPoints != null && _playerHeadSpawnPostion != null)
                     setup = false;

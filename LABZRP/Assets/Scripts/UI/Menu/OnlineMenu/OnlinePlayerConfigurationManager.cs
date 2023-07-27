@@ -38,6 +38,9 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      [SerializeField] private GameObject disconnectWindow;
      [SerializeField] private Button firstSelectDisconectWindow;
      [SerializeField] private Button quitButton;
+     [SerializeField] private Button StartGameButton;
+     [SerializeField] private TextMeshProUGUI WaitingForHostText;
+     [SerializeField] private TextMeshProUGUI readyCountText;
      private int localPlayerIndex;
      private bool hideClientPanel = false;
      private Player[] playersNaSala;
@@ -49,14 +52,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      private bool isRestatedLobby = false;
      private int[] playersOnLobbyByActorNumber = new int[3];
 
-
-
-     // private void Update()
-     // {
-     //     Debug.Log("PlayersCount: " + playersCount + " ReadyCount: " + readyCount);
-     //     Debug.Log("playersOnLobbyByActorNumber: " + playersOnLobbyByActorNumber[0] + " " + playersOnLobbyByActorNumber[1] + " " + playersOnLobbyByActorNumber[2]);
-     //     Debug.Log("AvaiblePlayerIndex" + AvaiablesPlayersIndex[0] + " " + AvaiablesPlayersIndex[1] + " " + AvaiablesPlayersIndex[2]);
-     // }
+     
      
      private void Start()
      {
@@ -110,10 +106,11 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      }
 
      [PunRPC]
-     public void UpdateAvaiablesPlayerIndex(int[] avaiablesPlayersIndexArray, int[] playersOnLobbyByActorNumber)
+     public void UpdateAvaiablesPlayerIndex(int[] avaiablesPlayersIndexArray, int[] playersOnLobbyByActorNumber, int readyCount)
      {
          AvaiablesPlayersIndex = new List<int>(avaiablesPlayersIndexArray);
          this.playersOnLobbyByActorNumber = playersOnLobbyByActorNumber;
+         this.readyCount = readyCount;
          if(!initializedConfigs)
              initializeJoinedPlayer();
      }
@@ -127,13 +124,14 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          // Converta a lista para um array antes de enviar
          int[] avaiablesPlayersIndexArray = AvaiablesPlayersIndex.ToArray();
     
-         photonView.RPC("UpdateAvaiablesPlayerIndex", RpcTarget.All, avaiablesPlayersIndexArray, playersOnLobbyByActorNumber);
+         photonView.RPC("UpdateAvaiablesPlayerIndex", RpcTarget.All, avaiablesPlayersIndexArray, playersOnLobbyByActorNumber,readyCount);
      }
      public override void OnJoinedRoom(){ 
          if(initializedConfigs)
              return;
          isReplay = false;
          playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+         playersCount = playersNaSala.Length;
          isMasterClient = PhotonNetwork.IsMasterClient;
          roomCode = PhotonNetwork.CurrentRoom.Name;
          roomCodeText.text = "Código da sala: " + roomCode;
@@ -149,7 +147,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 
      public void initializeJoinedPlayer()
      {
-         Debug.Log(isReplay);
          initializedConfigs = true;
          int newPlayerIndex = AvaiablesPlayersIndex[0];
          if(!isMasterClient)
@@ -170,7 +167,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             foreach (var verificacaoDePlayer in playersNaSala)
             {
                 OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(verificacaoDePlayer);
-                Debug.Log(OnlineConfigPlayer.PlayerIndex);
                 if (OnlineConfigPlayer.isLocal == false)
                 {
                     OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
@@ -191,7 +187,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
             //Vai organizar a lista de playerconfigs com base no playerindex
             playerConfigs = playerConfigs.OrderBy(playerConfig => playerConfig.PlayerIndex).ToList();
         }
-
+        readyCountText.text = readyCount + "/" + playersCount + " Ready";
      }
 
 
@@ -228,7 +224,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      public override void OnDisconnected(DisconnectCause cause)
      {
          Debug.Log(cause);
-         SceneManager.LoadScene("OnlineConnection");
+         SceneManager.LoadScene("MainMenu");
          Destroy(gameObject);
 
      }
@@ -236,7 +232,8 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      {
          // find gameobjct with tag GameManager
          GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
-         gameManager.GetComponent<MainGameManager>().removeDisconnectedPlayer();
+         if(gameManager != null)
+            gameManager.GetComponent<MainGameManager>().removeDisconnectedPlayer();
          PhotonNetwork.Disconnect();
      }
      public void DisconnectButton()
@@ -255,7 +252,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                      Debug.Log("Master client se desconectou, retornando ao menu");
                      PhotonNetwork.LeaveRoom();
                      PhotonNetwork.Disconnect();
-                     SceneManager.LoadScene("OnlineConnection");
+                     SceneManager.LoadScene("MainMenu");
                      Destroy(gameObject);
                  }
                  Debug.Log("O player de playerActorNumber " + playerToRemove.player.ActorNumber + " se desconectou");
@@ -264,13 +261,16 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                  playersCount--;
                  if(playerToRemove.isReady)
                      readyCount--;
+                 readyCountText.text = readyCount + "/" + playersCount + " Ready";
+                 if (isMasterClient && playerConfigs.Count == 1)
+                 {
+                     StartGameButton.interactable = false;
+                 }
                  AvaiablesPlayersIndex.Add(playerToRemove.PlayerIndex);
                  AvaiablesPlayersIndex.Sort();
                  playersOnLobbyByActorNumber[playerToRemove.PlayerIndex] = -1;
                  playerConfigs.Remove(playerToRemove);
-
              }
-         
      }
      
      public void cancelReadyPlayer(int playerIndex)
@@ -284,8 +284,18 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      {
          readyCount--;
          playersIndexReady.Remove(playerIndex);
-         playerConfigs[playerIndex].isReady = false;
-         playerConfigs[playerIndex].lobbyPlayersShower.setIsReady(false);
+         readyCountText.text = readyCount + "/" + playersCount + " Ready";
+         if (!playerConfigs[playerIndex].player.IsLocal)
+         {
+             playerConfigs[playerIndex].isReady = false;
+             playerConfigs[playerIndex].lobbyPlayersShower.setIsReady(false);
+         }
+         else
+         {
+             ClientPlayerSetupMenu.OnCancel();
+             ClientPlayerSetupMenu.transform.SetParent(clientPanel.transform);
+             lobbyPanel.SetActive(false);
+         }
      }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
@@ -314,14 +324,10 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          playersNaSala.Append(newPlayer);
          playersOnLobbyByActorNumber[AvaiablesPlayersIndex[0] - 1] = newPlayer.ActorNumber;
          playersCount++;
+         readyCountText.text = readyCount + "/" + playersCount + " Ready";
          OnlinePlayerConfiguration OnlineConfigPlayer = HandlePlayerJoined(newPlayer);
          if (OnlineConfigPlayer != null)
          {
-             Debug.Log("LobbyPlayerShower é null???? " +(lobbyPlayersShower[0] == null));
-             Debug.Log("avaibleLobbyPlayerShower é null?????? " +(availableLobbyPlayersShower[0] == null));
-             Debug.Log("Index do player " + OnlineConfigPlayer.PlayerIndex);
-             Debug.Log("Nome do player " + OnlineConfigPlayer.playerName);
-             Debug.Log("ActorNumber do player " + OnlineConfigPlayer.player.ActorNumber);
              AvaiablesPlayersIndex.RemoveAt(0);
              OnlineConfigPlayer.lobbyPlayersShower = availableLobbyPlayersShower[0];
              lobbyPlayersShower[0].setPlayerIndex(OnlineConfigPlayer.PlayerIndex);
@@ -379,6 +385,15 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                  {
                      lobbyPanel.SetActive(true);
                      ClientPlayerSetupMenu.transform.SetParent(lobbyPanel.transform);
+                     if (isMasterClient)
+                     {
+                         StartGameButton.gameObject.SetActive(true);
+                     }
+                     else
+                     {
+                         WaitingForHostText.gameObject.SetActive(true);
+                         WaitingForHostText.text = "Esperando os outros jogadores";
+                     }
                  }else
                  {
                      configs.lobbyPlayersShower.setIsReady(true);   
@@ -388,18 +403,30 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                  
                  configs.isReady = true;
                  readyCount++;
+                 playersIndexReady.Add(index);
+                 readyCountText.text = readyCount + "/" + playersCount + " Ready";
                  if (readyCount == playerConfigs.Count)
                  {
-                     if(isMasterClient)
-                         PhotonNetwork.LoadLevel("SampleScene");
-                     gameStarted = true;
+                     if (isMasterClient)
+                     {
+                         if(playerConfigs.Count == 1)
+                             return;
+                         StartGameButton.interactable = true;
+                         StartGameButton.Select();
+                     }
+                     else
+                     {
+                         WaitingForHostText.text = "Esperando o host iniciar o jogo";
+                     }
                  }
-                 
              }
          }
      }
 
-     
+     public void LoadLevel()
+     {
+         PhotonNetwork.LoadLevel("SampleScene");
+     }
      
     //PUNRPC CALLS=====================================
     public void PunSetPlayerSkin(int index, ScObPlayerCustom playerCustom)

@@ -42,7 +42,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public BulletScript MeleeHitBox;
         public BulletScript _bala;
         public GameObject armaSpawn;
-        [SerializeField] private PhotonView _photonView;
+        [SerializeField] public PhotonView _photonView;
 
         //Grafico
         private PlayerAnimationManager _playerAnimationManager;
@@ -556,42 +556,70 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         //================================================================================================
         //Getters and setters
         
-        
+        [PunRPC]
+        public void addKilledNormalZombieOnline()
+        {
+                _playerPoints.addPointsNormalZombieKilled();
+                NormalZombiesKilled++;
+        }
+
+        public void cancelAim()
+        {
+                _playerStats.aimSlow(0, false);
+                miraLaser.SetActive(false);
+                _dispersao *= (100 / _reducaoDispersaoMirando);
+                _throwablePlayerStats.setCanceledThrow(false);
+                _mirando = false;
+        }
         public void setIsOnline(bool isOnline)
         {
                 _isOnline = isOnline;
         }
         public void addKilledNormalZombie()
         {
+                
                 _playerPoints.addPointsNormalZombieKilled();
+                NormalZombiesKilled++;
                 if (_isKillInTimeChallengeActive) 
                         _challengeManager.addZombieKilled();
                 if(_isSharpshooterChallengeActive)
                         _challengeManager.addZombieKilled();
-                NormalZombiesKilled++;
-                
+
         }
 
-        public void addKilledSpecialZombie(int points)
+
+        [PunRPC]
+        public void addKilledSpecialZombieOnline(int points)
         {
                 _playerPoints.addPointsSpecialZombiesKilled(points);
                 SpecialZombiesKilled++;
-                if (_isChallengeActive)
+        }
+        public void addKilledSpecialZombie(int points)
+        {
+                if (_isOnline)
                 {
-                        if (_isKillInAreaChallengeActive)
-                        {
-                                if (_isInArea)
-                                        _challengeManager.addZombieKilled();
-                        }
-
-                        if (_isKillInTimeChallengeActive)
-                        {
-                                _challengeManager.addZombieKilled();
-                        }
-                        if(_isSharpshooterChallengeActive)
-                                _challengeManager.addZombieKilled();
-
+                        photonView.RPC("addKilledSpecialZombieOnline", RpcTarget.All, points);
                 }
+                else
+                {
+                        _playerPoints.addPointsSpecialZombiesKilled(points);
+                        SpecialZombiesKilled++;
+                }
+
+                if (!_isChallengeActive) return;
+                
+                if (_isKillInAreaChallengeActive)
+                {
+                        if (_isInArea)
+                                _challengeManager.addZombieKilled();
+                }
+
+                if (_isKillInTimeChallengeActive)
+                {
+                        _challengeManager.addZombieKilled();
+                }
+                if(_isSharpshooterChallengeActive)
+                        _challengeManager.addZombieKilled();
         }
         public int GetAtualAmmo()
         {

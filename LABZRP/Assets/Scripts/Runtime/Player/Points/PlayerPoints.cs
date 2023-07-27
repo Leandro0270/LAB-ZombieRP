@@ -28,8 +28,9 @@ public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
                 points += pointsPerNormalZombie;
                 totalPointsInGame += pointsPerNormalZombie;
             }
-            pointsUI.setPoints(points);
         }
+        pointsUI.setPoints(points);
+
     }
 
     public void addPointsSpecialZombiesKilled(int points)

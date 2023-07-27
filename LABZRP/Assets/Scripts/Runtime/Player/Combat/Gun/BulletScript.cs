@@ -90,43 +90,16 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
             {
                 
                 hitted = true;
-                enemiesHitted++;
-                if(_isBulletOwner)
-                    _status.takeDamage(damage);
-                if (_status.isDeadEnemy())
+                if (_isBulletOwner)
                 {
-                    if (_isAiming)
-                    {
-                        PlayerShooter.addKilledZombieWithAim();
-
-                    }
-
-                    else if (isMelee)
-                    {
-                        PlayerShooter.addKilledZombieWithMelee();
-
-
-                    }
-
-                    if (_status.getIsSpecial())
-                    {
-                        int points = _status.getPoints();
-                        PlayerShooter.addKilledSpecialZombie(points);
-                    }
-                    else
-                        PlayerShooter.addKilledNormalZombie();
-
-
-                }
-                else
-                {
+                    _status.takeDamage(damage, PlayerShooter,_isAiming,isMelee);
                     if (haveKnockback)
                     {
                         Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
                         rb.AddForce(transform.forward * knockbackForce, ForceMode.Impulse);
                     }
                 }
-                
+
                 if (enemiesHitted < hitableEnemies)
                 {
                     enemiesHitted++;
@@ -229,6 +202,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (!_isOnline)
         {
+            _isBulletOwner = true;
             PlayerShooter = shooter;
         }
     }

@@ -23,6 +23,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject playerConfigurationManager;
     [SerializeField] private GameObject onlinePlayerConfigurationManager;
     [SerializeField] private Camera minimapCamera;
+    [SerializeField] private PauseMenu pauseMenu;
 
 
     public bool _killAllPlayers = false;
@@ -51,7 +52,10 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         itens.Add(item);
     }
-
+    public PauseMenu getPauseMenu()
+    {
+        return pauseMenu;
+    }
 
     public int getCountItens()
     {
@@ -298,6 +302,9 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     public void setIsOnline(bool isOnline)
     {
         this.isOnline = isOnline;
+        pauseMenu.setIsOnline(isOnline);
+        GameObject mainCameraObject = mainCamera.gameObject;
+        mainCameraObject.GetComponent<CameraMovement>().setIsOnline(isOnline);
     }
 
 

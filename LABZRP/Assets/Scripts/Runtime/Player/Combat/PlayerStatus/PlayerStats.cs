@@ -60,7 +60,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     //Script components
     private MainGameManager _mainGameManager;
     public DecalProjector _playerIndicator;
-    private CâmeraMovement _camera;
+    private CameraMovement _camera;
     private PlayerMovement _playerMovement;
     private PlayerRotation _playerRotation;
     private WeaponSystem _weaponSystem;
@@ -425,7 +425,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         _vendingMachineHorderGenerator = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<VendingMachineHorderGenerator>();
         _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
         _vendingMachineHorderGenerator.addPlayer(gameObject);
-        _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CâmeraMovement>();
+        _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>();
         _camera.addPlayer(gameObject);
         _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
         GameObject findCanvaHud = GameObject.FindGameObjectWithTag("PlayersUiSpawn");
