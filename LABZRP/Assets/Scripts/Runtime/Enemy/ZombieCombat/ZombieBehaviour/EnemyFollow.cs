@@ -59,7 +59,7 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
                 {
                     if (!isEvent)
                     {
-                        if (target == null)
+                        if (target == null || players.Length != PhotonNetwork.PlayerList.Length)
                         {
                             players = GameObject.FindGameObjectsWithTag("Player");
                             target = GetTarget(players);

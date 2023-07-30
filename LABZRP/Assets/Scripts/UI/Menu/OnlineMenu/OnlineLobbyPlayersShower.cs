@@ -28,11 +28,11 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
         playerPrefab.SetSkinMaterial(playerCustom.Skin);
         playerPrefab.SetTshirtMaterial(playerCustom.tshirt);
     }
-    public void setPlayerIndex(int index)
+    public void setPlayerIndex(int index, string name)
     {
         playerNameText.gameObject.SetActive(true);
         playerStatusText.text = "Not Ready!";
-        playerNameText.text = PhotonNetwork.PlayerList[index].NickName;
+        playerNameText.text = name;
         PlayerIndex = index;
     }
 

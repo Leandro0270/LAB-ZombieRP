@@ -100,8 +100,7 @@ public class CameraMovement : MonoBehaviourPunCallbacks
             {
                 if (player.transform == clientPlayer.transform)
                 {
-                    if(followOnlyClientPlayer)
-                        showingOnlyMyPlayer = false;
+                    showingOnlyMyPlayer = false;
                 }
             }
         }

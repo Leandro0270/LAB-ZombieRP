@@ -3,19 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 public class InitializeLevel : MonoBehaviourPunCallbacks
 {
     private OnlinePlayerConfigurationManager onlinePlayerConfigurationManager;
+    [SerializeField] private GameObject waitingForPlayersPanel;
     [SerializeField] private Transform[] playerSpawns;
     [SerializeField] private MainGameManager mainGameManager;
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private PhotonView photonView;
+    private int[] playersOnLobbyByActorNumber;
     private List<OnlinePlayerConfiguration> pc;
     private List<GameObject> players = new List<GameObject>();
     int photonViewID;
     private int playersReady = 1;
+    private bool startedGame = false;
 
     private void Awake()
     {
@@ -24,9 +27,19 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         {
             onlinePlayerConfigurationManager = gameObjectonlinePlayerConfigurationManager.GetComponent<OnlinePlayerConfigurationManager>();
         }
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
     }
 
-    void Start()
+    private void Update()
+    {
+        if (startedGame && waitingForPlayersPanel.activeSelf)
+        {
+            waitingForPlayersPanel.SetActive(false);
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         //Verifica se há um instancia de PlayerConfigurationManager
         if (PlayerConfigurationManager.Instance == null)
@@ -37,6 +50,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
             pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
             mainGameManager.getHordeManager().setIsOnline(true);
             mainGameManager.getChallengeManager().setIsOnline(true);
+            playersOnLobbyByActorNumber = onlinePlayerConfigurationManager.getPlayersOnLobbyByActorNumber();
             if (!PhotonNetwork.LocalPlayer.IsMasterClient)
             {
                 photonView.RPC("sceneLoaded", RpcTarget.MasterClient);
@@ -51,6 +65,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         }
         else
         {
+            waitingForPlayersPanel.SetActive(false);
             Debug.Log("LOCAL");
             var playerConfigs = PlayerConfigurationManager.Instance.GetPlayerConfigs().ToArray();
             for (int i = 0; i < playerConfigs.Length; i++)
@@ -69,6 +84,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     public void setConfigsToplayer(int index, int photonId)
     {
         GameObject player = PhotonView.Find(photonId).gameObject;
+        mainGameManager.addPlayer(player);
         players.Add(player);
         player.GetComponent<PlayerInputHandler>().InitializeOnlinePlayer(pc[index]);
     }
@@ -76,7 +92,19 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     [PunRPC]
     public void instantiatePlayer()
     {
-        int playerindex = PhotonNetwork.LocalPlayer.ActorNumber - 1;
+        startedGame = true;
+        int playerindex = -1;
+
+        foreach (OnlinePlayerConfiguration NewPlayerConfiguration in pc)
+        {
+            if (NewPlayerConfiguration.player == PhotonNetwork.LocalPlayer)
+            {
+                playerindex = NewPlayerConfiguration.PlayerIndex;
+                break;
+            }
+        }
+        
+
         Debug.Log("Chamou para o player" + (playerindex));
         GameObject player = PhotonNetwork.Instantiate("OnlinePlayerPrefab", playerSpawns[playerindex].position,
             playerSpawns[playerindex].rotation);
@@ -92,6 +120,11 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         {
             photonView.RPC("instantiatePlayer", RpcTarget.All);
         }
+    }
+    
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     
     

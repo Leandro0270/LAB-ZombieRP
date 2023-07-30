@@ -80,8 +80,23 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         private void Update()
         {
-                
 
+                if (!_playerStats)
+                {
+                        _playerStats = GetComponent<PlayerStats>();
+                }
+                if(!_playerAnimationManager)
+                {
+                        _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
+                }
+                if (!_playerPoints)
+                {
+                        _playerPoints = GetComponent<PlayerPoints>();
+                }
+                if (!_challengeManager)
+                {
+                        _challengeManager = _playerStats.getChallengeManager();
+                }
 
                 if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0 & !_incapactitado)
                 {

@@ -13,7 +13,7 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject VendingMachinePrefab;
     [FormerlySerializedAs("VendingMachinesRespawnHound")] [SerializeField] private int VendingMachinesRespawnRound = 3;
     [SerializeField] private Transform[] VendingMachinesSpawnPoints;
-    [SerializeField] private int VendingMachinesPerPlayer = 3; 
+    [SerializeField] private int VendingMachinesPerPlayer = 2; 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager mainGameManager;
     private List<GameObject> spawnedVendingMachines = new List<GameObject>();
@@ -68,8 +68,8 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
                         NotVisibleSpawnPoints.Add(spawnPoint);
                     }
                 }
-
-                for (int i = 0; i < playersCount * VendingMachinesPerPlayer; i++)
+                
+                for (int i = 0; i < VendingMachinesRespawnRound; i++)
                 {
 
                     int randomSpawnPoint = Random.Range(0, NotVisibleSpawnPoints.Count);
