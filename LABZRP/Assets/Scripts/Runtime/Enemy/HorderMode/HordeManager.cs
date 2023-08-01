@@ -15,12 +15,12 @@ public class HordeManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject FinalBosses;
     
     //Components================================================================
-    [SerializeField] private TextMeshProUGUI HorderText;
+    [FormerlySerializedAs("HorderText")] [SerializeField] private TextMeshProUGUI HordeText;
     [SerializeField] private VendingMachineHorderGenerator Itemgenerator;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager GameManager;
     //Horde Parameters==========================================================
-    [SerializeField] private bool isHorderMode = true;
+    [SerializeField] private bool isHordeMode = true;
     [SerializeField] private bool isIncrementalZombiesPerPlayer = true;
     [SerializeField] private bool haveBaseZombieLifeIncrement = true;
     [SerializeField] private float baseZombieLifeIncrement = 0.5f;
@@ -29,6 +29,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     [SerializeField] private float timeBetweenHordes = 5f;
     [SerializeField] private int firstHordeZombies = 3;
     [SerializeField] private int hordeIncrement = 6;
+    [SerializeField] private int firstSpecialZombieAppearHorde = 3;
     [SerializeField] private float specialZombiePercentage = 25;
     [SerializeField] private float specialZombiePercentageDecrement = 5;
     [SerializeField] private bool isLastHordeMode = false;
@@ -66,7 +67,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     public void Start()
     
     { mainCamera = GameManager.getMainCamera();
-        HorderText.text = "Prepare for the First Horder";
+        HordeText.text = "Prepare for the First Horde";
         Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
         if (isOnline)
         {
@@ -80,13 +81,8 @@ public class HordeManager : MonoBehaviourPunCallbacks
         currentHordeZombies = firstHordeZombies;
         if(haveBaseZombieLifeIncrement)
             currentZombieLife = NormalZombiePrefab.GetComponent<EnemyStatus>().get_life();
-        if (isOnline)
-        {
-            if(isMasterClient)
-                StartCoroutine(HorderBreakManager());
-        }
-        else
-            StartCoroutine(HorderBreakManager());
+        if (!isOnline)
+            StartCoroutine(HordeBreakManager());
         
         
     }
@@ -104,16 +100,16 @@ public class HordeManager : MonoBehaviourPunCallbacks
         if (timeBetweenHordesUI > 0)
         {
             timeBetweenHordesUI -= Time.deltaTime;
-            //Vai printar o tempo que falta para a proxima horder formatado com no máximo 2 casas decimais
+            //Vai printar o tempo que falta para a proxima horde formatado com no máximo 2 casas decimais
             if (isOnline)
             {
-                string text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
+                string text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
                 photonView.RPC("setHordeText", RpcTarget.All, text);
 
             }
             else
             {
-                HorderText.text = "Next Horder in: " + timeBetweenHordesUI.ToString("F0");
+                HordeText.text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
             }
         }
 }
@@ -136,7 +132,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
             else if(!isOnline)
             {
                 killedZombiesInHorde++;
-                HorderText.text = "Horde: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
+                HordeText.text = "Horde: " + (currentHorde + 1) + " | Zombies: " + (currentHordeZombies - killedZombiesInHorde);
             }
             if (killedZombiesInHorde == currentHordeZombies)
             {
@@ -148,8 +144,8 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     currentHordeZombies += hordeIncrement;
                     if (spawnTime > 0.4f)
                         spawnTime -= spawnTimeDecrement;
-                    Itemgenerator.setIsOnHorderCooldown(true);
-                    StartCoroutine(HorderBreakManager());
+                    Itemgenerator.setIsOnHordeCooldown(true);
+                    StartCoroutine(HordeBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
                 }
                 if(haveChallenges){
@@ -185,6 +181,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
         }
 
         //Função que incrementa a quantidade de zumbis vivos
+        [PunRPC]
         public void incrementZombiesAlive()
         {
             zombiesAlive++;
@@ -194,14 +191,14 @@ public class HordeManager : MonoBehaviourPunCallbacks
         [PunRPC]
         public void setHordeText(string text)
         {
-            HorderText.text = text;
+            HordeText.text = text;
         }
         
         
         //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
         IEnumerator SpawnZombie()
         {
-            Itemgenerator.setIsOnHorderCooldown(false);
+            Itemgenerator.setIsOnHordeCooldown(false);
             Itemgenerator.verifySpawnVendingMachine(currentHorde + 1);
             List<GameObject> visibleSpawnPoints = new List<GameObject>();
 
@@ -246,9 +243,9 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     }
 
                     GameObject zombie;
-                    if (isSpecialZombie && currentHorde > 3)
+                    if (isSpecialZombie && currentHorde >= firstSpecialZombieAppearHorde)
                     {
-                        int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
+                        int specialZombieIndex = Random.Range(0, enemyPrefabNames.Length);
                         zombie = PhotonNetwork.Instantiate(enemyPrefabNames[specialZombieIndex], visibleSpawnPoints[0].transform.position,
                             visibleSpawnPoints[0].transform.rotation);
                     }
@@ -280,12 +277,14 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     zombie.GetComponent<EnemyStatus>().setHordeManager(this);
                     int photonViewId = zombie.GetComponent<PhotonView>().ViewID;
                     GameManager.addEnemyOnOnline(photonViewId);
-                    incrementZombiesAlive();
+                    photonView.RPC("incrementZombiesAlive", RpcTarget.All);
                 }
-                
             }
             else if(!isOnline)
             {
+                string text = "Horde: " + (currentHorde + 1) + " | Zombies: " +
+                              (currentHordeZombies - killedZombiesInHorde);
+                HordeText.text = text;
                 
                 if (isBossZombieAlive)
                 {
@@ -313,7 +312,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     }
 
                     GameObject zombie;
-                    if (isSpecialZombie && currentHorde > 3)
+                    if (isSpecialZombie && currentHorde >= firstSpecialZombieAppearHorde)
                     {
                         int specialZombieIndex = Random.Range(0, SpecialZombiesPrefabs.Length);
                         zombie = Instantiate(SpecialZombiesPrefabs[specialZombieIndex],
@@ -360,8 +359,13 @@ public class HordeManager : MonoBehaviourPunCallbacks
             return isVisible;
         }
 
+
+        public void HordeBreakManagerManualStart()
+        {
+            StartCoroutine(HordeBreakManager());
+        }
         //Função que adiciona um tempo entre as chamadas de spawnDeZumbis
-        IEnumerator HorderBreakManager()
+        IEnumerator HordeBreakManager()
         {
             yield return new WaitForSeconds(timeBetweenHordes);
             if (haveBaseZombieLifeIncrement && currentHorde > 0)
@@ -371,7 +375,6 @@ public class HordeManager : MonoBehaviourPunCallbacks
             
             StartCoroutine(SpawnZombie());
         }
-
         
         public bool RandomBoolWithPercentage(float probability)
         {
@@ -411,7 +414,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
         {
             StopAllCoroutines();
             isGameOver = true;
-            HorderText.text = " ";
+            HordeText.text = " ";
         }
 
         public int getCurrentHorde()

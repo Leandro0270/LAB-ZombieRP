@@ -17,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
     private bool _canMove = true;
     private float _speed;
     private PlayerDirection _direction;
+    private bool isLookingRight = false;
+    private bool isLookingLeft = false;
+    private bool isLookingForward = false;
+    private bool isLookingBack = false;
 
     public enum PlayerDirection
     {
@@ -52,10 +56,15 @@ public class PlayerMovement : MonoBehaviour
         if (_canMove && auxVector3 != Vector3.zero)
         {
             _controller.Move(auxVector3);
+            setLookigDirection(transform.rotation.eulerAngles.y);
             UpdateDirection(auxVector3);
         }
         else
         {
+            isLookingForward = false;
+            isLookingBack = false;
+            isLookingLeft = false;
+            isLookingRight = false;
             _direction = PlayerDirection.STANDING;
         }
         _status.setMovementAnimationStats(_direction);
@@ -65,19 +74,47 @@ public class PlayerMovement : MonoBehaviour
     {
         if(moveVector.x > 0)
         {
-            _direction = PlayerDirection.RIGHT;
+            if(isLookingForward)
+                _direction = PlayerDirection.RIGHT;
+            if(isLookingBack)
+                _direction = PlayerDirection.LEFT;
+            if(isLookingRight)
+                _direction = PlayerDirection.FORWARD;
+            if(isLookingLeft)
+                _direction = PlayerDirection.BACK;
         }
         else if(moveVector.x < 0)
         {
-            _direction = PlayerDirection.LEFT;
+            if(isLookingForward)
+                _direction = PlayerDirection.LEFT;
+            if(isLookingBack)
+                _direction = PlayerDirection.RIGHT;
+            if(isLookingLeft)
+                _direction = PlayerDirection.FORWARD;
+            if(isLookingRight)
+                _direction = PlayerDirection.BACK;
         }
         else if(moveVector.z > 0)
         {
-            _direction = PlayerDirection.FORWARD;
+            if(isLookingForward)
+                _direction = PlayerDirection.FORWARD;
+            if(isLookingBack)
+                _direction = PlayerDirection.BACK;
+            if(isLookingLeft)
+                _direction = PlayerDirection.RIGHT;
+            if(isLookingRight)
+                _direction = PlayerDirection.LEFT;
         }
         else if(moveVector.z < 0)
         {
-            _direction = PlayerDirection.BACK;
+            if(isLookingForward)
+                _direction = PlayerDirection.BACK;
+            if(isLookingBack)
+                _direction = PlayerDirection.FORWARD;
+            if(isLookingRight)
+                _direction = PlayerDirection.RIGHT;
+            if(isLookingLeft)
+                _direction = PlayerDirection.LEFT;
         }
     }
     
@@ -94,5 +131,37 @@ public class PlayerMovement : MonoBehaviour
     public void setSpeed(float valor)
     {
         _speed = valor;
+    }
+
+    public void setLookigDirection(float LookingAngle)
+    {
+        if (LookingAngle >= 315f && LookingAngle < 45f)
+        {
+            isLookingLeft = true;
+            isLookingBack = false;
+            isLookingForward = false;
+            isLookingRight = false;
+        }
+        else if(LookingAngle >= 45f && LookingAngle < 135f)
+        {
+            isLookingForward = true;
+            isLookingBack = false;
+            isLookingLeft = false;
+            isLookingRight = false;
+        }
+        else if(LookingAngle >= 135f && LookingAngle < 225f)
+        {
+            isLookingRight = true;
+            isLookingBack = false;
+            isLookingForward = false;
+            isLookingLeft = false;
+        }
+        else if(LookingAngle >= 225f && LookingAngle < 315f)
+        {
+            isLookingBack = true;
+            isLookingForward = false;
+            isLookingLeft = false;
+            isLookingRight = false;
+        }
     }
 }

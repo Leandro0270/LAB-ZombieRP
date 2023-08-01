@@ -20,7 +20,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     [SerializeField] private float buyCooldown = 5f;
     
     private int randomItemIndex;
-    
     private bool isOnCooldown = false;
     [SerializeField] private bool canBuyOnlyInHordeCooldown = false;
     private bool isOnHordeCooldown = false;
@@ -135,10 +134,9 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     {
         isOnCooldown = true;
         ScreenPoints.text = " ";
+        Destroy(StartItem);
         if (isMasterClient)
         {
-            PhotonNetwork.Destroy(StartItem);
-            PhotonNetwork.Destroy(ItemShowHolder);
             StartCoroutine(VendingMachineItemCoolDown());
 
         }
@@ -148,10 +146,9 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     {
         isOnCooldown = true;
         ScreenPoints.text = " ";
+        Destroy(StartItem);
         if (isMasterClient)
         {
-            PhotonNetwork.Destroy(StartItem);
-            PhotonNetwork.Destroy(ItemShowHolder);
             StartCoroutine(VendingMachineItemCoolDown());
         }
     }
@@ -177,7 +174,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         itemSpawn(player);
         playerStats.getPlayerPoints().removePoints(itens[randomItemIndex].Price);
         Destroy(StartItem);
-        Destroy(ItemShowHolder);
         StartCoroutine(VendingMachineItemCoolDown());
         ScreenPoints.text = " ";
     }
@@ -188,7 +184,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             itemSpawn(player);
             playerStats.getPlayerPoints().removePoints(guns[randomItemIndex].Price);
             Destroy(StartItem);
-            Destroy(ItemShowHolder);
             StartCoroutine(VendingMachineItemCoolDown());
             ScreenPoints.text = " ";
         
@@ -257,7 +252,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
 
     private void setRandomItem()
     {
-        Debug.Log("Setando item!");
         if(isOnline && !isMasterClient) return;
         //Randomizar se vai ser arma ou item
         var rotation = transform.rotation;
@@ -268,7 +262,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             
             if (isOnline)
             {
-                Debug.Log("Foi item online!");
                 photonView.RPC("setStartItemRPC", RpcTarget.All, randomItemIndex, false);
             }
             else
@@ -287,7 +280,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
 
             if (isOnline)
             {
-                Debug.Log("Foi arma online!");
                 photonView.RPC("setStartItemRPC", RpcTarget.All, randomItemIndex, true);
 
             }

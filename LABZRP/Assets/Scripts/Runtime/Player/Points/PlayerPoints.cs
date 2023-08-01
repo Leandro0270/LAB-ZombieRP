@@ -72,13 +72,38 @@ public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
         this.isMultiplierActive = isMultiplierActive;
     }
     
+    [PunRPC]
+    public void addChallengePointsRPC(int points)
+    {
+        if (photonView.IsMine)
+        {
+            addChallengePoints(points);
+        }
+        pointsUI.setPoints(points);
+
+        
+    }
     
     public void addChallengePoints(int points)
     {
-        this.points += points;
-        pointsUI.setPoints(points);
-        
+        if (isOnline)
+        {
+            if (photonView.IsMine)
+            {
+                this.points += points;
+            }
+            else
+            {
+                photonView.RPC("addChallengePointsRPC", RpcTarget.All, points);
+            }
+        }
+        else
+        {
+            this.points += points;
+            pointsUI.setPoints(points);
+        }
     }
+        
     
     public void setPointsUI(Points_UI pointsUI)
     {

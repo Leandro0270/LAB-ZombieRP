@@ -109,7 +109,7 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     }
     
     
-    public void setIsOnHorderCooldown(bool isOnHorderCooldown)
+    public void setIsOnHordeCooldown(bool isOnHorderCooldown)
     {
         foreach (var vendingMachine in spawnedVendingMachines)
         {

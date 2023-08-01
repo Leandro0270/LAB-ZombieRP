@@ -59,9 +59,13 @@ public class ChallengeCoffeeMachine : MonoBehaviourPunCallbacks, IPunObservable
             }
         }
     }
-    
     public void explodeMug(GameObject mug)
     {
+        if (isOnline)
+        {
+            if(PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Destroy(mug);
+        }
         Destroy(mug);
     }
     

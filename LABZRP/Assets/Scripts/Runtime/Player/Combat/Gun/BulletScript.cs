@@ -60,7 +60,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         yield return new WaitForSeconds(tempo);
         if (!hitted && _isBulletOwner)
             PlayerShooter.missedShot();
-        if(_isBulletOwner)
+        if(_isBulletOwner && _isOnline)
             PhotonNetwork.Destroy(gameObject);
         else if(!_isOnline)
             Destroy(gameObject);
@@ -75,7 +75,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 transform.rotation);
             Destroy(NewBulletHole, 20f);
             destroyBullet();
-            if(_isBulletOwner)
+            if(_isBulletOwner && _isOnline)
                 PhotonNetwork.Destroy(gameObject);
 
         }
@@ -144,9 +144,12 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 else
                 {
                     destroyBullet();
-                    if (photonView.IsMine)
-                        PhotonNetwork.Destroy(gameObject);
-                    else if (!_isOnline)
+                    if (_isOnline)
+                    {
+                        if (photonView.IsMine)
+                            PhotonNetwork.Destroy(gameObject);
+                    }
+                    else
                         Destroy(gameObject, 2f);
                 }
 

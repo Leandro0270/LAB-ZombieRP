@@ -747,8 +747,13 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public void setisKillInTimeChallengeActive(bool aux)
         {
                 _isChallengeActive = aux;
-
                 _isKillInTimeChallengeActive = aux;
+        }
+        
+        public void setIsSharpshooterChallengeActive(bool aux)
+        {
+                _isChallengeActive = aux;
+                _isSharpshooterChallengeActive = aux;
         }
         public void set_challengeManager(ChallengeManager challengeManager)
         {

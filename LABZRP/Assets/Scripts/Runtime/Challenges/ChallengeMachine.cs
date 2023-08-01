@@ -105,6 +105,11 @@ public class ChallengeMachine : MonoBehaviourPunCallbacks
             }
         }
     }
+    
+    public ScObChallengesSpecs getCurrentChallenge()
+    {
+        return _challenges[_currentChallenge];
+    }
 
     public void setIsActivated(bool value)
     {
@@ -113,7 +118,19 @@ public class ChallengeMachine : MonoBehaviourPunCallbacks
         else
             _isActivated = value;
     }
-    
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(_currentChallenge);
+        }
+        else
+        {
+            _currentChallenge = (int) stream.ReceiveNext();
+        }
+    }
+
     [PunRPC]
     public void setIsActivatedRPC(bool value)
     {
@@ -125,5 +142,6 @@ public class ChallengeMachine : MonoBehaviourPunCallbacks
         changeChallenges = false;
         InitializeChallengeMachine();
     }
+    
     
 }

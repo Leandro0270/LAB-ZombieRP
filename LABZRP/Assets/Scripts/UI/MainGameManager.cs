@@ -141,7 +141,11 @@ public class MainGameManager : MonoBehaviourPunCallbacks
             }
         }
     }
-    
+
+    public void StartGameHorde()
+    {
+        hordeManager.HordeBreakManagerManualStart();
+    }
     [PunRPC]
     public void removePlayer(int photonViewID)
     {

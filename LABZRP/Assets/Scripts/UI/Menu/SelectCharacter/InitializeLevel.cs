@@ -22,7 +22,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        GameObject gameObjectonlinePlayerConfigurationManager = GameObject.FindGameObjectWithTag("OnlinePlayerConfigurationManager");
+        GameObject gameObjectonlinePlayerConfigurationManager = GameObject.Find("OnlinePlayerConfigurationManager");
         if (gameObjectonlinePlayerConfigurationManager != null)
         {
             onlinePlayerConfigurationManager = gameObjectonlinePlayerConfigurationManager.GetComponent<OnlinePlayerConfigurationManager>();
@@ -33,10 +33,9 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (startedGame && waitingForPlayersPanel.activeSelf)
-        {
+        if ((startedGame && waitingForPlayersPanel.activeSelf) || !PhotonNetwork.IsConnected)
             waitingForPlayersPanel.SetActive(false);
-        }
+        
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -44,7 +43,6 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         //Verifica se há um instancia de PlayerConfigurationManager
         if (PlayerConfigurationManager.Instance == null)
         {
-            Debug.Log("ONLINE");
             mainGameManager.setIsOnline(true);
             mainGameManager.setOnlinePlayerConfigurationManager(onlinePlayerConfigurationManager.gameObject);
             pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
@@ -66,7 +64,6 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         else
         {
             waitingForPlayersPanel.SetActive(false);
-            Debug.Log("LOCAL");
             var playerConfigs = PlayerConfigurationManager.Instance.GetPlayerConfigs().ToArray();
             for (int i = 0; i < playerConfigs.Length; i++)
             {
@@ -102,9 +99,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
                 break;
             }
         }
-        
 
-        Debug.Log("Chamou para o player" + (playerindex));
         GameObject player = PhotonNetwork.Instantiate("OnlinePlayerPrefab", playerSpawns[playerindex].position,
             playerSpawns[playerindex].rotation);
         photonViewID = player.GetComponent<PhotonView>().ViewID;
@@ -118,6 +113,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
         if (playersReady == pc.Count)
         {
             photonView.RPC("instantiatePlayer", RpcTarget.All);
+            mainGameManager.StartGameHorde();
         }
     }
     

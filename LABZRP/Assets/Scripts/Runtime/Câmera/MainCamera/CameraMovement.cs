@@ -12,6 +12,7 @@ public class CameraMovement : MonoBehaviourPunCallbacks
     public Vector3 offset; // Distância da câmera aos objetos
     public float smoothTime = 0.5f; // Suavização do movimento da câmera
     public float defaultCenterY = 10f; // Altura padrão do centro Y
+    public float defaultCenterYOnline = 20f;
     public float distanceThreshold = 10f; // Distância mínima entre os jogadores para aumentar o centro Y
     public float heightIncrease = 5f; // Altura a ser adicionada ao centro Y se os jogadores estiverem distantes
     public bool isOnline = false;
@@ -51,11 +52,29 @@ public class CameraMovement : MonoBehaviourPunCallbacks
             // Se os jogadores estiverem distantes, aumente o centro Y
             if (playersAreFar)
             {
-                center.y = defaultCenterY + heightIncrease;
+                if (isOnline)
+                {
+                    center.y = defaultCenterYOnline + heightIncrease;
+
+                }
+                else
+                {
+                    center.y = defaultCenterY + heightIncrease;
+
+                }
             }
             else
             {
-                center.y = defaultCenterY;
+                if (isOnline)
+                {
+                    center.y = defaultCenterYOnline;
+
+                }
+                else
+                {
+                    center.y = defaultCenterY;
+
+                }
             }
 
             // Calcule a nova posição da câmera com base na posição média

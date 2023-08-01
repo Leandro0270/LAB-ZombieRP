@@ -13,6 +13,7 @@ using Vector3 = UnityEngine.Vector3;
 //Esse comando faz com que seja necessario o objeto em que o script for aplicado tenha o componente RIGIDBODY
 public class PlayerRotation : MonoBehaviour
 {
+    [SerializeField] private PlayerMovement _move;
     private bool _canSwitchInputs = true;
     private bool isOnlinePlayer;
     private PlayerStats _status;
@@ -20,14 +21,7 @@ public class PlayerRotation : MonoBehaviour
     private Vector3 _inputMouse;
     private Vector3 _lateInputRotation;
     private bool _canRotate = true;
-    //Variavel que vai armazenar onde o raycast está batendo
-
-
     private RaycastHit _hit;
-
-
-
-    //Variavel que vai definir onde que o raycast vai poder bater, fazendo com que tudo que não esteja nessa layer seja ignorado
     public LayerMask ground;
 
     private bool isGamepad;
@@ -78,8 +72,10 @@ void Start()
                     Vector3 FixRotation = new Vector3(playerToMouse.z, 0, -playerToMouse.x);
                     //Nessa variavel está sendo feito o calculo da rotação necessária para o player utilizando o lerp para suavizar
                     Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(FixRotation), 0.2f);
-                    if(_canRotate)
+                    if (_canRotate)
+                    {
                         transform.rotation = newRotation;
+                    }
             }
         }
 

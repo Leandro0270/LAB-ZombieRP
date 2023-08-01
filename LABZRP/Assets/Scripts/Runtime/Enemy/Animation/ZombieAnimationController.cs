@@ -16,21 +16,21 @@ public class ZombieAnimationController : MonoBehaviourPunCallbacks
     public void setTarget(bool haveTarget)
     {
         if(isOnline)
-            _photonView.RPC("setTargetRPC", RpcTarget.All, haveTarget);
+            _photonView.RPC("setTargetRPC", RpcTarget.Others, haveTarget);
         else
             _animator.SetBool("HaveTarget", haveTarget);
     }
     public void setAttack()
     {
         if(isOnline)
-            _photonView.RPC("setAttackRPC", RpcTarget.All);
+            _photonView.RPC("setAttackRPC", RpcTarget.Others);
         else
             _animator.SetTrigger("Attacking");
     }
     public void triggerDown()
     {
         if(isOnline)
-            _photonView.RPC("triggerDownRPC", RpcTarget.All);
+            _photonView.RPC("triggerDownRPC", RpcTarget.Others);
         _animator.SetTrigger("isDying");
     }
     

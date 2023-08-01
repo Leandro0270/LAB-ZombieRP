@@ -282,13 +282,11 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
              {
                  if (playerToRemove.isMasterClient)
                  {
-                     Debug.Log("Master client se desconectou, retornando ao menu");
                      PhotonNetwork.LeaveRoom();
                      PhotonNetwork.Disconnect();
                      SceneManager.LoadScene("MainMenu");
                      Destroy(gameObject);
                  }
-                 Debug.Log("O player de playerActorNumber " + playerToRemove.player.ActorNumber + " se desconectou");
                  availableLobbyPlayersShower.Add(playerToRemove.lobbyPlayersShower);
                  playerToRemove.lobbyPlayersShower.removePlayer();
                  playersCount--;
@@ -338,8 +336,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          {
              if(indexPlayer != -1)
              {
-                 Debug.Log("Entrou no if");
-                 Debug.Log(newPlayer.ActorNumber + " vai entrar no index " + indexPlayer);
                  newPlayerIndex = indexPlayer;
                  break;
              }
@@ -508,7 +504,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          OnlinePlayerConfiguration config = null;
          if (verificacaoDePlayer.IsMasterClient)
          {
-             Debug.Log("Adicionou o masterClient");
              config = new OnlinePlayerConfiguration(verificacaoDePlayer, 0);
          }
          else if(verificacaoDePlayer.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
@@ -517,7 +512,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          }
          else
          {
-             Debug.Log("Não é o masterClient nem o local player");
              for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
              { 
                  if(playersOnLobbyByActorNumber[i] == verificacaoDePlayer.ActorNumber)

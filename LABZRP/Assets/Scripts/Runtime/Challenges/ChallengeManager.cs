@@ -136,17 +136,31 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         challengeDescriptionUI.SetActive(true);
         _challengeDescriptionText.text = challengeDescription;
         challengeTimeUI.SetActive(true);
-        
     }
     
     [PunRPC]
-    public void updateChallengeTime(float challengeTime, float currentChallengeTime)
+    public void updateChallengeTime(float _challengeTime, float _currentChallengeTime)
     {
-        _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
+        _challengeTimeText.text = "Tempo restante: " + (_challengeTime - _currentChallengeTime).ToString("F0");
+    }
+
+
+    [PunRPC]
+    public void StartChallengeRPC(int CMPhotonViewId)
+    {
+        ChallengeMachine challengeMachine = PhotonView.Find(CMPhotonViewId).GetComponent<ChallengeMachine>();
+        ScObChallengesSpecs challenge = challengeMachine.getCurrentChallenge();
+        StartChallenge(challenge, challengeMachine);
     }
     
     public bool StartChallenge(ScObChallengesSpecs challenge, ChallengeMachine challengeMachinee)
     {
+        if (_isOnline && PhotonNetwork.IsMasterClient)
+        {
+            int challengeMachinePhotonViewId = challengeMachinee.photonView.ViewID;
+            photonView.RPC("StartChallengeRPC", RpcTarget.Others, challengeMachinePhotonViewId);
+            
+        }
         if (challengeInProgress || challengeCompleted || challengeFailed) return false;
         _startedChallengeMachine = challengeMachinee;
         if (players.Count == 0)
@@ -220,7 +234,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             if (_isOnline)
             {
                 photonView.RPC("updateChallengeTextRPC", RpcTarget.All, challengeName, challengeDescription);
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "noHit", true);
+                photonView.RPC("startChallengesRPC", RpcTarget.All, "noHit", true, false);
             }
             else
             {
@@ -256,11 +270,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
                 
             if (currentChallengeTime >= challengeTime)
             {
-                if (_isOnline)
-                {
-                    photonView.RPC("startChallengesRPC", RpcTarget.All, "noHit", false);
-                }
-                else
+                if (!_isOnline)
                 {
 
                     foreach (var player in players)
@@ -285,7 +295,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             if (_isOnline)
             {
                 photonView.RPC("updateChallengeTextRPC", RpcTarget.All, challengeName, challengeDescription);
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "noThrowable", true);
+                photonView.RPC("startChallengesRPC", RpcTarget.All, "noThrowable", true,false);
 
             }
             else
@@ -317,11 +327,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            if (_isOnline)
-            {
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "noThrowable", false);
-            }
-            else
+            if (!_isOnline)
             {
                 foreach (var player in players)
                 {
@@ -344,7 +350,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             if (_isOnline)
             {
                 photonView.RPC("updateChallengeTextRPC", RpcTarget.All, challengeName, challengeDescription);
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", true);
+                photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", true, false);
                 PhotonNetwork.Instantiate("areaPrefab", areaSpawnPoints[randomAreaIndex].position, areaSpawnPoints[randomAreaIndex].rotation);
                 _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled + "/" + _zombiesToKill;
 
@@ -380,11 +386,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             currentChallengeTime += Time.deltaTime;
             if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
             {
-                if (_isOnline)
-                {
-                    photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", false, false);
-                }
-                else
+                if (!_isOnline)
                 {
                     foreach (var Player in players)
                     {
@@ -395,15 +397,9 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             
             
-            
             else if(_zombiesKilled >= _zombiesToKill)
             {
-                if (_isOnline)
-                {
-                    photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", false, false);
-
-                }
-                else
+                if (!_isOnline)
                 {
                     foreach (var Player in players)
                     {
@@ -418,7 +414,6 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             if (_isOnline)
             {
                 PhotonNetwork.Destroy(_instantiateArea);
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", false, true);
 
             }
             else
@@ -458,10 +453,15 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
 
             if (_isOnline)
             {
-                _coffeeMachine = PhotonNetwork.Instantiate("coffeeMachine", coffeeMachineSpawnPoints[0].position,
-                    coffeeMachineSpawnPoints[0].transform.rotation);
-                _instantiatedCoffeeMachines.Add(_coffeeMachine);
-                hordeManager.setCoffeeMachineEvent(true);
+                for (int i = 0; i < _coffeeMachinesToDefend; i++)
+                {
+                    _coffeeMachine = PhotonNetwork.Instantiate("coffeeMachine", coffeeMachineSpawnPoints[0].position,
+                        coffeeMachineSpawnPoints[0].transform.rotation);
+                    _instantiatedCoffeeMachines.Add(_coffeeMachine);
+                    hordeManager.setCoffeeMachineEvent(true);
+                }
+                photonView.RPC("startChallengesRPC", RpcTarget.All, "defendTheCoffeeMachine", true, false);
+
             }
             else
             {
@@ -478,7 +478,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             _defendTheCoffeeMachineSetup = true;
         }
         else{
-            if (currentTimeToStartChallenge <= timeToStartChallenge)
+            if (currentTimeToStartChallenge < timeToStartChallenge)
             {
                 currentTimeToStartChallenge += Time.deltaTime;
                 _challengeTimeText.text = "Desafio começará em + " + (timeToStartChallenge - currentTimeToStartChallenge).ToString("F0");
@@ -560,11 +560,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
         if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
         {
-            if (_isOnline)
-            {
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killInTime", false, false);
-            }
-            else
+            if (!_isOnline)
             {
                 foreach (var Player in players)
                 {
@@ -576,19 +572,16 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (_zombiesKilled >= _zombiesToKill)
         {
-            if (_isOnline)
-            {
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killInTime", false, false);
-            }
-            else
+            if (!_isOnline)
             {
                 foreach (var Player in players)
                 {
                     Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
                 }
 
-                SuccessChallenge();
             }
+            SuccessChallenge();
+
         }
     }
 
@@ -628,11 +621,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         _challengeTimeText.text = "Tempo restante: " + (challengeTime - currentChallengeTime).ToString("F0");
         if((currentChallengeTime >= challengeTime) && _zombiesKilled < _zombiesToKill)
         {
-            if (_isOnline)
-            {
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killWithAim", false, false);
-            }
-            else
+            if (!_isOnline)
             {
                 foreach (var Player in players)
                 {
@@ -644,13 +633,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if(_zombiesKilled >= _zombiesToKill)
         {
-            if (_isOnline)
-            {
-                photonView.RPC("startChallengesRPC", RpcTarget.All, "killWithAim", false, false);
-
-            }
-            else
-            {
+            if (!_isOnline){
                 foreach (var Player in players)
                 {
                     Player.GetComponent<WeaponSystem>().setisKillWithAimChallengeActive(false);
@@ -758,9 +741,28 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 break;
             case "sharpshooter":
-                killedZombiesUI.SetActive(isActive);
+                foreach (var Player in players)
+                {
+                    Player.GetComponent<WeaponSystem>().setIsSharpshooterChallengeActive(isActive);
+                }
                 break;
-                
+            case "defendTheCoffeeMachine":
+                    hordeManager.setCoffeeMachineEvent(isActive);
+                break;
+            case "cancelChallenge":
+                foreach (var Player in players)
+                {
+                    Player.GetComponent<WeaponSystem>().setIsSharpshooterChallengeActive(false);
+                    Player.GetComponent<WeaponSystem>().setisMeleeChallengeActive(false);
+                    Player.GetComponent<WeaponSystem>().setisKillWithAimChallengeActive(false);
+                    Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
+                    Player.GetComponent<WeaponSystem>().setisKillInAreaChallengeActive(false);
+                    Player.GetComponent<WeaponSystem>().SetIsInArea(false);
+                    hordeManager.setCoffeeMachineEvent(false);
+                    Player.GetComponent<ThrowablePlayerStats>().setIsInThrowableChallenge(false);
+                    Player.GetComponent<PlayerStats>().setIsNoHitChallenge(false);
+                }
+                break;
         }
     }
 
@@ -785,6 +787,10 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
                 challengeTimeUI.SetActive(true);
                 killedZombiesUI.SetActive(true);
                 _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled + "/" + _zombiesToKill;
+                foreach (var player in players)
+                {
+                    player.GetComponent<WeaponSystem>().setIsSharpshooterChallengeActive(true);
+                }
                 _sharpshooterSetup = true;
             }
         }else{
@@ -821,7 +827,22 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (_isOnline)
         {
+            photonView.RPC("startChallengesRPC", RpcTarget.All, "cancelChallenge", false, false);
             photonView.RPC("finishChallenge", RpcTarget.All, true);
+        }
+        else
+        {
+            foreach (var Player in players)
+            {
+                Player.GetComponent<WeaponSystem>().setIsSharpshooterChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisMeleeChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillWithAimChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillInAreaChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().SetIsInArea(false);
+                Player.GetComponent<ThrowablePlayerStats>().setIsInThrowableChallenge(false);
+                Player.GetComponent<PlayerStats>().setIsNoHitChallenge(false);
+            }
         }
         challengeNameUI.SetActive(false);
         challengeDescriptionUI.SetActive(false);
@@ -831,7 +852,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         challengeCompleted = true;
         challengeFailed = false;
         currentChallengeText.SetActive(false);
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient || !_isOnline)
         {
             List<GameObject> players = mainGameManager.getAlivePlayers();
             foreach (GameObject player in players)
@@ -849,7 +870,22 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (_isOnline)
         {
+            photonView.RPC("startChallengesRPC", RpcTarget.All, "cancelChallenge", false, false);
             photonView.RPC("finishChallenge", RpcTarget.All, false);
+        }
+        else
+        {
+            foreach (var Player in players)
+            {
+                Player.GetComponent<WeaponSystem>().setIsSharpshooterChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisMeleeChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillWithAimChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillInTimeChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().setisKillInAreaChallengeActive(false);
+                Player.GetComponent<WeaponSystem>().SetIsInArea(false);
+                Player.GetComponent<ThrowablePlayerStats>().setIsInThrowableChallenge(false);
+                Player.GetComponent<PlayerStats>().setIsNoHitChallenge(false);
+            }
         }
         challengeNameUI.SetActive(false);
         challengeDescriptionUI.SetActive(false);
@@ -859,10 +895,6 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         challengeCompleted = false;
         challengeFailed = true;
         currentChallengeText.SetActive(false);
-        if (activeChallenge.havePenalty)
-        {
-            //penalidade do desafio
-        }
         if(PhotonNetwork.IsMasterClient)
             StartCoroutine(CooldownBetweenChallenges());
     }

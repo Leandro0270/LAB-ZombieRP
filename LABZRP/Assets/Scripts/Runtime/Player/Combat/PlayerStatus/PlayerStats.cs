@@ -48,7 +48,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     private bool _isWalkingBackward = false;
     private bool _isWalkingLeft = false;
     private bool _isWalkingRight = false;
-    private bool _isIdle = true;
+    private bool _isIdle = false;
     private bool _burnTickDamage = true;
     private float _burnTickTime = 0;
     private float _timeBurning = 0;
@@ -554,6 +554,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     {
         if (_direction == PlayerMovement.PlayerDirection.FORWARD)
         {
+            _playerMovement.setSpeed(_speed);
             _isWalkingForward = true;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
@@ -562,6 +563,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if( _direction == PlayerMovement.PlayerDirection.BACK)
         {
+            _playerMovement.setSpeed(_speed*0.8f);
             _isWalkingForward = false;
             _isWalkingBackward = true;
             _isWalkingLeft = false;
@@ -570,6 +572,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if (_direction == PlayerMovement.PlayerDirection.LEFT)
         {
+            _playerMovement.setSpeed(_speed*0.9f);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = true;
@@ -578,6 +581,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if (_direction == PlayerMovement.PlayerDirection.RIGHT)
         {
+            _playerMovement.setSpeed(_speed*0.9f);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
@@ -586,6 +590,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else
         {
+            _playerMovement.setSpeed(_speed);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
