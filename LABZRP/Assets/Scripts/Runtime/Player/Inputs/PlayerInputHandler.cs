@@ -37,6 +37,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     private void Start()
     {
         _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
+        _mainGameManager.addPlayer(gameObject);
         _pause = _mainGameManager.getPauseMenu();
 
     }

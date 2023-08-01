@@ -44,7 +44,11 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     private int _maxThrowableItens;
     private int _maxAuxiliaryItens;
     private int _maxGunItens;
-    private bool _isWalking;
+    private bool _isWalkingForward = false;
+    private bool _isWalkingBackward = false;
+    private bool _isWalkingLeft = false;
+    private bool _isWalkingRight = false;
+    private bool _isIdle = true;
     private bool _burnTickDamage = true;
     private float _burnTickTime = 0;
     private float _timeBurning = 0;
@@ -160,10 +164,11 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
 
         if (_isOnline && !photonView.IsMine)
         {
-            if(_isWalking)
-                _playerAnimationManager.setMovement(true);
-            else
-                _playerAnimationManager.setMovement(false);
+            _playerAnimationManager.setIsWalkingForward(_isWalkingForward);
+            _playerAnimationManager.setIsWalkingBackward(_isWalkingBackward);
+            _playerAnimationManager.setIsWalkingLeft(_isWalkingLeft);
+            _playerAnimationManager.setIsWalkingRight(_isWalkingRight);
+            _playerAnimationManager.setIsIdle(_isIdle);
         }
     }
 
@@ -181,7 +186,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             stream.SendNext(_isIncapatitated);
             stream.SendNext(_downLife);
             stream.SendNext(_interacting);
-            stream.SendNext(_isWalking);
+            stream.SendNext(_isWalkingForward);
+            stream.SendNext(_isWalkingBackward);
+            stream.SendNext(_isWalkingLeft);
+            stream.SendNext(_isWalkingRight);
             stream.SendNext(_isSpeedSlowed);
             stream.SendNext(_isStunned);
             stream.SendNext(_isBurning);
@@ -195,7 +203,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _isIncapatitated = (bool)stream.ReceiveNext();
             _downLife = (float)stream.ReceiveNext();
             _interacting = (bool)stream.ReceiveNext();
-            _isWalking = (bool)stream.ReceiveNext();
+            _isWalkingForward = (bool)stream.ReceiveNext();
+            _isWalkingBackward = (bool)stream.ReceiveNext();
+            _isWalkingLeft = (bool)stream.ReceiveNext();
+            _isWalkingRight = (bool)stream.ReceiveNext();
             _isSpeedSlowed = (bool)stream.ReceiveNext();
             _isStunned = (bool)stream.ReceiveNext();
             _isBurning = (bool)stream.ReceiveNext();
@@ -539,12 +550,57 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     {
         _isOnline = isOnline;
     }
-    public void setIsWalking(bool isWalking)
+    public void setMovementAnimationStats(PlayerMovement.PlayerDirection _direction)
     {
-        _isWalking = isWalking;
-        _playerAnimationManager.setMovement(_isWalking);
+        if (_direction == PlayerMovement.PlayerDirection.FORWARD)
+        {
+            _isWalkingForward = true;
+            _isWalkingBackward = false;
+            _isWalkingLeft = false;
+            _isWalkingRight = false;
+            _isIdle = false;
+        }
+        else if( _direction == PlayerMovement.PlayerDirection.BACK)
+        {
+            _isWalkingForward = false;
+            _isWalkingBackward = true;
+            _isWalkingLeft = false;
+            _isWalkingRight = false;
+            _isIdle = false;
+        }
+        else if (_direction == PlayerMovement.PlayerDirection.LEFT)
+        {
+            _isWalkingForward = false;
+            _isWalkingBackward = false;
+            _isWalkingLeft = true;
+            _isWalkingRight = false;
+            _isIdle = false;
+        }
+        else if (_direction == PlayerMovement.PlayerDirection.RIGHT)
+        {
+            _isWalkingForward = false;
+            _isWalkingBackward = false;
+            _isWalkingLeft = false;
+            _isWalkingRight = true;
+            _isIdle = false;
+        }
+        else
+        {
+            _isWalkingForward = false;
+            _isWalkingBackward = false;
+            _isWalkingLeft = false;
+            _isWalkingRight = false;
+            _isIdle = true;
+        }
         
+        _playerAnimationManager.setIsWalkingForward(_isWalkingForward);
+        _playerAnimationManager.setIsWalkingBackward(_isWalkingBackward);
+        _playerAnimationManager.setIsWalkingLeft(_isWalkingLeft);
+        _playerAnimationManager.setIsWalkingRight(_isWalkingRight);
+        _playerAnimationManager.setIsIdle(_isIdle);
+
     }
+    
     public ThrowablePlayerStats getThrowablePlayerStats()
     {
         return _throwablePlayerStats;

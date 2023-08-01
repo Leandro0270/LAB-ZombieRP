@@ -19,6 +19,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      private string roomCode;
      private string clientPlayerName;
      private int clientPlayerIndex;
+     [SerializeField] private GameObject mainCanvas;
      private List<int> AvailablesPlayersIndex = new List<int>(){1,2,3};
      [SerializeField] private TextMeshProUGUI roomCodeText;
      [SerializeField] private GameObject lobbyPanel;
@@ -481,9 +482,8 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      [PunRPC]
      public void LoadingForAllPlayers()
      {
-         lobbyPanel.SetActive(false);
-         LoadPanelTransition loadingPanelTransition = LoadPanel.GetComponent<LoadPanelTransition>();
-         loadingPanelTransition.setShowingLoadingPanel(true);
+         mainCanvas.SetActive(false);
+         LoadPanel.SetActive(true);
      }
      public void LoadLevel()
      {

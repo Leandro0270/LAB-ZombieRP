@@ -84,7 +84,6 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     public void setConfigsToplayer(int index, int photonId)
     {
         GameObject player = PhotonView.Find(photonId).gameObject;
-        mainGameManager.addPlayer(player);
         players.Add(player);
         player.GetComponent<PlayerInputHandler>().InitializeOnlinePlayer(pc[index]);
     }

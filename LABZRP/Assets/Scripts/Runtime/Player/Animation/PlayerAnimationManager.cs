@@ -15,9 +15,26 @@ public class PlayerAnimationManager : MonoBehaviourPunCallbacks
             photonView = GetComponent<PhotonView>();
     }
     
-    public void setMovement(bool walking)
+    
+    public void setIsIdle(bool idle)
     {
-        _animator.SetBool("Walking", walking);
+        _animator.SetBool("isIdle", idle);
+    }
+    public void setIsWalkingForward(bool walking)
+    {
+        _animator.SetBool("isWalkingForward", walking);
+    }
+    public void setIsWalkingBackward(bool walking)
+    {
+        _animator.SetBool("isWalkingBackward", walking);
+    }
+    public void setIsWalkingLeft(bool walking)
+    {
+        _animator.SetBool("isWalkingLeft", walking);
+    }
+    public void setIsWalkingRight(bool walking)
+    {
+        _animator.SetBool("isWalkingRight", walking);
     }
     public void setAttack()
     {
