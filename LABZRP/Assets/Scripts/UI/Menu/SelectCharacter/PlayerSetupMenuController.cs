@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 public class PlayerSetupMenuController : MonoBehaviour
 {
     private int PlayerIndex;
-
+    
+    [SerializeField] private GameObject pressAnyKeyToJoinText;
+    [SerializeField] private GameObject joinPanel;
     [SerializeField] private TextMeshProUGUI titletext;
     [SerializeField] private GameObject CharacterCustomizePanel;
     [SerializeField] private GameObject menuPanel;
@@ -20,31 +23,36 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private List<Material> tshirt;
     [SerializeField] private List<Material> pants;
     [SerializeField] private List<Material> Shoes;
-
+    [SerializeField] private InputSystemUIInputModule inputSystemUiInputModule;
 
     private int SkinIndex = 0;
     private int EyesIndex = 0;
     private int tshirtIndex = 0;
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
-
     private float ignoreInputTime = 0.5f;
-
     private bool inputEnabled;
-    
+
+
     public void SetPlayerIndex(int pi)
     {
         PlayerIndex = pi;
         titletext.SetText("Player" + (pi + 1).ToString());
         ignoreInputTime = Time.time + ignoreInputTime;
+        pressAnyKeyToJoinText.SetActive(false);
+        joinPanel.SetActive(true);
     }
 
     void Update()
     {
         if (Time.time > ignoreInputTime)
-            inputEnabled = true;
+                inputEnabled = true;
     }
 
+    public InputSystemUIInputModule GetInputSystemUIInputModule()
+    {
+        return inputSystemUiInputModule;
+    }
     public void SetClass(ScObPlayerStats player)
 
     {

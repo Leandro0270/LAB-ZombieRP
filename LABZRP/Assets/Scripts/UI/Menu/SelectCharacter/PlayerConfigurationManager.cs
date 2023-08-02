@@ -10,7 +10,7 @@ public class PlayerConfigurationManager : MonoBehaviour
 {
     private List<PlayerConfiguration> playerConfigs;
     private int readyCount = 0;
-
+    [SerializeField] private List<PlayerSetupMenuController> playerSetupsList;
     public static PlayerConfigurationManager Instance { get; private set; }
 
     private void Awake()
@@ -31,7 +31,15 @@ public class PlayerConfigurationManager : MonoBehaviour
     {
         playerConfigs[index].playerStats = stats;
     }
-    
+
+    public PlayerSetupMenuController setPlayerSetupMenuController()
+    {
+        return playerSetupsList[0];
+    }
+    public void deletePlayerSetupMenuController()
+    {
+        playerSetupsList.RemoveAt(0);
+    }
     public void SetPlayerName(int index, string name)
     {
         playerConfigs[index].playerStats.name = name;
@@ -51,8 +59,13 @@ public class PlayerConfigurationManager : MonoBehaviour
         readyCount++;
         if (readyCount == playerConfigs.Count)
         {
-            SceneManager.LoadScene("SampleScene");
+            loadScene("SampleScene");
         }
+    }
+    
+    public void loadScene(string scene)
+    {
+        SceneManager.LoadScene(scene);
     }
     
     public void CancelReadyPlayer(int index)
