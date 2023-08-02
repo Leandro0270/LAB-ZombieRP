@@ -132,7 +132,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         {
             if (!_isDown)
             {
-                if (EnemyInCapacitator != null || EnemyInCapacitator.GetComponent<EnemyStatus>().isDeadEnemy())
+                if (EnemyInCapacitator == null || EnemyInCapacitator.GetComponent<EnemyStatus>().isDeadEnemy())
                 {
                     CapacitatePlayer();
                 }
@@ -460,12 +460,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         else
         {
             playerUiConfig =
-                Instantiate(PlayerUI, findCanvaHud.transform).GetComponent<PlayerUiHandler>();
+                Instantiate(PlayerUI, findCanvaHud.transform.position,Quaternion.identity).GetComponent<PlayerUiHandler>();
             playerUiConfig.transform.parent = findCanvaHud.transform;
             playerUiConfig.setPlayer(this.gameObject);
         }
-
-
         _playerIndicator.material = _playerStatus.PlayerIndicator;
         _throwablePlayerStats.setMaxCapacity(_maxThrowableItens);
     }
@@ -493,9 +491,9 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
 
     public void incapacitateOnline(int enemyPhotonID)
     {
-        GameObject enemy = PhotonView.Find(enemyPhotonID).gameObject;
         if (photonView.IsMine)
         {
+            GameObject enemy = PhotonView.Find(enemyPhotonID).gameObject;
             IncapacitatePlayer(enemy);
         }
     }

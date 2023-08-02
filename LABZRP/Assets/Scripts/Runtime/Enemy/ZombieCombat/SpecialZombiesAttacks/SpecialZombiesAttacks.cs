@@ -393,7 +393,6 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                             else
                             {
                                 PuxarJogador(0.2f);
-
                             }
 
                             if (canSpecialAttack)
@@ -453,9 +452,9 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
 
         playerStats = target.GetComponent<PlayerStats>();
         enemyFollow.setTarget(target);
-        targetPhotonViewID = target.GetComponent<PhotonView>().ViewID;
         if (isOnline && PhotonNetwork.IsMasterClient)
         {
+            targetPhotonViewID = target.GetComponent<PhotonView>().ViewID;
             photonView.RPC("setManualTarget", RpcTarget.Others, targetPhotonViewID);
         }
         return target;

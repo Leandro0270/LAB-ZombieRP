@@ -206,84 +206,40 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         }
         private void Atirar()
         {
-                float currentDamage = _dano;
-                bool isCritical = false;
-                if (_haveCriticalChance)
+                if (!_incapactitado)
                 {
-                        float random = Random.Range(0, 100);
-                        if (random <= _currentCriticalChance)
+                        float currentDamage = _dano;
+                        bool isCritical = false;
+                        if (_haveCriticalChance)
                         {
-                                currentDamage = _dano + (_criticalDamagePercentage * _dano);
-                                isCritical = true;
-                                _currentCriticalChance = _criticalBaseChancePercentage;
+                                float random = Random.Range(0, 100);
+                                if (random <= _currentCriticalChance)
+                                {
+                                        currentDamage = _dano + (_criticalDamagePercentage * _dano);
+                                        isCritical = true;
+                                        _currentCriticalChance = _criticalBaseChancePercentage;
+                                }
+                                else
+                                {
+                                        _currentCriticalChance += _criticalChanceIncrementalPerBullet;
+                                        currentDamage = _dano;
+                                }
                         }
-                        else
-                        {
-                                _currentCriticalChance += _criticalChanceIncrementalPerBullet;
-                                currentDamage = _dano;
-                        }
-                }
 
-                _prontoParaAtirar = false;
-                if (!_isShotgun)
-                {
-                        //calcular direção dos tiros com a dispersão de bala
-                        float y = Random.Range(-_dispersao, _dispersao);
-                        Vector3 auxVector = canoDaArma.rotation.eulerAngles;
-                        Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
-
-                        //Spawn da bala
-                        if (_isOnline)
-                        {
-                                GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
-                                BulletScript bala = bullet.GetComponent<BulletScript>();
-                                bala.setDistancia(_distancia);
-                                bala.setVelocidadeBalas(_velocidadeBala);
-                                bala.setIsAiming(_mirando);
-                                bala.SetDamage(currentDamage);
-                                bala.setShooter(this);
-                                bala.setHitableEnemies(_hitableEnemies);
-                                bala.setIsCritical(isCritical);
-                        }
-                        else
-                        {
-
-
-                                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position,
-                                        dispersaoCalculada);
-                                bala.SetDamage(currentDamage);
-                                bala.setShooter(this);
-                                bala.setIsAiming(_mirando);
-                                bala.setDistancia(_distancia);
-                                bala.setIsKnockback(_haveKnockback);
-                                bala.setKnockbackForce(_ForcaKnockback);
-                                bala.setVelocidadeBalas(_velocidadeBala);
-                                bala.setHitableEnemies(_hitableEnemies);
-                                bala.setIsCritical(isCritical);
-                        }
-                        _balasRestantes--;
-                        _disparosAEfetuar--;
-                        _bulletsUI.setBalasPente(_balasRestantes);
-                       
-                        Invoke("ResetarTiro", _tempoEntreDisparos);
-                        if (_disparosAEfetuar > 0 && _balasRestantes > 0)
-                        {
-                                Invoke("Atirar", _tempoEntreDisparos);
-                        }
-                }
-                else
-                {
-                        for (int i = 0; i < _balasPorDisparo; i++)
+                        _prontoParaAtirar = false;
+                        if (!_isShotgun)
                         {
                                 //calcular direção dos tiros com a dispersão de bala
                                 float y = Random.Range(-_dispersao, _dispersao);
                                 Vector3 auxVector = canoDaArma.rotation.eulerAngles;
-                                Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
-                                //Spawn da bala
+                                Quaternion dispersaoCalculada =
+                                        Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
 
+                                //Spawn da bala
                                 if (_isOnline)
                                 {
-                                        GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
+                                        GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position,
+                                                dispersaoCalculada);
                                         BulletScript bala = bullet.GetComponent<BulletScript>();
                                         bala.setDistancia(_distancia);
                                         bala.setVelocidadeBalas(_velocidadeBala);
@@ -295,29 +251,83 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 }
                                 else
                                 {
-                                        BulletScript bala = Instantiate(_bala, canoDaArma.transform.position, dispersaoCalculada);
-                                        bala.setDistancia(_distancia);
-                                        bala.setVelocidadeBalas(_velocidadeBala);
-                                        bala.setIsAiming(_mirando);
+
+
+                                        BulletScript bala = Instantiate(_bala, canoDaArma.transform.position,
+                                                dispersaoCalculada);
                                         bala.SetDamage(currentDamage);
                                         bala.setShooter(this);
+                                        bala.setIsAiming(_mirando);
+                                        bala.setDistancia(_distancia);
+                                        bala.setIsKnockback(_haveKnockback);
+                                        bala.setKnockbackForce(_ForcaKnockback);
+                                        bala.setVelocidadeBalas(_velocidadeBala);
                                         bala.setHitableEnemies(_hitableEnemies);
                                         bala.setIsCritical(isCritical);
                                 }
-                                
 
+                                _balasRestantes--;
+                                _disparosAEfetuar--;
+                                _bulletsUI.setBalasPente(_balasRestantes);
 
+                                Invoke("ResetarTiro", _tempoEntreDisparos);
+                                if (_disparosAEfetuar > 0 && _balasRestantes > 0)
+                                {
+                                        Invoke("Atirar", _tempoEntreDisparos);
+                                }
                         }
-                        _balasRestantes -= _balasPorDisparo;
-                        _bulletsUI.setBalasPente(_balasRestantes);
-                       
-                        Invoke("ResetarTiro", _tempoEntreDisparos);
+                        else
+                        {
+                                for (int i = 0; i < _balasPorDisparo; i++)
+                                {
+                                        //calcular direção dos tiros com a dispersão de bala
+                                        float y = Random.Range(-_dispersao, _dispersao);
+                                        Vector3 auxVector = canoDaArma.rotation.eulerAngles;
+                                        Quaternion dispersaoCalculada =
+                                                Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
+                                        //Spawn da bala
+
+                                        if (_isOnline)
+                                        {
+                                                GameObject bullet = PhotonNetwork.Instantiate("bullet",
+                                                        canoDaArma.position, dispersaoCalculada);
+                                                BulletScript bala = bullet.GetComponent<BulletScript>();
+                                                bala.setDistancia(_distancia);
+                                                bala.setVelocidadeBalas(_velocidadeBala);
+                                                bala.setIsAiming(_mirando);
+                                                bala.SetDamage(currentDamage);
+                                                bala.setShooter(this);
+                                                bala.setHitableEnemies(_hitableEnemies);
+                                                bala.setIsCritical(isCritical);
+                                        }
+                                        else
+                                        {
+                                                BulletScript bala = Instantiate(_bala, canoDaArma.transform.position,
+                                                        dispersaoCalculada);
+                                                bala.setDistancia(_distancia);
+                                                bala.setVelocidadeBalas(_velocidadeBala);
+                                                bala.setIsAiming(_mirando);
+                                                bala.SetDamage(currentDamage);
+                                                bala.setShooter(this);
+                                                bala.setHitableEnemies(_hitableEnemies);
+                                                bala.setIsCritical(isCritical);
+                                        }
+
+
+
+                                }
+
+                                _balasRestantes -= _balasPorDisparo;
+                                _bulletsUI.setBalasPente(_balasRestantes);
+
+                                Invoke("ResetarTiro", _tempoEntreDisparos);
+                        }
                 }
         }
 
         private void Recarregar()
         {
-                if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando)
+                if (_totalBalas > 0 && _balasRestantes < _tamanhoPente && !_recarregando && !_incapactitado)
                 {
                         // if (_isOnline)
                         // {
@@ -413,13 +423,17 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         private void ResetarTiro()
         {
-                _prontoParaAtirar = true;
+                if(!_incapactitado) 
+                        _prontoParaAtirar = true;
         }
 
         private void ResetarMelee()
         {
-                _throwablePlayerStats.setCanceledThrow(false);
-                _meleePronto = true;
+                if (!!_incapactitado)
+                {
+                        _throwablePlayerStats.setCanceledThrow(false);
+                        _meleePronto = true;
+                }
         }
 
         private void ApplyGunSpecs()
@@ -481,7 +495,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         //Input Actions
         public void AuxMelee()
         {
-                if (!_atirando && _meleePronto && !_recarregando && _prontoParaAtirar)
+                if (!_atirando && _meleePronto && !_recarregando && _prontoParaAtirar && !_incapactitado)
                 {
                         melee();
                         _throwablePlayerStats.setCanceledThrow(true);
@@ -490,7 +504,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         }
         public void AuxReload()
         {
-                if (_balasRestantes < _tamanhoPente && !_recarregando && !_attMelee)
+                if (_balasRestantes < _tamanhoPente && !_recarregando && !_attMelee && !_incapactitado)
                 {
                         Recarregar();
                         _throwablePlayerStats.setCanceledThrow(true);
@@ -504,8 +518,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         case InputActionPhase.Performed:
                                 if (_segurarGatilho)
                                 {
-                                        _atirando = true;
+                                        if (!_incapactitado)
+                                                _atirando = true;
                                         _throwablePlayerStats.setCanceledThrow(true);
+                                        
                                 }
                                 else
                                 {
@@ -515,7 +531,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
                                 break;
                         case InputActionPhase.Started:
-                                _atirando = true;
+                                if(!_incapactitado)
+                                        _atirando = true;
                                 _throwablePlayerStats.setCanceledThrow(true);
                                 break;
                         case InputActionPhase.Canceled:
@@ -528,7 +545,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         public void AuxAimPress(InputAction.CallbackContext ctx)
         {
-                if (!_playerStats.verifyDown() && !_playerStats.getIsIncapacitated())
+                if (!_playerStats.verifyDown() && !_incapactitado)
                 {
                         switch (ctx.phase)
                         {
@@ -560,7 +577,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public void ReceiveAmmo(int ammo)
         {
                 PlayerStats status = GetComponent<PlayerStats>();
-                if (!status.verifyDown() && !status.verifyDeath())
+                if (!status.verifyDown() && !status.verifyDeath() && !_incapactitado)
                         _totalBalas += ammo;
                 if (_totalBalas > _maxBalas)
                         _totalBalas = _maxBalas;

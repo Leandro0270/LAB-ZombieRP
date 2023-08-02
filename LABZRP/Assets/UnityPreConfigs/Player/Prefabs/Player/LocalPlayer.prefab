@@ -234,7 +234,7 @@ MonoBehaviour:
   dispersaoSangue: 1
   totalLife: 0
   life: 0
-  PlayerUI: {fileID: 3552828503619246009, guid: 2fcfc9858337b484690ce36a42c2f4e3, type: 3}
+  PlayerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
   _playerHead: {fileID: 6071763367816855199}
   _playerIndicator: {fileID: 8476164450946481546}
 --- !u!114 &4110660743282712486

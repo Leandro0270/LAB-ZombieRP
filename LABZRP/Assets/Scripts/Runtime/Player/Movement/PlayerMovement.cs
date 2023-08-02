@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isLookingLeft = false;
     private bool isLookingForward = false;
     private bool isLookingBack = false;
+    private bool setup = false;
 
     public enum PlayerDirection
     {
@@ -41,14 +42,16 @@ public class PlayerMovement : MonoBehaviour
 
     public void SetInputMovimento(Vector3 valor)
     {
-        _inputMovimento = valor;
+        if(_canMove)
+            _inputMovimento = valor;
     }
 
     void FixedUpdate()
     {
-        if (_speed == 0)
+        if (_speed == 0 && !setup)
         {
             _status.updateSpeedMovement();
+            setup = true;
         }
 
         Vector3 auxVecto2 = _inputMovimento.normalized * (_speed * Time.deltaTime);

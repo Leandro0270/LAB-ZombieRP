@@ -31,7 +31,7 @@ public class LaserSight : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerStats.verifyDown() || playerStats.verifyDeath())
+        if (playerStats.verifyDown() || playerStats.verifyDeath() || playerStats.getIsIncapacitated())
         {
             playerStats.getWeaponSystem().cancelAim();
         }
