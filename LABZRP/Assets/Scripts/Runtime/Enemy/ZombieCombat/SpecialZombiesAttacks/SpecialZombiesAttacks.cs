@@ -27,6 +27,7 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     [SerializeField] private float tempoEntreAtaques = 2f;
     [SerializeField] private float delayLocknShoot = 2f;
     [SerializeField] private int points = 40;
+    [SerializeField] private LineRenderer FisherHook;
 
     private EnemyFollow enemyFollow;
     private float tempoPoderesAtual;
@@ -453,9 +454,20 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
         playerStats = target.GetComponent<PlayerStats>();
         enemyFollow.setTarget(target);
         targetPhotonViewID = target.GetComponent<PhotonView>().ViewID;
+        if (isOnline && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("setManualTarget", RpcTarget.Others, targetPhotonViewID);
+        }
         return target;
     }
 
+    [PunRPC]
+    public void setManualTarget(int targetID)
+    {
+        GameObject target = PhotonView.Find(targetID).gameObject;
+        playerStats = target.GetComponent<PlayerStats>();
+        targetPhotonViewID = target.GetComponent<PhotonView>().ViewID;
+    }
 
     private Vector3 posicaoFuga()
     {
@@ -544,6 +556,10 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
 
     private void PuxarJogador(float velocidadePuxar)
     {
+        if(FisherHook.gameObject.activeSelf == false)
+            FisherHook.gameObject.SetActive(true);
+        FisherHook.SetPosition(0, pontoDeLançamento.transform.position);
+        FisherHook.SetPosition(1, alvo.transform.position);
         
         float distanciaJogador = Vector3.Distance(transform.position, alvo.transform.position);
         if (distanciaJogador > 4f)
@@ -569,13 +585,22 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    void PuxarJogadorRPC(Vector3 position, float velocidadePuxar)
+    void PuxarJogadorRPC(float velocidadePuxar)
     {
-        float distanciaJogador = Vector3.Distance(transform.position, position);
-        if (distanciaJogador > 4f)
-            transform.position = Vector3.Lerp(transform.position,
-                new Vector3(position.x, transform.position.y, position.z),
-                Time.deltaTime * velocidadePuxar);
+        
+        if(FisherHook.gameObject.activeSelf == false)
+            FisherHook.gameObject.SetActive(true);
+        FisherHook.SetPosition(0, pontoDeLançamento.transform.position);
+        FisherHook.SetPosition(1, alvo.transform.position);
+        
+        if (alvo.GetComponent<PhotonView>().IsMine)
+        {
+            float distanciaJogador = Vector3.Distance(transform.position, alvo.transform.position);
+            if (distanciaJogador > 4f)
+                alvo.transform.position = Vector3.Lerp(alvo.transform.position,
+                    new Vector3(transform.position.x, alvo.transform.position.y, transform.position.z),
+                    Time.deltaTime * velocidadePuxar);
+        }
     }
     private void FindNewTarget()
     {
