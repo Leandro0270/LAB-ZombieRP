@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: DesertEagle
   m_EditorClassIdentifier: 
   id: 6
-  tier: 3
+  tier: 2
   dano: 18
   BalasPorMinuto: 240
   tempoRecarga: 2.2
   dispersao: 7
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.5
   totalBalas: 49
   tamanhoPente: 7
   balasPorDisparo: 1
@@ -38,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 15
   criticalDamagePercentage: 60
   criticalBaseChancePercentage: 7
-  Price: 170
+  Price: 130

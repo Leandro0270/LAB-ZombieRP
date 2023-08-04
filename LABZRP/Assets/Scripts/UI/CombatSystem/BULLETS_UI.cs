@@ -12,15 +12,17 @@ public class BULLETS_UI : MonoBehaviourPunCallbacks, IPunObservable
     private int balasPente;
     private int balasTotal;
     private bool isShotgun = false;
+    private int balasPorDisparo = 1;
 
 
 
 
-    public void initializeHud(int balasPente, int balasTotal, bool isShotgun)
+    public void initializeHud(int balasPente, int balasTotal, bool isShotgun, int balasPorDisparo)
     {
         this.balasPente = balasPente;
         this.balasTotal = balasTotal;
         this.isShotgun = isShotgun;
+        this.balasPorDisparo = balasPorDisparo;
         updateText();
     }
 
@@ -39,13 +41,14 @@ public class BULLETS_UI : MonoBehaviourPunCallbacks, IPunObservable
     public void updateText()
     {
         if (isShotgun)
-            texto.text = "|" + (balasPente / 6) + " / " + (balasTotal / 6);
+            texto.text = "|" + (balasPente / balasPorDisparo) + " / " + (balasTotal / balasPorDisparo);
         else
             texto.text = "|" + balasPente + " / " + balasTotal;
     }
     
-    public void setIsShotgun(bool isShotgun)
+    public void setIsShotgun(bool isShotgun, int balasPorDisparo)
     {
+        this.balasPorDisparo = balasPorDisparo;
         this.isShotgun = isShotgun;
     }
 

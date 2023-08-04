@@ -18,7 +18,7 @@ MonoBehaviour:
   BalasPorMinuto: 80
   tempoRecarga: 6
   dispersao: 28
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.6
   totalBalas: 56
   tamanhoPente: 7
   balasPorDisparo: 9

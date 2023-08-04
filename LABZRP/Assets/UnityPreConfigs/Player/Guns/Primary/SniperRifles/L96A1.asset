@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 31
   tier: 4
-  dano: 166
+  dano: 140
   BalasPorMinuto: 80
   tempoRecarga: 3
   dispersao: 0
-  tempoEntreDisparos: 0
-  totalBalas: 60
+  tempoEntreDisparos: 0.7
+  totalBalas: 80
   tamanhoPente: 10
   balasPorDisparo: 1
   segurarGatilho: 0
@@ -32,10 +32,10 @@ MonoBehaviour:
   haveKnockback: 1
   knockbackForce: 20
   hitableEnemies: 3
-  reducaoDispersaoMirando: 78
+  reducaoDispersaoMirando: 100
   slowWhileAimingPercent: 68
   haveCriticalChance: 1
   criticalChanceIncrementalPerBullet: 15
   criticalDamagePercentage: 80
   criticalBaseChancePercentage: 8
-  Price: 550
+  Price: 600

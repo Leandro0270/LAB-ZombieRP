@@ -318,6 +318,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     private void setRandomItem()
     {
         if(isOnline && !isMasterClient) return;
+        itemType = -1;
         _itemIndex = -1;
         _gunIndex = -1;
         _granadeIndex = -1;
@@ -329,6 +330,8 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             _randomizeType = Random.Range(0, 3);
         else
             _randomizeType = Random.Range(0, 2);
+        
+        itemType = _randomizeType;
         
         if (_randomizeType == 0)
         {

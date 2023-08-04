@@ -18,7 +18,7 @@ MonoBehaviour:
   BalasPorMinuto: 700
   tempoRecarga: 2
   dispersao: 5
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.3
   totalBalas: 136
   tamanhoPente: 17
   balasPorDisparo: 1
@@ -38,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 8
   criticalDamagePercentage: 60
   criticalBaseChancePercentage: 4
-  Price: 100
+  Price: 65

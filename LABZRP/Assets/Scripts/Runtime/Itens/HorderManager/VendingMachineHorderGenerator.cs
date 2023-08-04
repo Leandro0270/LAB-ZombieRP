@@ -16,13 +16,25 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     [SerializeField] private int VendingMachinesPerPlayer = 2; 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager mainGameManager;
+    [SerializeField] private bool isIncrementalPerPlayer = false;
+    private int maxVendingMachines = 1;
     private List<GameObject> spawnedVendingMachines = new List<GameObject>();
     private bool isOnline = false;
+    private int currentVendingMachineToSpawn = 0;
     private bool isMasterClient = false;
+
+
+    private void Start()
+    {
+        maxVendingMachines = VendingMachinesSpawnPoints.Length;
+    }
 
     public void addPlayer(GameObject player)
     {
         playersCount++;
+        currentVendingMachineToSpawn += VendingMachinesPerPlayer;
+        if(currentVendingMachineToSpawn > maxVendingMachines)
+            currentVendingMachineToSpawn = maxVendingMachines;
     }
     
     public void setIsOnline(bool isOnline)
@@ -44,7 +56,6 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     {
         if (!isOnline || PhotonNetwork.IsMasterClient)
         {
-
 
             if (atualHorde % VendingMachinesRespawnRound == 0 || atualHorde == 1)
             {
@@ -69,7 +80,7 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
                     }
                 }
                 
-                for (int i = 0; i < VendingMachinesRespawnRound; i++)
+                for (int i = 0; i < currentVendingMachineToSpawn; i++)
                 {
 
                     int randomSpawnPoint = Random.Range(0, NotVisibleSpawnPoints.Count);

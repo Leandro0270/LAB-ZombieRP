@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: Revolver
   m_EditorClassIdentifier: 
   id: 7
-  tier: 2
+  tier: 1
   dano: 22
   BalasPorMinuto: 150
   tempoRecarga: 3.8
   dispersao: 3
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.6
   totalBalas: 48
   tamanhoPente: 6
   balasPorDisparo: 1
@@ -38,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 20
   criticalDamagePercentage: 70
   criticalBaseChancePercentage: 10
-  Price: 150
+  Price: 90

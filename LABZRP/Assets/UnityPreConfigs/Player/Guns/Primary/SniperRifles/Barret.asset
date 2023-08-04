@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Barret
   m_EditorClassIdentifier: 
   id: 29
-  tier: 4
+  tier: 5
   dano: 166
   BalasPorMinuto: 60
   tempoRecarga: 3.7
   dispersao: 20
-  tempoEntreDisparos: 0
-  totalBalas: 30
+  tempoEntreDisparos: 1
+  totalBalas: 45
   tamanhoPente: 5
   balasPorDisparo: 0
   segurarGatilho: 0
@@ -31,8 +31,8 @@ MonoBehaviour:
   speedBullet: 85
   haveKnockback: 1
   knockbackForce: 20
-  hitableEnemies: 3
-  reducaoDispersaoMirando: 75
+  hitableEnemies: 5
+  reducaoDispersaoMirando: 100
   slowWhileAimingPercent: 60
   haveCriticalChance: 1
   criticalChanceIncrementalPerBullet: 1

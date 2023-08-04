@@ -15,10 +15,10 @@ MonoBehaviour:
   id: 8
   tier: 2
   dano: 12
-  BalasPorMinuto: 40
-  tempoRecarga: 4.5
+  BalasPorMinuto: 200
+  tempoRecarga: 2
   dispersao: 15
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.1
   totalBalas: 30
   tamanhoPente: 2
   balasPorDisparo: 8

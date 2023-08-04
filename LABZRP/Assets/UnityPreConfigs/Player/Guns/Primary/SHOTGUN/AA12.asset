@@ -15,7 +15,7 @@ MonoBehaviour:
   id: 18
   tier: 4
   dano: 12
-  BalasPorMinuto: 250
+  BalasPorMinuto: 180
   tempoRecarga: 3
   dispersao: 25
   tempoEntreDisparos: 0

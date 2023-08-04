@@ -71,12 +71,6 @@ public class HordeManager : MonoBehaviourPunCallbacks
     
     {
         currentFirstHordeStartTime = firstHordeStartTime;
-        playersCount = GameManager.getPlayersCount();
-        if (isIncrementalZombiesPerPlayer)
-        {
-            firstHordeZombies *= playersCount;
-            hordeIncrement *= playersCount;
-        }
         mainCamera = GameManager.getMainCamera();
         HordeText.text = "The first horde will start in " + currentHorde + " seconds";
         Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
@@ -246,9 +240,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     int viewID = zombieBoss.GetComponent<PhotonView>().ViewID;
                     GameManager.addEnemyOnOnline(viewID);
                 }
-
-                if (isIncrementalZombiesPerPlayer)
-                    currentHordeZombies = PhotonNetwork.PlayerList.Length * currentHordeZombies;
+                
                 for (int i = 0; i < currentHordeZombies; i++)
                 {
                     yield return new WaitForSeconds(spawnTime);
@@ -388,11 +380,18 @@ public class HordeManager : MonoBehaviourPunCallbacks
         {
             StartCoroutine(HordeBreakManager());
         }
-        //Função que adiciona um tempo entre as chamadas de spawnDeZumbis
         IEnumerator HordeBreakManager()
         {
             if (currentHorde == 0)
+            {
                 yield return new WaitForSeconds(firstHordeStartTime);
+                if (isIncrementalZombiesPerPlayer)
+                {
+                    playersCount = GameManager.getPlayersCount();
+                    firstHordeZombies *= playersCount;
+                    hordeIncrement *= playersCount;
+                }
+            }
             else
                 yield return new WaitForSeconds(timeBetweenHordes);
             if (haveBaseZombieLifeIncrement && currentHorde > 0)

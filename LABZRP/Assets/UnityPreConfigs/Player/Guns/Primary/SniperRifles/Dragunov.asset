@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 30
   tier: 3
-  dano: 133
+  dano: 72
   BalasPorMinuto: 85
   tempoRecarga: 3
   dispersao: 29
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.5
   totalBalas: 40
   tamanhoPente: 10
   balasPorDisparo: 1

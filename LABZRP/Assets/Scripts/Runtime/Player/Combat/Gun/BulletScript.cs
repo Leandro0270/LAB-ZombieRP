@@ -79,6 +79,22 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 PhotonNetwork.Destroy(gameObject);
 
         }
+        if(objetoDeColisao.gameObject.CompareTag("ExplosiveBarrel"))
+        {
+            if (_isBulletOwner || !_isOnline)
+            {
+                objetoDeColisao.GetComponent<explosiveBarrels>().takeDamage(damage);
+                destroyBullet();
+                if (_isOnline)
+                {
+                    PhotonNetwork.Destroy(gameObject);
+                }
+                else
+                {
+                    Destroy(gameObject);
+                }
+            }
+        }
         EnemyStatus _status = objetoDeColisao.GetComponent<EnemyStatus>();
         if (_status != null)
         {

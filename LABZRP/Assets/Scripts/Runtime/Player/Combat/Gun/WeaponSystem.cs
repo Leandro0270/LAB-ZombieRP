@@ -329,22 +329,12 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                         bala.setHitableEnemies(_hitableEnemies);
                                         bala.setIsCritical(isCritical);
                                 }
-                                
-
-
                         }
                         _balasRestantes -= _balasPorDisparo;
-                        _bulletsUI.setBalasPente(_balasRestantes/ _balasPorDisparo);
-                       
-                        if (_segurarGatilho)
-                        {
-                                Invoke("ResetarTiro", _tempoEntreBalas);
-                        }
-
-                        if (_disparosAEfetuar > 0 && _balasRestantes > 0)
-                        {
-                                Invoke("Atirar", _tempoEntreBalas);
-                        }
+                        _bulletsUI.setBalasPente(_balasRestantes);
+                        Invoke("ResetarTiro", _tempoEntreBalas);
+                        
+                        
                 }
         }
 
@@ -498,7 +488,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
                        armaSpawn.transform.rotation);
                 armaStart.transform.parent = armaSpawn.transform;
-                _bulletsUI.setIsShotgun(_isShotgun);
+                _bulletsUI.setIsShotgun(_isShotgun, _balasPorDisparo);
                 _bulletsUI.setBalasPente(_balasRestantes);
                 _bulletsUI.setBalasTotal(_totalBalas);
         }
@@ -720,7 +710,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public void setBullets_UI(BULLETS_UI bullets)
         {
                 _bulletsUI = bullets;
-                _bulletsUI.initializeHud(_tamanhoPente, _totalBalas, _isShotgun);
+                _bulletsUI.initializeHud(_tamanhoPente, _totalBalas, _isShotgun,_balasPorDisparo);
         }
 
         public bool GetIsSniper()

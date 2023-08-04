@@ -150,6 +150,8 @@ MonoBehaviour:
   - setStartGunRPC
   - updateAmmoBoxPricesRPC
   - instantiateExplosionEffect
+  - explode
+  - visualFireEffect
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
