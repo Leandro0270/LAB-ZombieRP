@@ -222,10 +222,6 @@ MonoBehaviour:
   itens:
   - {fileID: 11400000, guid: 89fa493959f62854aa81647e7a56cb32, type: 2}
   - {fileID: 11400000, guid: a549afeec2e577c4394bf39ce569ad80, type: 2}
-  - {fileID: 11400000, guid: 7e155960252610a4e8148e39033f00af, type: 2}
-  - {fileID: 11400000, guid: f225dd7e76582544d8894353bb4f8cea, type: 2}
-  - {fileID: 11400000, guid: 5f302c6a66d326e4ab5d1b136d4057fd, type: 2}
-  - {fileID: 11400000, guid: f637c6078baa2cb47a70e6ac2a93698c, type: 2}
   guns:
   - {fileID: 11400000, guid: 762636eab86db28459791475841c1cf8, type: 2}
   - {fileID: 11400000, guid: b7d7045f9c773a4469356e9929e5839e, type: 2}
@@ -261,6 +257,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 813e9bb5fae257547adbd7a9b6d99670, type: 2}
   - {fileID: 11400000, guid: 3f6b5505920d47348af1c53fe9f5f617, type: 2}
   - {fileID: 11400000, guid: 0c271102b2e56af46a9bf4e78be0bd03, type: 2}
+  granades:
+  - {fileID: 11400000, guid: 7e155960252610a4e8148e39033f00af, type: 2}
+  - {fileID: 11400000, guid: f225dd7e76582544d8894353bb4f8cea, type: 2}
+  - {fileID: 11400000, guid: 5f302c6a66d326e4ab5d1b136d4057fd, type: 2}
+  - {fileID: 11400000, guid: f637c6078baa2cb47a70e6ac2a93698c, type: 2}
+  hordeGunUpgrade: 3
+  firstGranadeAppearHorde: 5
   errorText: {fileID: 4222568347663920669}
   errorPlane: {fileID: 7100097498011102677}
   timeShowingError: 3

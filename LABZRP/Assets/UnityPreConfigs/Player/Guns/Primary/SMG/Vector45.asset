@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Vector45
   m_EditorClassIdentifier: 
+  id: 28
+  tier: 2
   dano: 11
   BalasPorMinuto: 1100
   tempoRecarga: 2.2

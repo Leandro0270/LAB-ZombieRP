@@ -1,11 +1,15 @@
 using System;
 using System.Collections;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class AmmoBox : MonoBehaviour
+public class AmmoBox : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private int price = 200;
+    [SerializeField] private int StartPrice = 50;
+    [SerializeField] private int IncrementPricePerHorde = 15;
+    private int currentPrice;
     public GameObject priceText;
     public GameObject lid; // Referência à tampa da caixa
     public float openSpeed = 2f; // Velocidade de abertura da tampa
@@ -22,7 +26,8 @@ public class AmmoBox : MonoBehaviour
     {
         closedPosition = lid.transform.localPosition;
         closedRotation = lid.transform.localEulerAngles;
-        priceText.GetComponent<TextMeshPro>().SetText("$"+price);
+        currentPrice = StartPrice;
+        priceText.GetComponent<TextMeshPro>().SetText("$"+StartPrice);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -49,10 +54,10 @@ public class AmmoBox : MonoBehaviour
             PlayerPoints playerPoints = playerStats.getPlayerPoints();
             bool isInteracting = playerStats.getInteracting();
             bool haveLessAmmo = (weapon.GetAtualAmmo()<weapon.GetMaxBalas());
-            bool haveMoney = (playerPoints.getPoints() >= price);
+            bool haveMoney = (playerPoints.getPoints() >= StartPrice);
             if(isInteracting && haveLessAmmo && haveMoney)
             {
-                playerPoints.removePoints(price);
+                playerPoints.removePoints(StartPrice);
                 weapon.ReceiveAmmo(weapon.GetMaxBalas());
             }
         }
@@ -108,6 +113,11 @@ public class AmmoBox : MonoBehaviour
         isOpen = false;
         isAnimating = false;
         priceText.SetActive(false);
-
+    }
+    
+    public void UpdatePrice()
+    {
+        currentPrice += IncrementPricePerHorde;
+        priceText.GetComponent<TextMeshPro>().SetText("$"+currentPrice);
     }
 }

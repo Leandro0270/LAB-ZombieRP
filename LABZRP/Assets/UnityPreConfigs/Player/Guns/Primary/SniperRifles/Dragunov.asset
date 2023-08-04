@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Dragunov
   m_EditorClassIdentifier: 
+  id: 30
+  tier: 3
   dano: 133
   BalasPorMinuto: 85
   tempoRecarga: 3

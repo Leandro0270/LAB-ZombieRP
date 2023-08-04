@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Ak47
   m_EditorClassIdentifier: 
+  id: 10
+  tier: 3
   dano: 0
   BalasPorMinuto: 600
   tempoRecarga: 3
   dispersao: 12
+  tempoEntreDisparos: 0
   totalBalas: 150
   tamanhoPente: 30
   balasPorDisparo: 1

@@ -109,12 +109,12 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     }
     
     
-    public void setIsOnHordeCooldown(bool isOnHorderCooldown)
+    public void setIsOnHordeCooldown(bool isOnHorderCooldown, int currentHorde)
     {
         foreach (var vendingMachine in spawnedVendingMachines)
         {
                 if (vendingMachine != null)
-                    vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown);
+                    vendingMachine.GetComponent<VendingMachine>().setIsOnHorderCooldown(isOnHorderCooldown, currentHorde);
         }
     }
     

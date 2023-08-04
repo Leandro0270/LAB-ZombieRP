@@ -223,15 +223,48 @@ MonoBehaviour:
   itens:
   - {fileID: 11400000, guid: 89fa493959f62854aa81647e7a56cb32, type: 2}
   - {fileID: 11400000, guid: a549afeec2e577c4394bf39ce569ad80, type: 2}
+  guns:
+  - {fileID: 11400000, guid: 762636eab86db28459791475841c1cf8, type: 2}
+  - {fileID: 11400000, guid: b7d7045f9c773a4469356e9929e5839e, type: 2}
+  - {fileID: 11400000, guid: f18a3318db4a78b4794a69e2c41076fd, type: 2}
+  - {fileID: 11400000, guid: e6cf55ef3a2a2d448a2c20d5b6211125, type: 2}
+  - {fileID: 11400000, guid: 184c1f4495c53ee45aed37d74509042b, type: 2}
+  - {fileID: 11400000, guid: 6af119e9663ecb04eb6a8386a8d22d35, type: 2}
+  - {fileID: 11400000, guid: 7a39950f94b3cd746b70f1b5e47c2c26, type: 2}
+  - {fileID: 11400000, guid: 79ef168cf0c022648b45a1130a5e36b2, type: 2}
+  - {fileID: 11400000, guid: 8e86561591da53d4883855520c60a462, type: 2}
+  - {fileID: 11400000, guid: d6ff14e4ccaf193428b892b15361bc8e, type: 2}
+  - {fileID: 11400000, guid: cde0fa95a1de5424eb0bddd38b595cd0, type: 2}
+  - {fileID: 11400000, guid: c1796a8a853521b43b6a8ac36429a5f8, type: 2}
+  - {fileID: 11400000, guid: 7de8376654b4dd9498765013af6340c4, type: 2}
+  - {fileID: 11400000, guid: bc1a9232e332e2544bce3a7e3175b5f3, type: 2}
+  - {fileID: 11400000, guid: f0c89636aa734a342b00a3469de7bc6a, type: 2}
+  - {fileID: 11400000, guid: ba3d47c4f89a4a2428f07be947bfd7bb, type: 2}
+  - {fileID: 11400000, guid: 02eba11d53992f645aa6a45ed5459953, type: 2}
+  - {fileID: 11400000, guid: 2e15403a531c1354095939853d566b64, type: 2}
+  - {fileID: 11400000, guid: b7ace7b863c47d343a327d14046fbb26, type: 2}
+  - {fileID: 11400000, guid: 647b6ebe0f3639c4893a93602d701951, type: 2}
+  - {fileID: 11400000, guid: 8c4bd23560b23fc448e6daee61720fb4, type: 2}
+  - {fileID: 11400000, guid: c813093f8de300f4495811c707a6a93e, type: 2}
+  - {fileID: 11400000, guid: d3af22b6d48adea4bbeac496d7b8574a, type: 2}
+  - {fileID: 11400000, guid: 5f45061407b187b4290cb8aa337f37c3, type: 2}
+  - {fileID: 11400000, guid: b1ede82ae909c074e995824651879275, type: 2}
+  - {fileID: 11400000, guid: 977f969efc7f96d4eb17a2a2e287d815, type: 2}
+  - {fileID: 11400000, guid: 1fdca19f32f52a440aab72ab1cd62dad, type: 2}
+  - {fileID: 11400000, guid: c34b485ed46477d4d9028962ee143577, type: 2}
+  - {fileID: 11400000, guid: f52cb75c80a5fcc4c9045318277084dc, type: 2}
+  - {fileID: 11400000, guid: c20b550148bf5c24a8d67c1ad6211e88, type: 2}
+  - {fileID: 11400000, guid: 972ffb0561da11e4bad8aa8a3a072fbd, type: 2}
+  - {fileID: 11400000, guid: 813e9bb5fae257547adbd7a9b6d99670, type: 2}
+  - {fileID: 11400000, guid: 3f6b5505920d47348af1c53fe9f5f617, type: 2}
+  - {fileID: 11400000, guid: 0c271102b2e56af46a9bf4e78be0bd03, type: 2}
+  granades:
+  - {fileID: 11400000, guid: f637c6078baa2cb47a70e6ac2a93698c, type: 2}
+  - {fileID: 11400000, guid: 5f302c6a66d326e4ab5d1b136d4057fd, type: 2}
   - {fileID: 11400000, guid: 7e155960252610a4e8148e39033f00af, type: 2}
   - {fileID: 11400000, guid: f225dd7e76582544d8894353bb4f8cea, type: 2}
-  - {fileID: 11400000, guid: 5f302c6a66d326e4ab5d1b136d4057fd, type: 2}
-  - {fileID: 11400000, guid: f637c6078baa2cb47a70e6ac2a93698c, type: 2}
-  guns:
-  - {fileID: 11400000, guid: 69bebbcf8871c2d45b3f2a9537691a0b, type: 2}
-  - {fileID: 11400000, guid: c4684c4bbc6a654458383aa43d451e4c, type: 2}
-  - {fileID: 11400000, guid: 597a5ff67bc1a344d897ef4936f1d1d5, type: 2}
-  - {fileID: 11400000, guid: 8c4bd23560b23fc448e6daee61720fb4, type: 2}
+  hordeGunUpgrade: 2
+  firstGranadeAppearHorde: 5
   errorText: {fileID: 4222568347663920669}
   errorPlane: {fileID: 7100097498011102677}
   timeShowingError: 3

@@ -12,13 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: ScarH
   m_EditorClassIdentifier: 
+  id: 14
+  tier: 3
   dano: 19
   BalasPorMinuto: 625
   tempoRecarga: 2.6
   dispersao: 10
   tempoEntreDisparos: 0
-  totalBalas: 100
-  tamanhoPente: 21
+  totalBalas: 120
+  tamanhoPente: 20
   balasPorDisparo: 1
   segurarGatilho: 1
   modelo3d: {fileID: 317226582167723328, guid: 158e97fc36bf1b344b692ea0ebce79bf, type: 3}

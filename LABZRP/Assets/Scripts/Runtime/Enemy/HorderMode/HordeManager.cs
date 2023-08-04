@@ -20,6 +20,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager GameManager;
     //Horde Parameters==========================================================
+    [SerializeField] private float firstHordeStartTime = 20f;
     [SerializeField] private bool isHordeMode = true;
     [SerializeField] private bool isIncrementalZombiesPerPlayer = true;
     [SerializeField] private bool haveBaseZombieLifeIncrement = true;
@@ -46,6 +47,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     private bool isBossZombieAlive = false;
     private bool isGameOver = false;
     private int playersCount;
+    private float currentFirstHordeStartTime;
     //Special events Variables==========================================================
     [SerializeField] private ChallengeManager challengeManager;
     [SerializeField] private List<GameObject> challengeMachines;
@@ -68,14 +70,15 @@ public class HordeManager : MonoBehaviourPunCallbacks
     public void Start()
     
     {
+        currentFirstHordeStartTime = firstHordeStartTime;
         playersCount = GameManager.getPlayersCount();
         if (isIncrementalZombiesPerPlayer)
         {
-            firstHordeZombies = firstHordeZombies * playersCount;
-            hordeIncrement = hordeIncrement * playersCount;
+            firstHordeZombies *= playersCount;
+            hordeIncrement *= playersCount;
         }
         mainCamera = GameManager.getMainCamera();
-        HordeText.text = "Prepare for the First Horde";
+        HordeText.text = "The first horde will start in " + currentHorde + " seconds";
         Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
         if (isOnline)
         {
@@ -105,19 +108,31 @@ public class HordeManager : MonoBehaviourPunCallbacks
     }
     void Update()
     {
-        if (timeBetweenHordesUI > 0)
+        if (timeBetweenHordesUI > 0 || currentFirstHordeStartTime > 0)
         {
             timeBetweenHordesUI -= Time.deltaTime;
+            currentFirstHordeStartTime -= Time.deltaTime;
             //Vai printar o tempo que falta para a proxima horde formatado com no máximo 2 casas decimais
             if (isOnline)
             {
-                string text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
-                photonView.RPC("setHordeText", RpcTarget.All, text);
+                if (currentHorde == 0)
+                {
+                    string text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
+                    photonView.RPC("setHordeText", RpcTarget.All, text);
+                }
+                else
+                {
+                    string text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
+                    photonView.RPC("setHordeText", RpcTarget.All, text);
+                }
 
             }
             else
             {
-                HordeText.text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
+                if (currentHorde == 0)
+                    HordeText.text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
+                else
+                    HordeText.text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
             }
         }
 }
@@ -152,7 +167,8 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     currentHordeZombies += hordeIncrement;
                     if (spawnTime > 0.4f)
                         spawnTime -= spawnTimeDecrement;
-                    Itemgenerator.setIsOnHordeCooldown(true);
+                    GameManager.updateAmmoBoxPrices();
+                    Itemgenerator.setIsOnHordeCooldown(true, currentHorde);
                     StartCoroutine(HordeBreakManager());
                     timeBetweenHordesUI = timeBetweenHordes;
                 }
@@ -206,7 +222,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
         //Função que recebe como parametro o tempo que o zumbi irá aparecer e a quantidade de zumbis que irão aparecer e spawna o zumbi
         IEnumerator SpawnZombie()
         {
-            Itemgenerator.setIsOnHordeCooldown(false);
+            Itemgenerator.setIsOnHordeCooldown(false, currentHorde);
             Itemgenerator.verifySpawnVendingMachine(currentHorde + 1);
             List<GameObject> visibleSpawnPoints = new List<GameObject>();
 
@@ -375,7 +391,10 @@ public class HordeManager : MonoBehaviourPunCallbacks
         //Função que adiciona um tempo entre as chamadas de spawnDeZumbis
         IEnumerator HordeBreakManager()
         {
-            yield return new WaitForSeconds(timeBetweenHordes);
+            if (currentHorde == 0)
+                yield return new WaitForSeconds(firstHordeStartTime);
+            else
+                yield return new WaitForSeconds(timeBetweenHordes);
             if (haveBaseZombieLifeIncrement && currentHorde > 0)
             {
                 currentZombieLife += (currentZombieLife * baseZombieLifeIncrement);

@@ -144,6 +144,12 @@ MonoBehaviour:
   - setManualTarget
   - destroyOnlineBullet
   - updateHordeText
+  - HandleBuyItemOnlineRPC
+  - setGranadeSpecsOnline
+  - setStartGranadeRPC
+  - setStartGunRPC
+  - updateAmmoBoxPricesRPC
+  - instantiateExplosionEffect
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

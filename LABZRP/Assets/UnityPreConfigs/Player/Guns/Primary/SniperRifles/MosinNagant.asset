@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MosinNagant
   m_EditorClassIdentifier: 
+  id: 32
+  tier: 2
   dano: 132
   BalasPorMinuto: 40
   tempoRecarga: 2.5
   dispersao: 29
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 1
   totalBalas: 45
   tamanhoPente: 5
   balasPorDisparo: 1

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Uzi
   m_EditorClassIdentifier: 
+  id: 27
+  tier: 2
   dano: 12
   BalasPorMinuto: 600
   tempoRecarga: 2.3

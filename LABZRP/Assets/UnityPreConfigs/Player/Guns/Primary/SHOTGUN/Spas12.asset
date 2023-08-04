@@ -12,11 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Spas12
   m_EditorClassIdentifier: 
+  id: 21
+  tier: 4
   dano: 12
   BalasPorMinuto: 80
   tempoRecarga: 6
   dispersao: 28
-  totalBalas: 28
+  tempoEntreDisparos: 0
+  totalBalas: 56
   tamanhoPente: 7
   balasPorDisparo: 9
   segurarGatilho: 0

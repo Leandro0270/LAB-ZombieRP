@@ -28,6 +28,9 @@ public class Item : MonoBehaviourPunCallbacks
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status)
         {
+            bool isMine = false;
+            if(isOnline)
+                isMine = objetoDeColisao.GetComponent<PhotonView>().IsMine;
             if (ItemScOB.throwable == null)
             {
                 WeaponSystem playerAmmo = objetoDeColisao.GetComponent<WeaponSystem>();
@@ -40,16 +43,20 @@ public class Item : MonoBehaviourPunCallbacks
                             if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas() ||
                                 status.GetLife() < status.GetTotalLife())
                             {
-                                playerAmmo.ReceiveAmmo(ItemScOB.Balas);
-                                status.ReceiveHeal(ItemScOB.life);
-                                if (isOnline)
+                                if (!isOnline || isMine)
                                 {
-                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
-                                }
-                                else
-                                {
-                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                    Destroy(gameObject);
+                                    playerAmmo.ReceiveAmmo(ItemScOB.Balas);
+                                    status.ReceiveHeal(ItemScOB.life);
+                                    if (isOnline)
+                                    {
+                                        photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                    }
+                                    else
+                                    {
+                                        GameObject.Find("GameManager").GetComponent<MainGameManager>()
+                                            .removeItem(gameObject);
+                                        Destroy(gameObject);
+                                    }
                                 }
                             }
                         }
@@ -64,15 +71,19 @@ public class Item : MonoBehaviourPunCallbacks
                         {
                             if (status.GetLife() < status.GetTotalLife())
                             {
-                                status.ReceiveHeal(ItemScOB.life);
-                                if (isOnline)
+                                if (!isOnline || isMine)
                                 {
-                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
-                                }
-                                else
-                                {
-                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                    Destroy(gameObject);
+                                    status.ReceiveHeal(ItemScOB.life);
+                                    if (isOnline)
+                                    {
+                                        photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                    }
+                                    else
+                                    {
+                                        GameObject.Find("GameManager").GetComponent<MainGameManager>()
+                                            .removeItem(gameObject);
+                                        Destroy(gameObject);
+                                    }
                                 }
                             }
                         }
@@ -87,15 +98,19 @@ public class Item : MonoBehaviourPunCallbacks
                         {
                             if (playerAmmo.GetAtualAmmo() < playerAmmo.GetMaxBalas())
                             {
-                                playerAmmo.ReceiveAmmo(ItemScOB.Balas);
-                                if (isOnline)
+                                if (!isOnline || isMine)
                                 {
-                                    photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
-                                }
-                                else
-                                {
-                                    GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
-                                    Destroy(gameObject);
+                                    playerAmmo.ReceiveAmmo(ItemScOB.Balas);
+                                    if (isOnline)
+                                    {
+                                        photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                                    }
+                                    else
+                                    {
+                                        GameObject.Find("GameManager").GetComponent<MainGameManager>()
+                                            .removeItem(gameObject);
+                                        Destroy(gameObject);
+                                    }
                                 }
                             }
                         }
@@ -104,17 +119,20 @@ public class Item : MonoBehaviourPunCallbacks
             }
             else
             {
-                if (status.addItemThrowable(ItemScOB.throwable))
+                if (!isOnline || isMine)
                 {
-                    if (isOnline)
+                    if (status.addItemThrowable(ItemScOB.throwable))
                     {
-                        photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
-                    }
-                    else
-                    {
-                        GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
+                        if (isOnline)
+                        {
+                            photonView.RPC("MasterClientDestroyItemHolder", RpcTarget.MasterClient);
+                        }
+                        else
+                        {
+                            GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
 
-                        Destroy(gameObject);
+                            Destroy(gameObject);
+                        }
                     }
                 }
             }
@@ -146,6 +164,11 @@ public class Item : MonoBehaviourPunCallbacks
     {
         GameObject.Find("GameManager").GetComponent<MainGameManager>().removeItem(gameObject);
         PhotonNetwork.Destroy(this.gameObject);
+    }
+    
+    public void setIsOnline(bool isOnline)
+    {
+        this.isOnline = isOnline;
     }
     
 }

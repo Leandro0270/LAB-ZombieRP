@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: M16
   m_EditorClassIdentifier: 
+  id: 13
+  tier: 3
   dano: 13
   BalasPorMinuto: 800
   tempoRecarga: 2.3
   dispersao: 9
-  tempoEntreDisparos: 0
+  tempoEntreDisparos: 0.75
   totalBalas: 120
   tamanhoPente: 30
   balasPorDisparo: 3

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MG42
   m_EditorClassIdentifier: 
+  id: 33
+  tier: 5
   dano: 13
   BalasPorMinuto: 1200
   tempoRecarga: 6
@@ -36,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 5
   criticalDamagePercentage: 50
   criticalBaseChancePercentage: 2
-  Price: 275
+  Price: 320

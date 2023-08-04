@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: Barret
   m_EditorClassIdentifier: 
+  id: 29
+  tier: 4
   dano: 166
   BalasPorMinuto: 60
   tempoRecarga: 3.7

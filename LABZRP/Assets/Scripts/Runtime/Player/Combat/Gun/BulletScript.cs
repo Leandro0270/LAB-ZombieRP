@@ -265,15 +265,15 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-
-            Destroy(gameObject.GetComponent<BoxCollider>());
+            _collider.enabled = false;
             if (!isMelee)
             {
-                Destroy(gameObject.GetComponent<MeshFilter>());
-                Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
-                Destroy(gameObject.GetComponent<Light>());
-                Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+                _UAlightD.enabled = false;
+                _light.enabled = false;
+                _meshRenderer.enabled = false;
+                _particleSystem.Stop();
             }
+            
         }
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

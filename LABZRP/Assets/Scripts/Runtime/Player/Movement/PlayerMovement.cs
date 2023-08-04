@@ -64,10 +64,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            isLookingForward = false;
-            isLookingBack = false;
-            isLookingLeft = false;
-            isLookingRight = false;
             _direction = PlayerDirection.STANDING;
         }
         _status.setMovementAnimationStats(_direction);

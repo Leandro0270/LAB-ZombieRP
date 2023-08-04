@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: AWS
   m_EditorClassIdentifier: 
+  id: 15
+  tier: 5
   dano: 17
   BalasPorMinuto: 800
   tempoRecarga: 5.5
   dispersao: 14
+  tempoEntreDisparos: 0
   totalBalas: 300
   tamanhoPente: 100
   balasPorDisparo: 1
@@ -35,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 7
   criticalDamagePercentage: 50
   criticalBaseChancePercentage: 4
-  Price: 250
+  Price: 310

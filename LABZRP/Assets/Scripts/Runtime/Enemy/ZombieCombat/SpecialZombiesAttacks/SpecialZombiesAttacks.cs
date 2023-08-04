@@ -538,8 +538,7 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
         if (isOnline)
         {
             PhotonNetwork.Instantiate("bombZombieExplosion", position, Quaternion.identity);
-            GameObject effectInstantiate = PhotonNetwork.Instantiate("bombZombieExplosionEffect", position, Quaternion.identity);
-            Destroy(effectInstantiate, 2f);
+            photonView.RPC("instantiateExplosionEffect", RpcTarget.All, position);
             PhotonNetwork.Destroy(gameObject);
         }
         else
@@ -639,12 +638,17 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                     i++;
                 }
             }
-
             alvo = GetTarget(aux);
         }
     }
 
 
+    [PunRPC]
+    public void instantiateExplosionEffect(Vector3 position)
+    {
+        GameObject effectInstantiate = Instantiate(Effect, position, Quaternion.identity);
+        Destroy(effectInstantiate, 2f);
+    }
     void OnTriggerEnter(Collider objetoDeColisao)
     {
         switch (tipoDePoder)

@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MTAR21
   m_EditorClassIdentifier: 
+  id: 16
+  tier: 5
   dano: 15
   BalasPorMinuto: 950
   tempoRecarga: 3.5
@@ -36,4 +38,4 @@ MonoBehaviour:
   criticalChanceIncrementalPerBullet: 9
   criticalDamagePercentage: 50
   criticalBaseChancePercentage: 5
-  Price: 250
+  Price: 300

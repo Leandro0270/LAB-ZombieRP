@@ -15,6 +15,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     private List<GameObject> downedPlayers;
     private List<GameObject> enemies;
     private List<GameObject> itens;
+    [SerializeField] private List<AmmoBox> ammoBoxes;
     [SerializeField] private PhotonView photonView;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private HordeManager hordeManager;
@@ -258,6 +259,27 @@ public class MainGameManager : MonoBehaviourPunCallbacks
                 zombie.GetComponent<EnemyStatus>().gameIsOver();
             }
             gameOverUI.gameOver();
+        }
+    }
+
+    [PunRPC]
+    public void updateAmmoBoxPricesRPC()
+    {
+        foreach (AmmoBox currentAmmoBox in ammoBoxes)
+        {
+            currentAmmoBox.UpdatePrice();
+        }
+    }
+    public void updateAmmoBoxPrices()
+    {
+        if(isOnline)
+            photonView.RPC("updateAmmoBoxPricesRPC", RpcTarget.All);
+        else
+        {
+            foreach (AmmoBox currentAmmoBox in ammoBoxes)
+            {
+                currentAmmoBox.UpdatePrice();
+            }
         }
     }
 

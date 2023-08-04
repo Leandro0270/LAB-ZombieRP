@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: DesertEagle
   m_EditorClassIdentifier: 
+  id: 6
+  tier: 3
   dano: 18
   BalasPorMinuto: 240
   tempoRecarga: 2.2

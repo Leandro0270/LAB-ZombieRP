@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: MP5A2
   m_EditorClassIdentifier: 
+  id: 22
+  tier: 2
   dano: 13
   BalasPorMinuto: 800
   tempoRecarga: 2.2
   dispersao: 8
+  tempoEntreDisparos: 0
   totalBalas: 180
   tamanhoPente: 30
   balasPorDisparo: 1

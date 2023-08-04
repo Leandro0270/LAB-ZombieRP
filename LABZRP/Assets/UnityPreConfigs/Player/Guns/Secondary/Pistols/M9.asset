@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
   m_Name: M9
   m_EditorClassIdentifier: 
+  id: 0
+  tier: 1
   dano: 9
   BalasPorMinuto: 650
   tempoRecarga: 2.1
