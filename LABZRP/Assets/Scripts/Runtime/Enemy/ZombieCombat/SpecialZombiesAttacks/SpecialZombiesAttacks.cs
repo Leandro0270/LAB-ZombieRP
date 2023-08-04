@@ -15,6 +15,7 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     private GameObject alvo;
     private NavMeshAgent navMeshAgent;
     private Rigidbody rb;
+    [SerializeField] private float timeToSinglePlayerBreakFree = 5f;
     [SerializeField] private PhotonView _photonView;
     [SerializeField] private ZombieAnimationController animationController;
     [SerializeField] private GameObject Effect;
@@ -29,6 +30,8 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
     [SerializeField] private int points = 40;
     [SerializeField] private LineRenderer FisherHook;
 
+    private bool isSinglePlayer = false;
+    private float currentBreakFreeTime = 0f;
     private EnemyFollow enemyFollow;
     private float tempoPoderesAtual;
     private float tempoAtaqueAtual;
@@ -204,6 +207,27 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                             navMeshAgent.speed = 5;
                             if (!zumbi.isDeadEnemy())
                             {
+                                if (isSinglePlayer)
+                                {
+                                    if (currentBreakFreeTime < timeToSinglePlayerBreakFree)
+                                    {
+                                        currentBreakFreeTime += Time.deltaTime;
+                                    }
+                                    else
+                                    {
+                                        alvo.transform.SetParent(null);
+                                        alvo.transform.position = new Vector3(alvo.transform.position.x, 59,
+                                            alvo.transform.position.z);
+                                        playerStats.CapacitatePlayer();
+                                        enemyFollow.setFollowPlayers(true);
+                                        enemyFollow.setIsStoped(false);
+                                        enemyFollow.setIsAlive(true);
+                                        enemyFollow.setTarget(alvo);
+                                        enemyFollow.setIsSpecial(false);
+                                        zumbi.setLooseSpecial(true);
+                                        enabled = false;
+                                    }
+                                }
                                 if (canAttack)
                                 {
                                     if (isOnline)
@@ -248,7 +272,6 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                                     alvo = GetTarget(aux);
 
                                 }
-
                                 navMeshAgent.SetDestination(posicaoFuga());
                             }
                             else

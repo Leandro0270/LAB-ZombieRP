@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Gunner
   m_EditorClassIdentifier: 
   classIndex: 2
-  name: 
+  name: Gunner
   maxThrowableCapacity: 2
   maxAuxiliaryCapacity: 0
   maxGunCapacity: 0
   health: 120
-  speed: 10
-  revivalSpeed: 15
+  speed: 9
+  revivalSpeed: 14
   timeBeteweenMelee: 2
   meleeDamage: 8
   startGun: {fileID: 11400000, guid: 1823e422b2f58b044aacc33e68ff6e02, type: 2}

@@ -30,11 +30,10 @@ public class PauseMenu : MonoBehaviour
             Resume();
             return false;
         }
-        else
-        {
-            Pause();
-            return true;
-        }
+        
+        Pause();
+        return true;
+        
     }
 
     public void setIsOnline(bool isOnline)
@@ -110,6 +109,7 @@ public class PauseMenu : MonoBehaviour
         }
         else
         {
+            Destroy(PlayerConfigurationManager.Instance.gameObject);
             SceneManager.LoadScene("MainMenu");
         }
     }

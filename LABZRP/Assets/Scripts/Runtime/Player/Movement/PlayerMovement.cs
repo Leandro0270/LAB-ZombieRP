@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private float _speed;
     private PlayerDirection _direction;
     private bool isLookingRight = false;
-    private bool isLookingLeft = false;
+    private bool isLookingLeft = true;
     private bool isLookingForward = false;
     private bool isLookingBack = false;
     private bool setup = false;

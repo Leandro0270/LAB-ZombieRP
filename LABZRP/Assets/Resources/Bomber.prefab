@@ -48684,6 +48684,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4762d18431d513c4694b6e9bac3038d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 6151606114692026344}
+  _photonView: {fileID: 7266103579406128218}
+  isOnline: 1
 --- !u!1 &754800584644183808
 GameObject:
   m_ObjectHideFlags: 0
@@ -75206,6 +75209,7 @@ MonoBehaviour:
   photonView: {fileID: 7266103579406128218}
   explosivesPrefabs: []
   explosiveDeathEffect: {fileID: 0}
+  randomExplosiveName: []
 --- !u!65 &7222996290498460788
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -75232,6 +75236,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _photonView: {fileID: 7266103579406128218}
+  animationController: {fileID: 996699310881233176}
   Effect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}
   damage: 10
   CoffeProjectile: {fileID: 5410999002539148555, guid: 6935b666ac664a54eb2e57b3c53d3958, type: 3}
@@ -75242,6 +75247,7 @@ MonoBehaviour:
   tempoEntreAtaques: 5
   delayLocknShoot: 2
   points: 40
+  FisherHook: {fileID: 0}
   isOnline: 1
   tipoDePoder: 2
 --- !u!114 &7266103579406128218
@@ -75263,6 +75269,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 2252458965755085624}
   - {fileID: -5168116371282089679}
   sceneViewId: 0
   InstantiationId: 0

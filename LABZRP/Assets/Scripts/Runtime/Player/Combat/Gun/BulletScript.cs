@@ -243,27 +243,37 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         isCritical = critical;
     }
 
-    private void destroyBullet()
-    {
-        if (_isOnline)
-        {
 
-            _collider.enabled = false;
+    [PunRPC]
+    public void destroyOnlineBullet()
+    {
+        _collider.enabled = false;
+        if (!isMelee)
+        {
             _UAlightD.enabled = false;
             _light.enabled = false;
             _meshRenderer.enabled = false;
             _particleSystem.Stop();
-            
-            
+        }
+    }
+    private void destroyBullet()
+    {
+        if (_isOnline)
+        {
+            if(photonView.IsMine)
+                photonView.RPC("destroyOnlineBullet", RpcTarget.All);
         }
         else
         {
 
-            Destroy(gameObject.GetComponent<MeshFilter>());
-            Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
             Destroy(gameObject.GetComponent<BoxCollider>());
-            Destroy(gameObject.GetComponent<Light>());
-            Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+            if (!isMelee)
+            {
+                Destroy(gameObject.GetComponent<MeshFilter>());
+                Destroy(gameObject.GetComponent<UniversalAdditionalLightData>());
+                Destroy(gameObject.GetComponent<Light>());
+                Destroy(gameObject.GetComponentInChildren<ParticleSystem>());
+            }
         }
     }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

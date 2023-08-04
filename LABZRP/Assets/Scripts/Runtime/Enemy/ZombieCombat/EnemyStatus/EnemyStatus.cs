@@ -17,6 +17,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     private float _speed;
     private float _damage;
     private bool isSpecial = false;
+    private bool looseSpecial = false;
     [SerializeField] private ZombieAnimationController _animator;
     private EnemyFollow _enemyFollow;
     private SpecialZombiesAttacks _specialZombiesAttacks;
@@ -63,6 +64,10 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     }
 
 
+    public void setLooseSpecial(bool loose)
+    {
+        looseSpecial = loose;
+    }
     private void Update()
     {
         if(isOnline && !PhotonNetwork.IsMasterClient)
@@ -99,19 +104,8 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void MasterClientHandleDamageRPC(float damage, int photonid, bool isAiming, bool isMelee)
     {
-        _life -= damage;
-        if (_specialZombiesAttacks)
-        {
-            _specialZombiesAttacks.setLife(_life);
-        }
-
-        if (_life <= 0 && isDead==false)
-        {
-            killEnemy();
-            isDead = true;
-            photonView.RPC("rewardPlayerShooterRPC", RpcTarget.All, photonid, isAiming,
-                isMelee);
-        }
+        WeaponSystem playerShooter = PhotonView.Find(photonid).GetComponent<WeaponSystem>();
+        takeDamage(damage,playerShooter, isAiming, isMelee);
     }
 
     public void rewardPlayerShooter(WeaponSystem playerShooter, bool isAiming, bool isMelee)
@@ -201,11 +195,17 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (playerShooter != null)
             {
-                if (!isOnline || PhotonNetwork.IsMasterClient)
-                {
+                
                     killEnemy();
-                    rewardPlayerShooter(playerShooter, isAiming, isMelee);
-                }
+                    if (isOnline)
+                    {
+                        int photonid = playerShooter.photonView.ViewID;
+                        photonView.RPC("rewardPlayerShooterRPC", RpcTarget.All, photonid, isAiming,
+                            isMelee);
+                    }
+                    else
+                        rewardPlayerShooter(playerShooter, isAiming, isMelee);
+                    
             }
 
         }
@@ -222,74 +222,78 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (!isOnline || PhotonNetwork.IsMasterClient)
         {
-            if (isOnline)
-                photonView.RPC("disableCapsuleColliderRPC", RpcTarget.All);
-            else
-                GetComponent<CapsuleCollider>().enabled = false;
-            GetComponent<BoxCollider>().enabled = true;
-            isDead = true;
-            GetComponent<EnemyFollow>().setIsAlive(false);
-            if (PhotonNetwork.IsMasterClient || !isOnline)
+            if (!isDead)
             {
-                hordeManager.decrementZombiesAlive(gameObject);
-            }
-            if (isOnExplosiveEvents)
-            {
-                if (!isOnline || PhotonNetwork.IsMasterClient)
-                {
-                    int randomExplosiveIndex =0;
-                    if(isOnline)
-                       randomExplosiveIndex = UnityEngine.Random.Range(0, randomExplosiveName.Length);
-                    else
-                        randomExplosiveIndex = UnityEngine.Random.Range(0, explosivesPrefabs.Length);
-                    
-                    GameObject randomExplosive =
-                        explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
-                    var position = transform.position; 
-                    
-                    if (isOnline)
-                    {
-                        PhotonNetwork.Instantiate(randomExplosiveName[randomExplosiveIndex], position,
-                            Quaternion.identity);
-                        photonView.RPC("instantiateExplosiveEffect", RpcTarget.All);
-                    }
-                    else
-                    {
-                        Instantiate(randomExplosive, position, Quaternion.identity);
-                        GameObject effectInstantiate = Instantiate(explosiveDeathEffect, position, Quaternion.identity);
-                        Destroy(effectInstantiate, 2f);
-                    }
-                }
-
                 if (isOnline)
-                    PhotonNetwork.Destroy(gameObject);
+                    photonView.RPC("disableCapsuleColliderRPC", RpcTarget.All);
                 else
-                    Destroy(gameObject);
-            }
-            else
-            {
+                    GetComponent<CapsuleCollider>().enabled = false;
                 GetComponent<BoxCollider>().enabled = true;
-                if (!isBurning)
-                {
-                    GameObject NewBloodParticle = Instantiate(blood2,
-                        new Vector3(transform.position.x, 57, transform.position.z),
-                        blood2.transform.rotation);
-                    Destroy(NewBloodParticle, 8f);
-                }
-
-                _animator.setTarget(false);
-                if (isOnline)
-                {
-                    photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
-                }
-                else
-                    _animator.triggerDown();
-
+                isDead = true;
                 GetComponent<EnemyFollow>().setIsAlive(false);
                 if (PhotonNetwork.IsMasterClient || !isOnline)
                 {
                     hordeManager.decrementZombiesAlive(gameObject);
-                    StartCoroutine(waiterToDestroy());
+                }
+
+                if (isOnExplosiveEvents && !isSpecial)
+                {
+                    if (!isOnline || PhotonNetwork.IsMasterClient)
+                    {
+                        int randomExplosiveIndex = 0;
+                        if (isOnline)
+                            randomExplosiveIndex = UnityEngine.Random.Range(0, randomExplosiveName.Length);
+                        else
+                            randomExplosiveIndex = UnityEngine.Random.Range(0, explosivesPrefabs.Length);
+
+                        GameObject randomExplosive =
+                            explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
+                        var position = transform.position;
+
+                        if (isOnline)
+                        {
+                            PhotonNetwork.Instantiate(randomExplosiveName[randomExplosiveIndex], position,
+                                Quaternion.identity);
+                            photonView.RPC("instantiateExplosiveEffect", RpcTarget.All);
+                        }
+                        else
+                        {
+                            Instantiate(randomExplosive, position, Quaternion.identity);
+                            GameObject effectInstantiate =
+                                Instantiate(explosiveDeathEffect, position, Quaternion.identity);
+                            Destroy(effectInstantiate, 2f);
+                        }
+                    }
+
+                    if (isOnline)
+                        PhotonNetwork.Destroy(gameObject);
+                    else
+                        Destroy(gameObject);
+                }
+                else
+                {
+                    GetComponent<BoxCollider>().enabled = true;
+                    if (!isBurning)
+                    {
+                        GameObject NewBloodParticle = Instantiate(blood2,
+                            new Vector3(transform.position.x, 57, transform.position.z),
+                            blood2.transform.rotation);
+                        Destroy(NewBloodParticle, 8f);
+                    }
+
+                    _animator.setTarget(false);
+                    if (isOnline)
+                    {
+                        photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
+                    }
+                    else
+                        _animator.triggerDown();
+
+                    GetComponent<EnemyFollow>().setIsAlive(false);
+                    if (PhotonNetwork.IsMasterClient || !isOnline)
+                    {
+                        StartCoroutine(waiterToDestroy());
+                    }
                 }
             }
         }

@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Damage
   m_EditorClassIdentifier: 
   classIndex: 1
-  name: 
-  maxThrowableCapacity: 2
+  name: Damage
+  maxThrowableCapacity: 1
   maxAuxiliaryCapacity: 0
-  maxGunCapacity: 0
+  maxGunCapacity: 1
   health: 80
-  speed: 10
+  speed: 13
   revivalSpeed: 10
-  timeBeteweenMelee: 2
+  timeBeteweenMelee: 1
   meleeDamage: 8
-  startGun: {fileID: 11400000, guid: 1823e422b2f58b044aacc33e68ff6e02, type: 2}
+  startGun: {fileID: 11400000, guid: 0c271102b2e56af46a9bf4e78be0bd03, type: 2}
   MainColor: {r: 0.6792453, g: 0.27233893, b: 0.27233893, a: 1}
   PlayerIndicator: {fileID: 2100000, guid: 79d7a5a89369f6a468dc0a912e327073, type: 2}
   burnDamagePerSecond: 5

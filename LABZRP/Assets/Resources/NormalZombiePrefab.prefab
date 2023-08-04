@@ -214,9 +214,11 @@ MonoBehaviour:
   _animator: {fileID: 28239589519732905}
   isOnline: 1
   photonView: {fileID: 4687554036512629209}
-  explosivesPrefabs: []
-  explosiveDeathEffect: {fileID: 0}
-  randomExplosiveName: []
+  explosivesPrefabs:
+  - {fileID: 5410999002539148555, guid: c7bbaecd74f361e4c98750234816cf4a, type: 3}
+  explosiveDeathEffect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}
+  randomExplosiveName:
+  - bombZombieExplosion
 --- !u!65 &7731260086498954267
 BoxCollider:
   m_ObjectHideFlags: 0

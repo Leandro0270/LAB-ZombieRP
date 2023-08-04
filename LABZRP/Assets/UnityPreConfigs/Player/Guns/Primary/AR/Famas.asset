@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
+  m_Name: Famas
+  m_EditorClassIdentifier: 
+  dano: 13
+  BalasPorMinuto: 1000
+  tempoRecarga: 2.7
+  dispersao: 11
+  tempoEntreDisparos: 0
+  totalBalas: 120
+  tamanhoPente: 30
+  balasPorDisparo: 3
+  segurarGatilho: 0
+  modelo3d: {fileID: 7948888589614156552, guid: ecac6f3071a20824ab9ff284cac221db, type: 3}
+  modelo3dVendingMachine: {fileID: 7948888589614156552, guid: 779b435e5127cf141b572c14b19baf78, type: 3}
+  isShotgun: 0
+  isSniper: 0
+  range: 150
+  speedBullet: 9.6
+  haveKnockback: 0
+  knockbackForce: 0
+  hitableEnemies: 1
+  reducaoDispersaoMirando: 30
+  slowWhileAimingPercent: 75
+  haveCriticalChance: 1
+  criticalChanceIncrementalPerBullet: 8
+  criticalDamagePercentage: 50
+  criticalBaseChancePercentage: 3
+  Price: 175

@@ -20,7 +20,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         //Status das armas
         private float _danoMelee;
         private float _dano;
-        private float _tempoEntreDisparos, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback, _criticalChanceIncrementalPerBullet, _criticalDamagePercentage, _criticalBaseChancePercentage, _currentCriticalChance;
+        private float _tempoEntreBalas, _tempoEntreMelee, _tempoRecarga, _dispersao, _distancia, _velocidadeBala, _reducaoDispersaoMirando, _slowWhileAimingPercent, _ForcaKnockback, _criticalChanceIncrementalPerBullet, _criticalDamagePercentage, _criticalBaseChancePercentage, _currentCriticalChance, _tempoEntreDisparos, _currentPauseBetweenShots;
         private int _maxBalas, _totalBalas, _tamanhoPente, _balasPorDisparo;
         private int _hitableEnemies;
         private bool _segurarGatilho, _haveKnockback;
@@ -28,7 +28,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         private bool _isShotgun, _isSniper, _haveCriticalChance;
         
         //ações
-        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando, _hitted, _hittedWithMelee,_hittedWithAim;
+        private bool _atirando, _prontoParaAtirar, _recarregando, _attMelee, _meleePronto, _incapactitado, _mirando, _hitted, _hittedWithMelee,_hittedWithAim, _isOnShotPause;
         private int NormalZombiesKilled = 0;
         private int SpecialZombiesKilled = 0;
         private int KilledWithAim = 0;
@@ -74,13 +74,13 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 _playerPoints = GetComponent<PlayerPoints>();
                 _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
                 _challengeManager = _playerStats.getChallengeManager();
+                _isOnShotPause =true;
                 ApplyGunSpecs();
 
         }
 
         private void Update()
         {
-
                 if (!_playerStats)
                 {
                         _playerStats = GetComponent<PlayerStats>();
@@ -98,8 +98,20 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         _challengeManager = _playerStats.getChallengeManager();
                 }
 
+                if (_isOnShotPause && !_segurarGatilho && _balasPorDisparo > 1)
+                {
+                        if(_currentPauseBetweenShots > 0)
+                        {
+                                _currentPauseBetweenShots -= Time.deltaTime;
+                        }
+                        else
+                        {
+                                _isOnShotPause = false;
+                        }
+                }
                 if (_meleePronto && _prontoParaAtirar && _atirando && !_recarregando && _balasRestantes > 0 & !_incapactitado)
                 {
+                        
                         if (_balasRestantes >= _balasPorDisparo)
                         {
                                 _disparosAEfetuar = _balasPorDisparo;
@@ -206,6 +218,11 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         }
         private void Atirar()
         {
+                if (!_segurarGatilho && _balasPorDisparo > 1)
+                {
+                        _isOnShotPause = true;
+                        _currentPauseBetweenShots = _tempoEntreDisparos;
+                }
                 float currentDamage = _dano;
                 bool isCritical = false;
                 if (_haveCriticalChance)
@@ -264,11 +281,19 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         _balasRestantes--;
                         _disparosAEfetuar--;
                         _bulletsUI.setBalasPente(_balasRestantes);
-                       
-                        Invoke("ResetarTiro", _tempoEntreDisparos);
+
+                        if (_segurarGatilho)
+                        {
+                                Invoke("ResetarTiro", _tempoEntreBalas);
+                        }
+                        else
+                        {
+                                Invoke("ResetarTiro", _tempoEntreDisparos);
+                        }
+
                         if (_disparosAEfetuar > 0 && _balasRestantes > 0)
                         {
-                                Invoke("Atirar", _tempoEntreDisparos);
+                                Invoke("Atirar", _tempoEntreBalas);
                         }
                 }
                 else
@@ -309,9 +334,17 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
                         }
                         _balasRestantes -= _balasPorDisparo;
-                        _bulletsUI.setBalasPente(_balasRestantes);
+                        _bulletsUI.setBalasPente(_balasRestantes/ _balasPorDisparo);
                        
-                        Invoke("ResetarTiro", _tempoEntreDisparos);
+                        if (_segurarGatilho)
+                        {
+                                Invoke("ResetarTiro", _tempoEntreBalas);
+                        }
+
+                        if (_disparosAEfetuar > 0 && _balasRestantes > 0)
+                        {
+                                Invoke("Atirar", _tempoEntreBalas);
+                        }
                 }
         }
 
@@ -428,10 +461,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 if (_isShotgun)
                 {
                         _tamanhoPente = _specsArma.tamanhoPente;
-                        _tamanhoPente *= 6;
+                        _tamanhoPente *= _specsArma.balasPorDisparo;
                         _balasRestantes = _tamanhoPente;
                         _maxBalas = _specsArma.totalBalas;
-                        _maxBalas *= 6;
+                        _maxBalas *= _specsArma.balasPorDisparo;
                         _totalBalas = _maxBalas;
                 }
                 else
@@ -450,10 +483,11 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 _ForcaKnockback = _specsArma.knockbackForce;
                 _dano = _specsArma.dano;
                 _dispersao = _specsArma.dispersao;
+                _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
                 _balasPorDisparo = _specsArma.balasPorDisparo;
                 _tempoRecarga = _specsArma.tempoRecarga;
                 _segurarGatilho = _specsArma.segurarGatilho;
-                _tempoEntreDisparos = _specsArma.tempoEntreDisparos;
+                _tempoEntreBalas = (60/_specsArma.BalasPorMinuto);
                 _reducaoDispersaoMirando = _specsArma.reducaoDispersaoMirando;
                 _haveCriticalChance = _specsArma.haveCriticalChance;
                 _criticalDamagePercentage = _specsArma.criticalDamagePercentage;
@@ -464,6 +498,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 armaStart = Instantiate(_specsArma.modelo3d, armaSpawn.transform.position,
                        armaSpawn.transform.rotation);
                 armaStart.transform.parent = armaSpawn.transform;
+                _bulletsUI.setIsShotgun(_isShotgun);
                 _bulletsUI.setBalasPente(_balasRestantes);
                 _bulletsUI.setBalasTotal(_totalBalas);
         }
@@ -471,7 +506,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public IEnumerator waitToEnableGun(float atraso)
         {
                 yield return new WaitForSeconds(atraso);
-
+                _currentPauseBetweenShots = 0;
                 _prontoParaAtirar = true;
         }
         

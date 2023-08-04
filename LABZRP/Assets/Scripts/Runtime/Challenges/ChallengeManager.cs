@@ -825,10 +825,11 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void SuccessChallenge()
     {
-        if (_isOnline)
+        challengeInProgress = false;
+        if (_isOnline && PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("startChallengesRPC", RpcTarget.All, "cancelChallenge", false, false);
-            photonView.RPC("finishChallenge", RpcTarget.All, true);
+            photonView.RPC("finishChallenge", RpcTarget.Others, true);
         }
         else
         {
@@ -848,9 +849,9 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
         challengeDescriptionUI.SetActive(false);
         challengeTimeUI.SetActive(false);
         killedZombiesUI.SetActive(false);
-        challengeInProgress = false;
         challengeCompleted = true;
         challengeFailed = false;
+        challengeInProgress = false;
         currentChallengeText.SetActive(false);
         if (PhotonNetwork.IsMasterClient || !_isOnline)
         {
@@ -868,10 +869,11 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void FailChallenge()
     {
-        if (_isOnline)
+        challengeInProgress = false;
+        if (_isOnline && PhotonNetwork.IsMasterClient)
         {
             photonView.RPC("startChallengesRPC", RpcTarget.All, "cancelChallenge", false, false);
-            photonView.RPC("finishChallenge", RpcTarget.All, false);
+            photonView.RPC("finishChallenge", RpcTarget.Others, true);
         }
         else
         {

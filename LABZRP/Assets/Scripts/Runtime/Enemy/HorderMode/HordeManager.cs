@@ -45,6 +45,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
     private float timeBetweenHordesUI;
     private bool isBossZombieAlive = false;
     private bool isGameOver = false;
+    private int playersCount;
     //Special events Variables==========================================================
     [SerializeField] private ChallengeManager challengeManager;
     [SerializeField] private List<GameObject> challengeMachines;
@@ -66,7 +67,14 @@ public class HordeManager : MonoBehaviourPunCallbacks
     //=========================================================================================
     public void Start()
     
-    { mainCamera = GameManager.getMainCamera();
+    {
+        playersCount = GameManager.getPlayersCount();
+        if (isIncrementalZombiesPerPlayer)
+        {
+            firstHordeZombies = firstHordeZombies * playersCount;
+            hordeIncrement = hordeIncrement * playersCount;
+        }
+        mainCamera = GameManager.getMainCamera();
         HordeText.text = "Prepare for the First Horde";
         Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
         if (isOnline)

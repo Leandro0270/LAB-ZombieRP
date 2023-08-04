@@ -189,6 +189,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemy: {fileID: 6227790603402903899}
+  isOnline: 0
+  photonView: {fileID: 0}
   animation: {fileID: 28239589519732905}
 --- !u!114 &1168015271937127255
 MonoBehaviour:
@@ -207,8 +209,11 @@ MonoBehaviour:
   blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
   _animator: {fileID: 28239589519732905}
+  isOnline: 0
+  photonView: {fileID: 0}
   explosivesPrefabs: []
   explosiveDeathEffect: {fileID: 0}
+  randomExplosiveName: []
 --- !u!65 &7731260086498954267
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -366,6 +371,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_AddedGameObjects: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
+--- !u!95 &2684700840326687787 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6047579641533930501, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
+  m_PrefabInstance: {fileID: 8551395149691678766}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8332175961623672401 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 364085069070878335, guid: 0b576c6dc04274948ac9e3f7bb3cd65e, type: 3}
@@ -388,3 +398,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4762d18431d513c4694b6e9bac3038d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 2684700840326687787}
+  _photonView: {fileID: 0}
+  isOnline: 0

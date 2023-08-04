@@ -28,7 +28,12 @@ public class HordeModeGameOverManager : MonoBehaviourPunCallbacks
         GameInstanceConfiguration = mainGameManager.getPlayerConfigurationManager();
         lastHorde = mainGameManager.getHordeManager().getCurrentHorde();
         players = mainGameManager.getPlayers();
-        _titleText.text = "Você sobreviveu até a horda " + (lastHorde+1);
+        string text = "Você sobreviveu até a horda " + (lastHorde+1);
+        _titleText.text = text;
+        if (isOnline && PhotonNetwork.IsMasterClient)
+        {
+            photonView.RPC("updateHordeText", RpcTarget.Others, text);
+        }
         foreach (var player in players)
         {
             GameObject IntantiatedPlayerStats = Instantiate(playerGameOverUI, gameOverUI.transform);
@@ -84,6 +89,11 @@ public class HordeModeGameOverManager : MonoBehaviourPunCallbacks
     }
 
 
+    [PunRPC]
+    public void updateHordeText(string text)
+    {
+        _titleText.text = text;
+    }
     [PunRPC]
     public void backToMenuRPC()
     {

@@ -286,6 +286,7 @@ MonoBehaviour:
   tempoEntreAtaques: 5
   delayLocknShoot: 2
   points: 40
+  FisherHook: {fileID: 0}
   isOnline: 1
   tipoDePoder: 0
 --- !u!114 &9038619053660166546

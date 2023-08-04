@@ -43,7 +43,11 @@ public class BULLETS_UI : MonoBehaviourPunCallbacks, IPunObservable
         else
             texto.text = "|" + balasPente + " / " + balasTotal;
     }
-
+    
+    public void setIsShotgun(bool isShotgun)
+    {
+        this.isShotgun = isShotgun;
+    }
 
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

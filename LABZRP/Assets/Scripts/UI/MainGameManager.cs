@@ -57,6 +57,10 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         return pauseMenu;
     }
 
+    public int getPlayersCount()
+    {
+        return players.Count;
+    }
     public int getCountItens()
     {
         return itens.Count;

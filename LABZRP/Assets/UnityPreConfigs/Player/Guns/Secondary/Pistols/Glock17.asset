@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f68d55d66df409e46ad9fd62f50652c6, type: 3}
+  m_Name: Glock17
+  m_EditorClassIdentifier: 
+  dano: 9
+  BalasPorMinuto: 700
+  tempoRecarga: 2
+  dispersao: 5
+  tempoEntreDisparos: 0
+  totalBalas: 136
+  tamanhoPente: 17
+  balasPorDisparo: 1
+  segurarGatilho: 0
+  modelo3d: {fileID: 7575573416949257461, guid: 046d7d70101d9e7488404ee8ebb6d2aa, type: 3}
+  modelo3dVendingMachine: {fileID: 7575573416949257461, guid: 54b8812f4045d094ea88dc764ee4d504, type: 3}
+  isShotgun: 0
+  isSniper: 0
+  range: 40
+  speedBullet: 35
+  haveKnockback: 0
+  knockbackForce: 0
+  hitableEnemies: 1
+  reducaoDispersaoMirando: 45
+  slowWhileAimingPercent: 80
+  haveCriticalChance: 1
+  criticalChanceIncrementalPerBullet: 8
+  criticalDamagePercentage: 60
+  criticalBaseChancePercentage: 4
+  Price: 100
