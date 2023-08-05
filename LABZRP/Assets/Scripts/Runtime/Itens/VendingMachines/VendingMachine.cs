@@ -417,7 +417,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 {
                     availableSpawnGunSpecsIds.Append(availableGun.id);
                 }
-                photonView.RPC("setStartGunRPC", RpcTarget.All, _AvailableSpawnGunSpecs[randomizeGun], availableSpawnGunSpecsIds);
+                photonView.RPC("setStartGunRPC", RpcTarget.All, _AvailableSpawnGunSpecs[randomizeGun].id, availableSpawnGunSpecsIds);
             }
             else
             {
