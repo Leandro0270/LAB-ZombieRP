@@ -271,7 +271,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                     item = PhotonNetwork.Instantiate("itemHolder", ItemSpawnPoint.transform.position,
                         ItemSpawnPoint.transform.rotation);
                     int itemHolderPhotonViewID = item.GetComponent<PhotonView>().ViewID;
-                    
                     if (_randomizeType == 0)
                         photonView.RPC("setItemSpecsOnline", RpcTarget.All, _randomizeType, itemHolderPhotonViewID, _itemIndex);
                     else
@@ -300,15 +299,17 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     [PunRPC]
     public void setItemSpecsOnline(int itemIndex, int itemHolderViewId)
     {
+        _itemIndex = itemIndex;
         GameObject itemHolder = PhotonView.Find(itemHolderViewId).gameObject;
         Item item = itemHolder.GetComponent<Item>();
         item.setIsOnline(true);
-        item.setItem(itens[itemIndex]);
+        item.setItem(itens[_itemIndex]);
     }
 
     [PunRPC]
     public void setGranadeSpecsOnline(int granadeIndex, int itemHolderViewId)
     {
+        _granadeIndex = granadeIndex;
         GameObject itemholder = PhotonView.Find(itemHolderViewId).gameObject;
         Item item = itemHolder.GetComponent<Item>();
         item.setIsOnline(true);
@@ -410,9 +411,13 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             int randomizeGun = Random.Range(0, _AvailableSpawnGunSpecs.Count-1);
             _gunIndex = randomizeGun;
             if (isOnline)
-            {
-                ScObGunSpecs[] avaibleSpawnGunSpecsArray = _AvailableSpawnGunSpecs.ToArray();
-                photonView.RPC("setStartGunRPC", RpcTarget.All, randomizeGun, avaibleSpawnGunSpecsArray);
+            { 
+                int[] availableSpawnGunSpecsIds = new int[_AvailableSpawnGunSpecs.Count];
+                foreach (ScObGunSpecs availableGun in _AvailableSpawnGunSpecs)
+                {
+                    availableSpawnGunSpecsIds.Append(availableGun.id);
+                }
+                photonView.RPC("setStartGunRPC", RpcTarget.All, _AvailableSpawnGunSpecs[randomizeGun], availableSpawnGunSpecsIds);
             }
             else
             {
@@ -457,12 +462,26 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     }
     
     [PunRPC]
-    public void setStartGunRPC(int gunIndex, ScObGunSpecs[] availableSpawnGunSpecsArray)
+    public void setStartGunRPC(int gunIndex, int[] availableSpawnGunId)
     {
-        //Passa o array de avaibleSpawnGunSpecs para a lista de avaibleSpawnGunSpecs
-        _randomizeType = 1;
         _AvailableSpawnGunSpecs.Clear();
-        _AvailableSpawnGunSpecs.AddRange(availableSpawnGunSpecsArray);
+        int i = 0;
+        foreach (ScObGunSpecs gun in guns)
+        {
+            foreach (int id in availableSpawnGunId)
+            {
+                if (gun.id == id)
+                {
+                    _AvailableSpawnGunSpecs.Add(gun);
+                    if(id == gunIndex)
+                        _gunIndex = i;
+                    else
+                        i++;
+                    
+                }
+            }
+        }
+        _randomizeType = 1;
         var rotation = transform.rotation;
         StartItem = Instantiate(_AvailableSpawnGunSpecs[gunIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
             rotation);
