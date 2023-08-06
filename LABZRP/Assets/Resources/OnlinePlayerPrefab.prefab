@@ -391,6 +391,7 @@ MonoBehaviour:
   pointsPerNormalZombie: 10
   pointsMultiplier: 1.5
   isMultiplierActive: 0
+  points: 0
   isOnline: 1
   photonView: {fileID: -294461941703932716}
 --- !u!143 &2607379241762753282
@@ -964,42 +965,10 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 5941111720470294485}
+  ObservedComponents: []
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &5941111720470294485
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5776796256810629318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Animator: {fileID: 972973158037288966}
-  ShowLayerWeightsInspector: 1
-  ShowParameterInspector: 1
-  m_SynchronizeParameters:
-  - Type: 4
-    SynchronizeType: 2
-    Name: Walking
-  - Type: 4
-    SynchronizeType: 1
-    Name: isDown
-  - Type: 9
-    SynchronizeType: 1
-    Name: Melee
-  - Type: 9
-    SynchronizeType: 1
-    Name: Downing
-  m_SynchronizeLayers:
-  - SynchronizeType: 0
-    LayerIndex: 0
 --- !u!114 &7704960691108931514
 MonoBehaviour:
   m_ObjectHideFlags: 0

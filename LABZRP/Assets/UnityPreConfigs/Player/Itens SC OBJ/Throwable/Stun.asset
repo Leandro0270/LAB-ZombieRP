@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b76a8f8699df8469e4c986b3778191, type: 3}
   m_Name: Stun
   m_EditorClassIdentifier: 
-  nome: 
+  nome: Stun
   life: 0
   Balas: 0
   modelo3d: {fileID: 1887226697130731664, guid: f374e5c137d1da94d8309981613f088f, type: 3}

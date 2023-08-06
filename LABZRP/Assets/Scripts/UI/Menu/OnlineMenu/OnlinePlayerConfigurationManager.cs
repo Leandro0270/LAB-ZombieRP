@@ -67,7 +67,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          DontDestroyOnLoad(this);
          availableLobbyPlayersShower = lobbyPlayersShower;
          PhotonNetwork.AutomaticallySyncScene = true;
-         if (isReplay)
+         if (isReplay && PhotonNetwork.IsConnected)
          {
              playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
              isMasterClient = PhotonNetwork.IsMasterClient;

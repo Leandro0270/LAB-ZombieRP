@@ -109,6 +109,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     {
         this.isMasterClient = isMasterClient;
     }
+    
 
     private void OnTriggerStay(Collider other)
     {
@@ -253,7 +254,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     private void itemSpawn(GameObject playerBuyer)
     {
 
-            if (_randomizeType == 0 || _randomizeType == 2)
+            if (_randomizeType is 0 or 2)
             {
                 GameObject item;
                 if (!isOnline)
@@ -272,9 +273,9 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                         ItemSpawnPoint.transform.rotation);
                     int itemHolderPhotonViewID = item.GetComponent<PhotonView>().ViewID;
                     if (_randomizeType == 0)
-                        photonView.RPC("setItemSpecsOnline", RpcTarget.All, _randomizeType, itemHolderPhotonViewID, _itemIndex);
+                        photonView.RPC("setItemSpecsOnline", RpcTarget.All,_itemIndex, itemHolderPhotonViewID);
                     else
-                        photonView.RPC("setGranadeSpecsOnline", RpcTarget.All, _randomizeType, itemHolderPhotonViewID, _granadeIndex);
+                        photonView.RPC("setGranadeSpecsOnline", RpcTarget.All, _granadeIndex, itemHolderPhotonViewID);
                     
                 }
             }
@@ -283,17 +284,17 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 if (isOnline)
                 {
                     int playerPhotonViewID = playerBuyer.GetComponent<PhotonView>().ViewID;
-                    photonView.RPC("changePlayerBuyerGunOnline", RpcTarget.All, _gunIndex, playerPhotonViewID);
+                    photonView.RPC("changePlayerBuyerGunOnline", RpcTarget.All, playerPhotonViewID);
                 }
                 else
                     playerBuyer.GetComponent<WeaponSystem>().ChangeGun(_AvailableSpawnGunSpecs[_gunIndex]);
             }
     }
     [PunRPC]
-    public void changePlayerBuyerGunOnline(int gunIndex, int playerViewId)
+    public void changePlayerBuyerGunOnline(int playerViewId)
     {
         GameObject playerBuyer = PhotonView.Find(playerViewId).gameObject;
-        playerBuyer.GetComponent<WeaponSystem>().ChangeGun(_AvailableSpawnGunSpecs[gunIndex]);
+        playerBuyer.GetComponent<WeaponSystem>().ChangeGun(_AvailableSpawnGunSpecs[_gunIndex]);
     }
     
     [PunRPC]
@@ -408,7 +409,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 }
             }
             //==================================================================================================================================================================
-            int randomizeGun = Random.Range(0, _AvailableSpawnGunSpecs.Count-1);
+            int randomizeGun = Random.Range(0, _AvailableSpawnGunSpecs.Count);
             _gunIndex = randomizeGun;
             if (isOnline)
             { 
@@ -417,7 +418,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                 {
                     availableSpawnGunSpecsIds.Append(availableGun.id);
                 }
-                photonView.RPC("setStartGunRPC", RpcTarget.All, _AvailableSpawnGunSpecs[randomizeGun].id, availableSpawnGunSpecsIds);
+                photonView.RPC("setStartGunRPC", RpcTarget.All, _AvailableSpawnGunSpecs[_gunIndex].id, availableSpawnGunSpecsIds);
             }
             else
             {
@@ -431,7 +432,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         }
         else
         {
-            _granadeIndex = Random.Range(0, granades.Length-1);
+            _granadeIndex = Random.Range(0, granades.Length);
             if (isOnline)
             {
                 photonView.RPC("setStartGranadeRPC", RpcTarget.All, _granadeIndex);
@@ -453,6 +454,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     {
         //Passa o array de avaibleSpawnGunSpecs para a lista de avaibleSpawnGunSpecs
         _randomizeType = 2;
+        _granadeIndex = granadeIndex;
         var rotation = transform.rotation;
         StartItem = Instantiate(granades[granadeIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
             rotation);
@@ -482,6 +484,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             }
         }
         _randomizeType = 1;
+        _gunIndex = gunIndex;
         var rotation = transform.rotation;
         StartItem = Instantiate(_AvailableSpawnGunSpecs[gunIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
             rotation);
@@ -494,11 +497,12 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     public void setStartItemRPC(int itemIndex)
     {
         _randomizeType = 0;
+        _itemIndex = itemIndex;
         var rotation = transform.rotation;
-        StartItem = Instantiate(granades[itemIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
+        StartItem = Instantiate(itens[itemIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
             rotation);
         StartItem.transform.parent = ItemShowHolder.transform;
-        price = granades[itemIndex].Price;
+        price = itens[itemIndex].Price;
         ScreenPoints.text = price.ToString();
     }
     

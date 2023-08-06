@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Photon.Realtime;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,6 +19,9 @@ public class OnlineMenuManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI ConnectionFeedbackText;
     public OnlineGameManager onlineGameManager;
     public MainMenuManager mainMenuManager;
+    private string playerNick;
+    private string roomCode;
+    
     
     
     public void LoadScene(string sceneName)
@@ -52,34 +56,24 @@ public class OnlineMenuManager : MonoBehaviourPunCallbacks
           }
       }
 
-
     public void connectToLobby()
     {
-        Debug.Log("Trying to connect");
-        string playerNick = nickInput.text;
-        string roomCode = codeInput.text;
+        playerNick = nickInput.text;
+        roomCode = codeInput.text;
         inputPanel.SetActive(false);
         ConnectionFeedbackText.gameObject.SetActive(true);
         ConnectionFeedbackText.text = "Conectando...";
-        
+
         onlineGameManager.setLocalPlayerNickname(playerNick);
         onlineGameManager.setConnectedRoomCode(roomCode);
-        onlineGameManager.ConnectToRoom();
-        
         PhotonNetwork.LocalPlayer.NickName = playerNick;
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-
-    public override void OnConnectedToMaster()
-    {
-        ConnectionFeedbackText.text = "Conectado!";
+        onlineGameManager.connectDirectRoom();
     }
     
-    public override void OnJoinedLobby()
+    
+    public void setText(string text)
     {
-        ConnectionFeedbackText.text = "Entrando na sala..."; 
-        enabled = false;
+        ConnectionFeedbackText.text = text;
     }
    
 }

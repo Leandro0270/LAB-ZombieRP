@@ -10,7 +10,8 @@ public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool isMultiplierActive = false;
     private Points_UI pointsUI;
     private int totalPointsInGame = 0;
-    private int points = 0;
+    //Its serialized for debugging purposes
+    [SerializeField] private int points = 0;
     [SerializeField] private bool isOnline = false;
     [SerializeField] private PhotonView photonView;
 

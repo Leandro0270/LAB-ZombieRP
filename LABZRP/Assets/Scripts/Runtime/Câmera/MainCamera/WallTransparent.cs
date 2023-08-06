@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 
 public class WallTransparent : MonoBehaviour
 {
-    public Material[] newMaterials; // Defina estes materiais no Inspector do Unity
+    public Material[] newMaterials;
     private Material[] originalMaterials;
     private Renderer objectRenderer;
 

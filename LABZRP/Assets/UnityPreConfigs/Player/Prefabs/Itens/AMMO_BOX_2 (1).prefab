@@ -158,7 +158,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a67be8ecf3c9fc4cbcfeee560ffe1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  price: 200
+  StartPrice: 50
+  IncrementPricePerHorde: 15
   priceText: {fileID: 4796889499221651602}
   lid: {fileID: 3507218756054186615}
   openSpeed: 2
@@ -1940,7 +1941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4777689699594721330, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 2.44
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 4777689699594721330, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1978,6 +1979,18 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 1f0a3f73038c04c45b43134bffdde4cb, type: 2}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.b
+      value: 0.12335351
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.g
+      value: 0.7787771
+      objectReference: {fileID: 0}
+    - target: {fileID: 5437996981865413513, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7924528
+      objectReference: {fileID: 0}
     - target: {fileID: 6026822363570454077, guid: 37918b0686b210a489ec3598f07f1599, type: 3}
       propertyPath: m_Name
       value: MiniMapIcon

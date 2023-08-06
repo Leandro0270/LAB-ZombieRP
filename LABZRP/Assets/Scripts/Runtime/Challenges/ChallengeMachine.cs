@@ -21,10 +21,13 @@ public class ChallengeMachine : MonoBehaviourPunCallbacks
     private int _currentWave = 0;
     private int _currentEnemy = 0;
     private int _currentEnemySpawned = 0;
+    private int _currentPlayersInFrontOfMachine = 0;
     private GameObject _current3dModel;
     [SerializeField] private TextMeshPro ScreenPoints;
     [SerializeField] private bool changeChallenges = false;
     [SerializeField] private bool isOnline = false;
+    [SerializeField] private TextMeshPro challengeDescription;
+    [SerializeField] private GameObject challengeDescriptionPanel;
     [SerializeField] private PhotonView photonView;
 
 
@@ -73,10 +76,33 @@ public class ChallengeMachine : MonoBehaviourPunCallbacks
             Destroy(_current3dModel);
         else
         {
+            challengeDescription.text = _challenges[_currentChallengeRPC].ChallengeDescription;
             _current3dModel = Instantiate(_challenges[_currentChallengeRPC].Model3dChallengeMachine,
                 ModelSpawnPoint.position, ModelSpawnPoint.rotation);
             _current3dModel.transform.parent = transform;
-            ScreenPoints.text = _challenges[_currentChallengeRPC].ChallengeReward.ToString();
+            ScreenPoints.text = "Recompensa:\n" +_challenges[_currentChallengeRPC].ChallengeReward;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            _currentPlayersInFrontOfMachine++;
+            if(_currentPlayersInFrontOfMachine == 1){
+                challengeDescriptionPanel.SetActive(true);
+                _current3dModel.SetActive(false);
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if(other.CompareTag("Player"))
+            _currentPlayersInFrontOfMachine--;
+        if(_currentPlayersInFrontOfMachine == 0){
+            challengeDescriptionPanel.SetActive(false);
+            _current3dModel.SetActive(false);
         }
     }
 
