@@ -88,7 +88,7 @@ MonoBehaviour:
   velocidadeBala: 20
   hitableEnemies: 1
   _isOnline: 1
-  _collider: {fileID: 0}
+  _collider: {fileID: 5056165961735005413}
   _UAlightD: {fileID: 0}
   _light: {fileID: 0}
   _meshRenderer: {fileID: 0}
