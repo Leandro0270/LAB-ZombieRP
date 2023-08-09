@@ -206,8 +206,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _status: {fileID: 11400000, guid: c80a1977709c27e468f41b5749b94ce7, type: 2}
   FireDamage: {fileID: 3078254144593795290}
-  blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
+  LessBloodPrefabs:
+  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
+  MoreBloodPrefabs:
+  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
   _animator: {fileID: 28239589519732905}
   isOnline: 0
   photonView: {fileID: 0}

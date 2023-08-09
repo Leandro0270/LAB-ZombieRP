@@ -15,8 +15,10 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool isWallBang = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
-    public GameObject bloodParticle;
+    [SerializeField] private GameObject[] _bloodSplatterParticles;
+    [SerializeField] private GameObject[] _bloodSplatterParticlesCritical;
     private Rigidbody _rb;
+    private float baseDamage;
     private float damage;
     public float distancia;
     public float velocidadeBala = 20f;
@@ -99,16 +101,29 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         if (_status != null)
         {
             enemiesHitted++;
-            GameObject NewBloodParticle = Instantiate(bloodParticle, objetoDeColisao.transform.position,
-                objetoDeColisao.transform.rotation);
-            Destroy(NewBloodParticle, 4f);
             if (!_status.isDeadEnemy())
             {
+                GameObject NewBloodParticle;
+                if (!isCritical)
+                {
+                    int randomBloodEffect = UnityEngine.Random.Range(0, _bloodSplatterParticles.Length);
+                    NewBloodParticle = Instantiate(_bloodSplatterParticles[randomBloodEffect], objetoDeColisao.transform.position,
+                        objetoDeColisao.transform.rotation);
+                    Destroy(NewBloodParticle, 2f);
+                }
+                else
+                {
+                    int randomBloodEffect = UnityEngine.Random.Range(0, _bloodSplatterParticlesCritical.Length);
+                    NewBloodParticle = Instantiate(_bloodSplatterParticlesCritical[randomBloodEffect], objetoDeColisao.transform.position,
+                        objetoDeColisao.transform.rotation);
+                }
+                Destroy(NewBloodParticle, 2f);
+
                 
                 hitted = true;
                 if (_isBulletOwner)
                 {
-                    _status.takeDamage(damage, PlayerShooter,_isAiming,isMelee);
+                    _status.takeDamage(damage, PlayerShooter,_isAiming,isMelee, isCritical);
                     if (haveKnockback)
                     {
                         Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
@@ -142,15 +157,19 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (!status.verifyDown())
             {
-                enemiesHitted++;
+                int randomBloodEffect = UnityEngine.Random.Range(0, _bloodSplatterParticles.Length);
+                    GameObject NewBloodParticle = Instantiate(_bloodSplatterParticles[randomBloodEffect], objetoDeColisao.transform.position,
+                        objetoDeColisao.transform.rotation);
+                    Destroy(NewBloodParticle, 4f);
+                    enemiesHitted++;
                 if (_isOnline)
                 {
                     if(_isBulletOwner)
-                        status.takeOnlineDamage(damage * 0.5f);
+                        status.takeOnlineDamage(baseDamage*0.5f, false);
                 }
                 else
                 {
-                    status.takeDamage(damage * 0.5f);
+                    status.takeDamage(baseDamage*0.5f, false);
                 }
 
                 if (enemiesHitted < hitableEnemies)
@@ -207,6 +226,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     public void SetDamage(float damage)
     {
         this.damage = damage;
+        baseDamage = damage;
     }
 
 
@@ -254,9 +274,12 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         _isAiming = aiming;
     }
 
-    public void setIsCritical(bool critical)
+    public void setIsCritical(bool critical, float criticalPercentageDamage)
     {
         isCritical = critical;
+        if(isCritical)
+            damage += (damage * criticalPercentageDamage/100);
+        
     }
 
 

@@ -20,7 +20,7 @@ public class EnemyAreaEffect : MonoBehaviour
     private bool isDamagePlayerSplash = false;
     private float DamageSplashPlayer;
     private bool isDamagePlayerOverTime = false;
-    private float DamagheOverTimePlayer;
+    private float DamageOverTimePlayer;
     private bool isPlayerSpeedSlower = false;
     private float PlayerSpeedSlower;
     private float TimeEffect = 0f;
@@ -43,7 +43,7 @@ public class EnemyAreaEffect : MonoBehaviour
             isDamagePlayerOverTime = enemyAreaEffect.isDamagePlayerOverTime;
             TimeEffect = enemyAreaEffect.TimeEffect;
             DamageSplashPlayer = enemyAreaEffect.PlayerSplashDamage;
-            DamagheOverTimePlayer = enemyAreaEffect.PlayerOverTimeDamage;
+            DamageOverTimePlayer = enemyAreaEffect.PlayerOverTimeDamage;
             EffectIsPermanent = enemyAreaEffect.EffectIsPermanent;
             EnemyDamage = enemyAreaEffect.EnemyDamage;
             EnemySpeed = enemyAreaEffect.EnemySpeed;
@@ -77,7 +77,7 @@ public class EnemyAreaEffect : MonoBehaviour
             if (Pstats && !Pstats.verifyDown())
             {
                 if (isDamagePlayerSplash)
-                    Pstats.takeDamage(DamageSplashPlayer);
+                    Pstats.takeDamage(DamageSplashPlayer, false);
                 
                 if(isPlayerSpeedSlower)
                     Pstats.ReceiveTemporarySlow(TimeEffect, PlayerSpeedSlower);
@@ -117,7 +117,7 @@ public class EnemyAreaEffect : MonoBehaviour
             if (Pstats && !Pstats.verifyDown())
             {
                 if (isDamagePlayerOverTime)
-                    Pstats.takeDamage(DamagheOverTimePlayer * Time.deltaTime);
+                    Pstats.takeDamage(DamageOverTimePlayer * Time.deltaTime, false);
                 
                 
             }

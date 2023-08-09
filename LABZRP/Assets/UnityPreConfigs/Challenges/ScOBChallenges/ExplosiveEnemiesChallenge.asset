@@ -16,7 +16,7 @@ MonoBehaviour:
   ChallengeType: 1
   ChallengeName: Inimigos explosivos
   ChallengeDescription: "Cuidado! Os zumbis normais s\xE3o explosivos"
-  ChallengeReward: 500
+  ChallengeReward: 80
   ChallengeDifficulty: 1
   TimeToStartChallenge: 8
   ChallengeTime: 120

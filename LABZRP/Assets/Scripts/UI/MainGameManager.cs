@@ -172,7 +172,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject player in players)
         {
-            player.GetComponent<PlayerStats>().takeDamage(100000);
+            player.GetComponent<PlayerStats>().takeDamage(100000, false);
         }
     }
 
@@ -310,8 +310,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         if (isOnline)
             return onlinePlayerConfigurationManager;
-        else
-            return playerConfigurationManager;
+        return playerConfigurationManager;
         
     }
     

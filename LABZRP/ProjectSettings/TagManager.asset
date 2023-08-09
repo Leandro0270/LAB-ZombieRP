@@ -17,6 +17,7 @@ TagManager:
   - Enemy
   - door
   - Bullet
+  - MainMenuOptions
   layers:
   - Default
   - TransparentFX
@@ -51,6 +52,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: DisconnectPanel
+    uniqueID: 1393115251
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0

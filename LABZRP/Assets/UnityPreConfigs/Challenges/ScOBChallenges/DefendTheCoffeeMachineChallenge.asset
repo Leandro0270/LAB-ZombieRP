@@ -16,7 +16,7 @@ MonoBehaviour:
   ChallengeType: 7
   ChallengeName: Defend The Coffee Machine
   ChallengeDescription: "Defenda as m\xE1quinas de caf\xE9 dos ataques zumbis!"
-  ChallengeReward: 800
+  ChallengeReward: 150
   ChallengeDifficulty: 1
   TimeToStartChallenge: 15
   ChallengeTime: 200

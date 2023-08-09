@@ -163,6 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AreaEffect: {fileID: 5410999002539148555, guid: 6935b666ac664a54eb2e57b3c53d3958, type: 3}
+  AreaEffectName: bombZombieExplosion
 --- !u!114 &9019263840940092629
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,6 +184,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: -5247522135026936158}
+  - {fileID: -8425041979664344018}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

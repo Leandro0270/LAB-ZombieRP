@@ -479,17 +479,15 @@ public class VendingMachine : MonoBehaviourPunCallbacks
                         _gunIndex = i;
                     else
                         i++;
-                    
                 }
             }
         }
         _randomizeType = 1;
-        _gunIndex = gunIndex;
         var rotation = transform.rotation;
         StartItem = Instantiate(_AvailableSpawnGunSpecs[_gunIndex].modelo3dVendingMachine, ItemShowHolder.transform.position,
             rotation);
         StartItem.transform.parent = ItemShowHolder.transform;
-        price = _AvailableSpawnGunSpecs[gunIndex].Price;
+        price = _AvailableSpawnGunSpecs[_gunIndex].Price;
         ScreenPoints.text = price.ToString();
     }
     

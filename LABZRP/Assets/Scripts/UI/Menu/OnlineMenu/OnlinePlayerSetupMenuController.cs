@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +13,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
 {
     private int PlayerIndex;
     [SerializeField] private OnlinePlayerConfigurationManager playerConfigurationManager;
+    [SerializeField] private Button startButton;
     [SerializeField] private Button readyClassButton;
     [SerializeField] private TextMeshProUGUI titletext;
     [SerializeField] private GameObject CharacterCustomizePanel;
@@ -25,8 +27,6 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     [SerializeField] private List<Material> tshirt;
     [SerializeField] private List<Material> pants;
     [SerializeField] private List<Material> Shoes;
-
-
     [SerializeField] private TextMeshProUGUI SkinIndexText;
     [SerializeField] private TextMeshProUGUI EyesIndexText;
     [SerializeField] private TextMeshProUGUI tshirtIndexText;
@@ -40,6 +40,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     private int tshirtIndex = 0;
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
+    private ScObPlayerCustom playerCustom;
     private String name;
 
 
@@ -72,13 +73,18 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
         if (_isReady)
         {
                 ClientCustomizationPanel.SetActive(true);
-                transform.SetParent(ClientCustomizationPanel.transform);
+                gameObject.transform.SetParent(ClientCustomizationPanel.transform);
                 OnlineLobbyReady.SetActive(false);
                 CharacterCustomizePanel.SetActive(true);
                 readySkinButton.gameObject.SetActive(true);
                 ReadyPanel.SetActive(false);
                 OnlineLobbyReady.SetActive(false);
                 _isReady = false;
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    startButton.interactable = false;
+                    startButton.gameObject.SetActive(false);
+                }
                 OnlinePlayerConfigurationManager.Instance.cancelReadyPlayer(PlayerIndex);
         }
         else if (playerStats != null)
@@ -139,6 +145,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
         ClientCustomizationPanel.SetActive(false);
         transform.SetParent(OnlineLobbyReady.transform);
         _isReady = true;
+        playerCustom = ScOb;
     }
 
     

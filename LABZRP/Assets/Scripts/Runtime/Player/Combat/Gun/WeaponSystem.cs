@@ -184,38 +184,6 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         }
         
-        
-        [PunRPC]
-        public void setOnlineAttackSpecs(
-                bool isCritical
-                ,float damage
-                ,float distancia
-                ,int hitableEnemies
-                ,bool isMelee
-                ,bool haveKnockBack
-                ,float knockbackForce
-                ,int photonviewid
-                ,bool isAiming
-                ,int bulletPhotonViewId)
-        {
-                GameObject bullet = PhotonView.Find(bulletPhotonViewId).gameObject;
-                GameObject player = PhotonView.Find(photonviewid).gameObject;
-                BulletScript bulletScript = bullet.GetComponent<BulletScript>();
-                bulletScript.setIsOnline(true);
-                bulletScript.setIsCritical(isCritical);
-                bulletScript.SetDamage(damage);
-                bulletScript.setMelee(isMelee);
-                bulletScript.setShooter(player.GetComponent<WeaponSystem>());
-                bulletScript.setHaveKnockback(haveKnockBack);
-                if(haveKnockBack)
-                        bulletScript.setKnockbackForce(knockbackForce);
-                bulletScript.setIsAiming(isAiming);
-                bulletScript.setDistancia(distancia);
-                bulletScript.setHitableEnemies(hitableEnemies);
-                
-                player.GetComponent<WeaponSystem>()._danoMelee = damage;
-                player.GetComponent<WeaponSystem>()._haveKnockback = isMelee;
-        }
         private void Atirar()
         {
                 if (!_segurarGatilho && _balasPorDisparo > 1)
@@ -223,21 +191,18 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         _isOnShotPause = true;
                         _currentPauseBetweenShots = _tempoEntreDisparos;
                 }
-                float currentDamage = _dano;
                 bool isCritical = false;
                 if (_haveCriticalChance)
                 {
                         float random = Random.Range(0, 100);
                         if (random <= _currentCriticalChance)
                         {
-                                currentDamage = _dano + (_criticalDamagePercentage * _dano);
                                 isCritical = true;
                                 _currentCriticalChance = _criticalBaseChancePercentage;
                         }
                         else
                         {
                                 _currentCriticalChance += _criticalChanceIncrementalPerBullet;
-                                currentDamage = _dano;
                         }
                 }
 
@@ -256,11 +221,11 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 BulletScript bala = bullet.GetComponent<BulletScript>();
                                 bala.setDistancia(_distancia);
                                 bala.setVelocidadeBalas(_velocidadeBala);
+                                bala.SetDamage(_dano);
                                 bala.setIsAiming(_mirando);
-                                bala.SetDamage(currentDamage);
                                 bala.setShooter(this);
                                 bala.setHitableEnemies(_hitableEnemies);
-                                bala.setIsCritical(isCritical);
+                                bala.setIsCritical(isCritical, _criticalDamagePercentage);
                         }
                         else
                         {
@@ -268,7 +233,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
                                 BulletScript bala = Instantiate(_bala, canoDaArma.transform.position,
                                         dispersaoCalculada);
-                                bala.SetDamage(currentDamage);
+                                bala.SetDamage(_dano);
                                 bala.setShooter(this);
                                 bala.setIsAiming(_mirando);
                                 bala.setDistancia(_distancia);
@@ -276,7 +241,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 bala.setKnockbackForce(_ForcaKnockback);
                                 bala.setVelocidadeBalas(_velocidadeBala);
                                 bala.setHitableEnemies(_hitableEnemies);
-                                bala.setIsCritical(isCritical);
+                                bala.setIsCritical(isCritical, _criticalDamagePercentage);
                         }
                         _balasRestantes--;
                         _disparosAEfetuar--;
@@ -304,8 +269,6 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                 float y = Random.Range(-_dispersao, _dispersao);
                                 Vector3 auxVector = canoDaArma.rotation.eulerAngles;
                                 Quaternion dispersaoCalculada = Quaternion.Euler(auxVector.x, auxVector.y + y, auxVector.z);
-                                //Spawn da bala
-
                                 if (_isOnline)
                                 {
                                         GameObject bullet = PhotonNetwork.Instantiate("bullet", canoDaArma.position, dispersaoCalculada);
@@ -313,10 +276,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                         bala.setDistancia(_distancia);
                                         bala.setVelocidadeBalas(_velocidadeBala);
                                         bala.setIsAiming(_mirando);
-                                        bala.SetDamage(currentDamage);
+                                        bala.SetDamage(_dano);
                                         bala.setShooter(this);
                                         bala.setHitableEnemies(_hitableEnemies);
-                                        bala.setIsCritical(isCritical);
+                                        bala.setIsCritical(isCritical, _criticalDamagePercentage);
                                 }
                                 else
                                 {
@@ -324,10 +287,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                                         bala.setDistancia(_distancia);
                                         bala.setVelocidadeBalas(_velocidadeBala);
                                         bala.setIsAiming(_mirando);
-                                        bala.SetDamage(currentDamage);
+                                        bala.SetDamage(_dano);
                                         bala.setShooter(this);
                                         bala.setHitableEnemies(_hitableEnemies);
-                                        bala.setIsCritical(isCritical);
+                                        bala.setIsCritical(isCritical, _criticalDamagePercentage);
                                 }
                         }
                         _balasRestantes -= _balasPorDisparo;

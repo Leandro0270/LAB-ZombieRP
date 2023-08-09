@@ -9,8 +9,8 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     public ScObEnemyStats _status;
     private HordeManager hordeManager;
     public GameObject FireDamage;
-    public GameObject blood1;
-    public GameObject blood2;
+    [SerializeField] private GameObject[] LessBloodPrefabs;
+    [SerializeField] private GameObject[] MoreBloodPrefabs;
     private bool isDead = false;
     private float totalLife;
     private float _life;
@@ -78,7 +78,7 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
             FireDamage.SetActive(true);
             if (burnTickDamage && !isDead)
             {
-                takeDamage(_status.burnDamagePerSecond,null,false,false);
+                takeDamage(_status.burnDamagePerSecond,null,false,false,false);
                 burnTickTime = 0;
                 burnTickDamage = false;
             }
@@ -102,10 +102,10 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
 
     
     [PunRPC]
-    public void MasterClientHandleDamageRPC(float damage, int photonid, bool isAiming, bool isMelee)
+    public void MasterClientHandleDamageRPC(float damage, int photonid, bool isAiming, bool isMelee, bool isCritical)
     {
         WeaponSystem playerShooter = PhotonView.Find(photonid).GetComponent<WeaponSystem>();
-        takeDamage(damage,playerShooter, isAiming, isMelee);
+        takeDamage(damage,playerShooter, isAiming, isMelee, isCritical);
     }
 
     public void rewardPlayerShooter(WeaponSystem playerShooter, bool isAiming, bool isMelee)
@@ -166,21 +166,22 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    public void takeDamage(float damage, WeaponSystem playerShooter, bool isAiming, bool isMelee)
+    public void takeDamage(float damage, WeaponSystem playerShooter, bool isAiming, bool isMelee, bool isCritical)
     {
         
         if (!isBurning)
         {
-            GameObject NewBloodParticle = Instantiate(blood1,
+            int randomLessBlood = UnityEngine.Random.Range(0, LessBloodPrefabs.Length);
+            GameObject NewBloodParticle = Instantiate(LessBloodPrefabs[randomLessBlood],
                 new Vector3(transform.position.x, 57, transform.position.z),
-                blood1.transform.rotation);
+                LessBloodPrefabs[randomLessBlood].transform.rotation);
             Destroy(NewBloodParticle, 8f);
         }
 
         if (isOnline && !PhotonNetwork.IsMasterClient)
         {
             int photonid = playerShooter.photonView.ViewID;
-            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage, photonid, isAiming,isMelee);
+            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage, photonid, isAiming, isMelee, isCritical);
         }
         else
         {
@@ -272,20 +273,18 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 else
                 {
-                    GetComponent<BoxCollider>().enabled = true;
                     if (!isBurning)
                     {
-                        GameObject NewBloodParticle = Instantiate(blood2,
+                        int randomMoreBlood = UnityEngine.Random.Range(0, MoreBloodPrefabs.Length);
+                        GameObject NewBloodParticle = Instantiate(MoreBloodPrefabs[randomMoreBlood],
                             new Vector3(transform.position.x, 57, transform.position.z),
-                            blood2.transform.rotation);
+                            MoreBloodPrefabs[randomMoreBlood].transform.rotation);
                         Destroy(NewBloodParticle, 8f);
                     }
 
                     _animator.setTarget(false);
                     if (isOnline)
-                    {
                         photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
-                    }
                     else
                         _animator.triggerDown();
 
@@ -303,6 +302,17 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
     public void disableCapsuleColliderRPC()
     {
         GetComponent<CapsuleCollider>().enabled = false;
+        GetComponent<BoxCollider>().enabled = true;
+        if(isOnExplosiveEvents) {
+            if (!isBurning)
+            {
+                int randomMoreBlood = UnityEngine.Random.Range(0, MoreBloodPrefabs.Length);
+                GameObject NewBloodParticle = Instantiate(MoreBloodPrefabs[randomMoreBlood],
+                    new Vector3(transform.position.x, 57, transform.position.z),
+                    MoreBloodPrefabs[randomMoreBlood].transform.rotation);
+                Destroy(NewBloodParticle, 8f);
+            }
+        }
     }
     
     [PunRPC]

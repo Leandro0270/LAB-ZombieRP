@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -11,10 +13,10 @@ public class PauseMenu : MonoBehaviour
 {
     private bool isOnline = false;
     private bool GameIsPaused = false;
+    private List<PlayerInputHandler> playerInputHandlers = new List<PlayerInputHandler>();
     [SerializeField] private TextMeshProUGUI disconnectText;
     [SerializeField] private Button DisconnectFirstSelectedButton;
     [SerializeField] private Button OptionsFirstSelectedButton;
-    private OnlinePlayerConfigurationManager onlinePlayerConfigurationManager;
     [SerializeField] private SettingsMenu settingsMenu;
     [SerializeField] private GameObject disconnectPanel;
     [SerializeField] private GameObject settingsPanel;
@@ -41,14 +43,17 @@ public class PauseMenu : MonoBehaviour
         this.isOnline = isOnline;
         if (isOnline)
         {
-            onlinePlayerConfigurationManager = GameObject.Find("OnlinePlayerConfigurationManager")
-                .GetComponent<OnlinePlayerConfigurationManager>();
+           
             disconnectText.text = "Deseja desconectar da sala?";
         }
 
     }
     public void Resume()
     {
+        foreach (var player in playerInputHandlers)
+        {
+            player.setGameIsPaused(false);
+        }
         GameIsPaused = false;
         if(settingsMenu.gameObject.activeSelf)
             settingsMenu.gameObject.SetActive(false);
@@ -94,11 +99,12 @@ public class PauseMenu : MonoBehaviour
         OptionsFirstSelectedButton.Select();
         if(!isOnline)
             Time.timeScale = 0f;
-        
-
     }
 
-    
+    public void addPlayer(PlayerInputHandler player)
+    {
+        playerInputHandlers.Add(player);
+    }
     
 
     public void LoadMenu()
@@ -109,6 +115,7 @@ public class PauseMenu : MonoBehaviour
         }
         else
         {
+            Time.timeScale = 1f;
             Destroy(PlayerConfigurationManager.Instance.gameObject);
             SceneManager.LoadScene("MainMenu");
         }

@@ -75,5 +75,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf9c2348646a0241a4d42c04d339ab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerSetupMenuPrefab: {fileID: 5453530276072924867, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
   input: {fileID: 5855413144986114702}

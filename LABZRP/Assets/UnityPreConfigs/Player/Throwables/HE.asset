@@ -38,5 +38,5 @@ MonoBehaviour:
   health: 0
   stunDuration: 0
   burnDuration: 0
-  effectDuration: 1
+  effectDuration: 2
   maxDistance: 20

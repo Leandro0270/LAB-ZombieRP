@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
@@ -9,48 +12,78 @@ public class PlayerSetupMenuController : MonoBehaviour
 {
     private int PlayerIndex;
     
+    [SerializeField] private MultiplayerEventSystem eventSystem;
     [SerializeField] private GameObject pressAnyKeyToJoinText;
     [SerializeField] private GameObject joinPanel;
     [SerializeField] private TextMeshProUGUI titletext;
-    [SerializeField] private GameObject CharacterCustomizePanel;
+    [SerializeField] private GameObject characterCustomizePanel;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private Button readyButton;
-    [SerializeField] private GameObject ReadyPanel;
+    [SerializeField] private GameObject readyPanel;
     [SerializeField] private CustomizeSkinMenu playerPrefab;
+    [SerializeField] private Button firstClassButon;
     [SerializeField] private Button firstButton;
-    [SerializeField] private List<Material> Skin;
-    [SerializeField] private List<Material> Eyes;
+    [SerializeField] private List<Material> skin;
+    [SerializeField] private List<Material> eyes;
     [SerializeField] private List<Material> tshirt;
     [SerializeField] private List<Material> pants;
-    [SerializeField] private List<Material> Shoes;
+    [SerializeField] private List<Material> shoes;
     [SerializeField] private InputSystemUIInputModule inputSystemUiInputModule;
+    [SerializeField] private GameObject returnPanel;
+    [SerializeField] private GameObject cancelButton;
+    [SerializeField] PlayerInput playerInput;
+    private PlayerController _playerController;
 
-    private int SkinIndex = 0;
+
+    private int _skinIndex = 0;
     private int EyesIndex = 0;
     private int tshirtIndex = 0;
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
-    private float ignoreInputTime = 0.5f;
-    private bool inputEnabled;
+    [SerializeField] private float ignoreInputTime = 2f;
+    private bool inputEnabled = false;
+    private bool isClassSelected = false;
+    private bool isReady = false;
 
 
     public void SetPlayerIndex(int pi)
     {
+
+        inputEnabled = false;
+        _playerController = new PlayerController();
+        playerInput.onActionTriggered += Input_onActionTriggered;
         PlayerIndex = pi;
-        titletext.SetText("Player" + (pi + 1).ToString());
+        titletext.SetText("Player " + (pi + 1));
         ignoreInputTime = Time.time + ignoreInputTime;
         pressAnyKeyToJoinText.SetActive(false);
         joinPanel.SetActive(true);
+        
     }
 
+    public MultiplayerEventSystem GetEventSystem()
+    {
+        return eventSystem;
+    }
+    public int GetPlayerIndex()
+    {
+        return PlayerIndex;
+    }
+    
+    public GameObject GetCancelButton()
+    {
+        return cancelButton;
+    }
+    
     void Update()
     {
         if (Time.time > ignoreInputTime)
                 inputEnabled = true;
     }
 
-    public InputSystemUIInputModule GetInputSystemUIInputModule()
+    
+    public InputSystemUIInputModule GetInputSystemUIInputModule(PlayerInput playerInput)
     {
+        this.playerInput = playerInput;
         return inputSystemUiInputModule;
     }
     public void SetClass(ScObPlayerStats player)
@@ -59,15 +92,17 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (!inputEnabled)
             return;
         PlayerConfigurationManager.Instance.SetScObPlayerStats(PlayerIndex, player);
-        CharacterCustomizePanel.SetActive(true);
+        characterCustomizePanel.SetActive(true);
         menuPanel.SetActive(false);
         firstButton.Select();
+        isClassSelected = true;
     }
     
-    public void CancelSelectClass()
+    void cancelSelectClass()
     {
+        isClassSelected = false;
         PlayerConfigurationManager.Instance.SetScObPlayerStats(PlayerIndex, null);
-        CharacterCustomizePanel.SetActive(false);
+        characterCustomizePanel.SetActive(false);
         menuPanel.SetActive(true);
     }
     
@@ -77,18 +112,17 @@ public class PlayerSetupMenuController : MonoBehaviour
         if (!inputEnabled)
             return;
         ScObPlayerCustom ScOb = ScriptableObject.CreateInstance<ScObPlayerCustom>();
-        ScOb.Skin = Skin[SkinIndex];
-        ScOb.Eyes = Eyes[EyesIndex];
-  
+        ScOb.Skin = skin[_skinIndex];
+        ScOb.Eyes = eyes[EyesIndex];
         ScOb.tshirt = tshirt[tshirtIndex];
         ScOb.pants = pants[pantsIndex];
-        ScOb.Shoes = Shoes[ShoesIndex];
+        ScOb.Shoes = shoes[ShoesIndex];
         PlayerConfigurationManager.Instance.SetPlayerSkin(PlayerIndex, ScOb);
-        
         PlayerConfigurationManager.Instance.ReadyPlayer(PlayerIndex);
         readyButton.gameObject.SetActive(false);
-        CharacterCustomizePanel.SetActive(false);
-        ReadyPanel.SetActive(true);
+        characterCustomizePanel.SetActive(false);
+        readyPanel.SetActive(true);
+        isReady = true;
         
     }
     
@@ -96,21 +130,21 @@ public class PlayerSetupMenuController : MonoBehaviour
     //Player Customization
     public void SetNextSkin()
     {
-        if (SkinIndex < (Skin.Count - 1))
-            SkinIndex++;
+        if (_skinIndex < (skin.Count - 1))
+            _skinIndex++;
         else
         {
-            SkinIndex = 0;
+            _skinIndex = 0;
         }
         
-        playerPrefab.SetSkinMaterial(Skin[SkinIndex]);
+        playerPrefab.SetSkinMaterial(skin[_skinIndex]);
 
     }
     
     
     public void SetNextEyes()
-    {Debug.Log("EyesIndex: " + EyesIndex);
-        if (EyesIndex < (Eyes.Count - 1))
+    {
+        if (EyesIndex < (eyes.Count - 1))
         {
             
             EyesIndex++;
@@ -119,13 +153,13 @@ public class PlayerSetupMenuController : MonoBehaviour
         {
             EyesIndex = 0;
         }
-        playerPrefab.SetEyesMaterial(Eyes[EyesIndex]);
+        playerPrefab.SetEyesMaterial(eyes[EyesIndex]);
 
     }
     
     public void SetNextTshirt()
     {
-        Debug.Log("ShirtIndex: " + tshirtIndex);
+       
         if (tshirtIndex < (tshirt.Count - 1))
         {
             tshirtIndex++;
@@ -141,7 +175,6 @@ public class PlayerSetupMenuController : MonoBehaviour
     
     public void SetNextPants()
     {
-        Debug.Log("PantsIndex: " + pantsIndex);
         if (pantsIndex < (pants.Count - 1))
         {
             pantsIndex++;
@@ -156,8 +189,7 @@ public class PlayerSetupMenuController : MonoBehaviour
     
     public void SetNextShoes()
     {
-        Debug.Log("ShoesIndex: " + ShoesIndex);
-        if (ShoesIndex < (Shoes.Count - 1))
+        if (ShoesIndex < (shoes.Count - 1))
         {
             ShoesIndex++;
         }
@@ -166,7 +198,57 @@ public class PlayerSetupMenuController : MonoBehaviour
             ShoesIndex = 0;
         }
         
-        playerPrefab.SetShoesMaterial(Shoes[ShoesIndex]);
+        playerPrefab.SetShoesMaterial(shoes[ShoesIndex]);
 
+    }
+
+    private void OnDisable()
+    {
+        if(playerInput != null)
+            playerInput.onActionTriggered -= Input_onActionTriggered;
+
+    }
+
+    private void OnDestroy()
+    {
+        if(playerInput != null)
+            playerInput.onActionTriggered -= Input_onActionTriggered;
+    }
+
+    public void SelectFirstClass()
+    {
+        eventSystem.playerRoot = gameObject;
+        eventSystem.SetSelectedGameObject(firstClassButon.gameObject);
+    }
+
+    private void Input_onActionTriggered(InputAction.CallbackContext obj)
+    {
+        if (obj.action.name == _playerController.Menu.Cancel.name)
+        {
+            OnCancel(obj);
+        }
+    }
+
+    
+    public void OnCancel(InputAction.CallbackContext context)
+    {
+        if(inputEnabled){
+            if (context.started)
+            {
+                if (isClassSelected && !isReady)
+                    cancelSelectClass();
+                else if (isReady)
+                    PlayerConfigurationManager.Instance.CancelReadyPlayer(PlayerIndex);
+                else
+                {
+                    bool canShow = PlayerConfigurationManager.Instance.ShowReturnMenu(PlayerIndex, this);
+                    if (canShow)
+                    {
+                        eventSystem.playerRoot = returnPanel;
+                        eventSystem.SetSelectedGameObject(cancelButton);
+                    }
+                }
+            }
+        }
     }
 }

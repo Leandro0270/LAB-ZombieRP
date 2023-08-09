@@ -74,6 +74,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
 
 
     //KILL IN AREA VARIABLES
+    [SerializeField] private string ChallengeAreaName = "ChallengeArea";
     private bool _killInAreaSetup = false;
     [SerializeField] private GameObject areaPrefab;
     [SerializeField] private Transform[] areaSpawnPoints;
@@ -95,8 +96,9 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
     //KILL WITH MELEE VARIABLES
     private bool _killWithMeleeSetup = false;
 
-
+    
     //DEFEND THE COFFEE MACHINE VARIABLES
+    [SerializeField] private string coffeeMachineName = "CoffeeMachine";
     private bool destroyedCoffeeMachine = false;
     [SerializeField] private int _coffeeMachinesToDefend = 3;
     [SerializeField] private GameObject _coffeeMachine;
@@ -351,7 +353,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 photonView.RPC("updateChallengeTextRPC", RpcTarget.All, challengeName, challengeDescription);
                 photonView.RPC("startChallengesRPC", RpcTarget.All, "killInArea", true, false);
-                PhotonNetwork.Instantiate("areaPrefab", areaSpawnPoints[randomAreaIndex].position, areaSpawnPoints[randomAreaIndex].rotation);
+                PhotonNetwork.Instantiate(ChallengeAreaName, areaSpawnPoints[randomAreaIndex].position, areaSpawnPoints[randomAreaIndex].rotation);
                 _killedZombiesText.text = "Zumbis Mortos: " + _zombiesKilled + "/" + _zombiesToKill;
 
             }
@@ -455,7 +457,7 @@ public class ChallengeManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 for (int i = 0; i < _coffeeMachinesToDefend; i++)
                 {
-                    _coffeeMachine = PhotonNetwork.Instantiate("coffeeMachine", coffeeMachineSpawnPoints[0].position,
+                    _coffeeMachine = PhotonNetwork.Instantiate(coffeeMachineName, coffeeMachineSpawnPoints[0].position,
                         coffeeMachineSpawnPoints[0].transform.rotation);
                     _instantiatedCoffeeMachines.Add(_coffeeMachine);
                     hordeManager.setCoffeeMachineEvent(true);

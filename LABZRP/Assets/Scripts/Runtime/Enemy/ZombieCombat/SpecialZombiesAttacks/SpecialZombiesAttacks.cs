@@ -177,12 +177,12 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                             if (isOnline)
                             {
                                 playerStats.incapacitateOnline(photonView.ViewID);
-                                playerStats.takeOnlineDamage(damage);
+                                playerStats.takeOnlineDamage(damage, false);
                             }
                             else
                             {
                                 playerStats.IncapacitatePlayer(gameObject);
-                                playerStats.takeDamage(damage);
+                                playerStats.takeDamage(damage,false);
                             }
 
                             if (isOnline)
@@ -232,11 +232,11 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                                 {
                                     if (isOnline)
                                     {
-                                        playerStats.takeOnlineDamage(damage);
+                                        playerStats.takeOnlineDamage(damage, false);
                                     }
                                     else
                                     {
-                                        playerStats.takeDamage(damage);
+                                        playerStats.takeDamage(damage, false);
                                     }
 
                                     tempoAtaqueAtual = tempoEntreAtaques;
@@ -361,11 +361,11 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                                 {
                                     if (isOnline)
                                     {
-                                        playerStats.takeOnlineDamage(damage);
+                                        playerStats.takeOnlineDamage(damage, false);
                                     }
                                     else
                                     {
-                                        playerStats.takeDamage(damage);
+                                        playerStats.takeDamage(damage, false);
 
                                     }
                                     tempoAtaqueAtual = tempoEntreAtaques;
@@ -421,9 +421,9 @@ public class SpecialZombiesAttacks : MonoBehaviourPunCallbacks
                             if (canSpecialAttack)
                             {
                                 if(isOnline)
-                                    playerStats.takeOnlineDamage(damage);
+                                    playerStats.takeOnlineDamage(damage, false);
                                 else
-                                    playerStats.takeDamage(damage);
+                                    playerStats.takeDamage(damage, false);
                                 if (playerStats.verifyDown())
                                 {
                                     enemyFollow.setIsStoped(false);

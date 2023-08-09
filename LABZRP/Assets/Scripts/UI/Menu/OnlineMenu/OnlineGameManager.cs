@@ -16,13 +16,13 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
 
     public void connectDirectRoom()
     {
-        connectToPhotonServer();
+        if(!PhotonNetwork.IsConnected)
+            connectToPhotonServer();
         ConnectOrCreateRoom();
     }
     
     private void connectToPhotonServer()
     {
-        Debug.Log("Conectando ao Photon...");
         PhotonNetwork.LocalPlayer.NickName = LocalplayerNickname;
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -35,14 +35,12 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
     
     private void ConnectOrCreateRoom()
     {
-        Debug.Log("Está conectado? " + PhotonNetwork.IsConnected);
-        Debug.Log("Está no lobby? " + PhotonNetwork.InLobby);
+        
         if(PhotonNetwork.InLobby)
             PhotonNetwork.LeaveLobby();
         else
         {
             PhotonNetwork.JoinLobby(inGameLobby);
-            Debug.Log("Current Lobby: " + PhotonNetwork.CurrentLobby);
         }
 
     }

@@ -226,7 +226,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""080b79af-210d-4742-8b0e-b097bc0ff34b"",
-                    ""path"": ""<Mouse>/delta"",
+                    ""path"": ""<Mouse>/position"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Keyboard"",

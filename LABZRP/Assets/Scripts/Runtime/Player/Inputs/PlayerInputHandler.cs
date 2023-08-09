@@ -39,6 +39,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
         _mainGameManager.addPlayer(gameObject);
         _pause = _mainGameManager.getPauseMenu();
+        _pause.addPlayer(this);
 
     }
 
@@ -59,6 +60,7 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         }
         else
         {
+            _OnlinePlayerInput.enabled = false;
             _rotate.setIsOnlinePlayer(true);
         }
 
@@ -224,9 +226,14 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
     {
         if (_rotate != null)
         {
+            PlayerInput playerInput;
+            if(_OnlinePlayerConfig != null)
+                playerInput = _OnlinePlayerInput;
+            else
+                playerInput = _playerConfig.Input;
 
             if (ctx.ReadValue<Vector2>() != new Vector2(0, 0))
-                _rotate.setRotationInput(ctx.ReadValue<Vector2>());
+                _rotate.setRotationInput(ctx.ReadValue<Vector2>(),playerInput.devices[0] is Gamepad);
         }
     }
 
@@ -276,4 +283,10 @@ public class PlayerInputHandler : MonoBehaviourPunCallbacks
         _throwableStats.cancelThrowAction();
     }
 
+    
+    
+    public void setGameIsPaused(bool value)
+    {
+        gameIsPaused = value;
+    }
 }

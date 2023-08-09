@@ -101,11 +101,11 @@ public class EnemyFollow : MonoBehaviourPunCallbacks
                             canWalk = false;
                             if (isOnline)
                             {
-                                _playerstats.takeOnlineDamage(GetComponent<EnemyStatus>().getDamage());
+                                _playerstats.takeOnlineDamage(GetComponent<EnemyStatus>().getDamage(), false);
                             }
                             else
                             {
-                                _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage());
+                                _playerstats.takeDamage(GetComponent<EnemyStatus>().getDamage(), false);
                             }
 
                             Invoke("resetCanWalk", 1f);

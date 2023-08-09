@@ -7,7 +7,9 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
@@ -43,6 +45,10 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      [SerializeField] private TextMeshProUGUI WaitingForHostText;
      [SerializeField] private TextMeshProUGUI readyCountText;
      [SerializeField] private GameObject LoadPanel;
+     [SerializeField] private InputSystemUIInputModule inputSystemUiInputModule;
+     private bool selectedClass = false;
+     private bool selectedSkin = false;
+     private bool clientPlayerIsReady = false;
      private int localPlayerIndex;
      private bool hideClientPanel = false;
      private Player[] playersNaSala;
@@ -53,6 +59,9 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      private bool initializedConfigs = false;
      private bool isRestatedLobby = false;
      private int[] playersOnLobbyByActorNumber = new int[4];
+     private InputActionMap actionMap;
+     public InputActionAsset actionAsset;
+     private InputAction cancelAction;
 
      
      
@@ -65,6 +74,9 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          }
          Instance = this;
          DontDestroyOnLoad(this);
+         actionMap = actionAsset.FindActionMap("Menu");
+         cancelAction = actionMap.FindAction("Cancel");
+         cancelAction.performed += OnCancel;
          availableLobbyPlayersShower = lobbyPlayersShower;
          PhotonNetwork.AutomaticallySyncScene = true;
          if (isReplay && PhotonNetwork.IsConnected)
@@ -86,7 +98,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                      playersOnLobbyByActorNumber[i] = playersNaSala[i].ActorNumber;
                  }
                  int[]playersOnLobbyByActorNumberArray = playersOnLobbyByActorNumber.ToArray();
-                 photonView.RPC("UpdateAvailablesPlayerIndex", RpcTarget.All, availablesPlayersIndexArray, playersOnLobbyByActorNumberArray, readyCount);
+                 photonView.RPC("UpdateAvailablesPlayerIndex", RpcTarget.All, availablesPlayersIndexArray, playersOnLobbyByActorNumberArray);
                  
              }
          }
@@ -180,6 +192,9 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          isMasterClient = PhotonNetwork.IsMasterClient;
          if(!isMasterClient)
             clientPlayerIndex = newPlayerIndex;
+         else
+             clientPlayerIndex = 0;
+         
          if (isMasterClient && !isReplay)
          {
              OnlinePlayerConfiguration MasterLocalPlayer = HandlePlayerJoined(playersNaSala[0]);
@@ -214,7 +229,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
                  }
                  else
                  {
-                     Debug.Log("Error! OnlineCOnfigPlayer is null");
+                     Debug.Log("Error! OnlineConfigPlayer is null");
                  }
              }
              //Vai organizar a lista de playerconfigs com base no playerindex
@@ -256,7 +271,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 
      public override void OnDisconnected(DisconnectCause cause)
      {
-         Debug.Log(cause);
          SceneManager.LoadScene("MainMenu");
          Destroy(gameObject);
 
@@ -306,7 +320,7 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      
      public void cancelReadyPlayer(int playerIndex)
      {
-         photonView.RPC("cancelReadyPlayer", RpcTarget.All, playerIndex);
+         photonView.RPC("cancelReadyPlayerRPC", RpcTarget.All, playerIndex);
      }
      
      
@@ -316,17 +330,17 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          readyCount--;
          playersIndexReady.Remove(playerIndex);
          readyCountText.text = readyCount + "/" + playersCount + " Ready";
-         if (!playerConfigs[playerIndex].player.IsLocal)
+         foreach (OnlinePlayerConfiguration playerConfig in playerConfigs)
          {
-             playerConfigs[playerIndex].isReady = false;
-             playerConfigs[playerIndex].lobbyPlayersShower.setIsReady(false);
+                 if(playerIndex == playerConfig.PlayerIndex)
+                 {
+                     playerConfig.isReady = false;
+                     if(playerConfig.lobbyPlayersShower != null)
+                        playerConfig.lobbyPlayersShower.setIsReady(false);
+                     break;
+                 }
          }
-         else
-         {
-             ClientPlayerSetupMenu.OnCancel();
-             ClientPlayerSetupMenu.transform.SetParent(clientPanel.transform);
-             lobbyPanel.SetActive(false);
-         }
+         
      }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
@@ -566,4 +580,10 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
 //         photonView.RPC("CancelReadyPlayer", RpcTarget.All, index);
 //     }
 
+    void OnCancel(InputAction.CallbackContext context)
+    {
+        ClientPlayerSetupMenu.OnCancel();
+              
+        
+    }
 }

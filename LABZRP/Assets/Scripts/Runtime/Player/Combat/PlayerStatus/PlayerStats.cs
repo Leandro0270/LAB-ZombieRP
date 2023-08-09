@@ -12,10 +12,11 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     
     //VISUAL
     public float delayBlood = 1f;
-    private float _delayBloodTimer; 
-    public GameObject blood1;
-    public GameObject bloodSplash;
-    public GameObject blood2;
+    private float _delayBloodTimer;
+    [SerializeField] private GameObject[] LessBloodPrefabs;
+    [SerializeField] private GameObject[] MoreBloodPrefabs;
+
+
     private PlayerAnimationManager _playerAnimationManager;
     public GameObject fireEffect;
     public float dispersaoSangue = 4;
@@ -32,6 +33,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     public float totalLife;
     public float life;
     private float _downLife = 100f;
+    private float _baseSpeed;
     private float _speed;
     private float _revivalSpeed;
     private float _timeBetweenMelee;
@@ -143,7 +145,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             fireEffect.SetActive(true);
             if (_burnTickDamage)
             {
-                takeDamage(_playerStatus.burnDamagePerSecond);
+                takeDamage(_playerStatus.burnDamagePerSecond, false);
                 _burnTickTime = 0;
                 _burnTickDamage = false;
             }
@@ -214,27 +216,32 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void takeOnlineDamage(float damage)
+    public void takeOnlineDamage(float damage, bool isCritical)
     {
-        photonView.RPC("takeDamage", RpcTarget.All, damage);
+        photonView.RPC("takeDamage", RpcTarget.All, damage, isCritical);
     }
 
     [PunRPC]
-    public void instantiateBlood(Vector3 spawnPosition, bool isDown)
+    public void instantiateBlood(Vector3 spawnPosition, bool isDown, bool isCritical)
     {
         if (!isDown)
         {
-            GameObject _bloodSplash = Instantiate(bloodSplash, transform.position, transform.rotation);
-            Destroy(_bloodSplash, 2f);
-            GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
-            Destroy(_blood1, 15f);
-            
+            if (_delayBloodTimer <= 0)
+            {
+                _delayBloodTimer = delayBlood;
+                int randomLessBloodIndex = Random.Range(0, LessBloodPrefabs.Length);
+                GameObject _blood1 = Instantiate(LessBloodPrefabs[randomLessBloodIndex], spawnPosition,
+                    LessBloodPrefabs[randomLessBloodIndex].transform.rotation);
+                Destroy(_blood1, 15f);
+            }
+
         }
         else
         {
-            GameObject _blood2 = Instantiate(blood2,
+            int randomMoreBloodIndex = Random.Range(0, MoreBloodPrefabs.Length);
+            GameObject _blood2 = Instantiate(MoreBloodPrefabs[randomMoreBloodIndex],
                 new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
-                blood2.transform.rotation);
+                MoreBloodPrefabs[randomMoreBloodIndex].transform.rotation);
             Destroy(_blood2, 15f);
             _weaponSystem.SetIsIncapacitated(true);
             _characterController.enabled = false;
@@ -254,9 +261,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     }
     
     [PunRPC]
-    public void takeDamage(float damage)
+    public void takeDamage(float damage, bool isCritical)
     {
         if(photonView.IsMine){
+            
             if (!_isDown && !_isDead)
             {
                 if (_challengeInProgress)
@@ -274,11 +282,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
                             float x = Random.Range(-dispersaoSangue, dispersaoSangue);
                             Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
                                 transform.position.z + x);
-                            if (_delayBloodTimer <= 0)
-                            {
-                                _delayBloodTimer = delayBlood;
-                                photonView.RPC("instantiateBlood", RpcTarget.All, spawnPosition, false);
-                            }
+                            photonView.RPC("instantiateBlood", RpcTarget.All, spawnPosition, false, isCritical);
                         }
                     }
                     else
@@ -292,12 +296,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
                                 transform.position.z + x);
                             if (_delayBloodTimer <= 0)
                             {
+                                int randomLessBloodIndex = Random.Range(0, LessBloodPrefabs.Length);
                                 _delayBloodTimer = delayBlood;
-                                GameObject _blood1 = Instantiate(blood1, spawnPosition, blood1.transform.rotation);
+                                GameObject _blood1 = Instantiate(LessBloodPrefabs[randomLessBloodIndex], spawnPosition, LessBloodPrefabs[randomLessBloodIndex].transform.rotation);
                                 Destroy(_blood1, 15f);
-                                GameObject _bloodSplash =
-                                    Instantiate(bloodSplash, transform.position, transform.rotation);
-                                Destroy(_bloodSplash, 2f);
                             }
                         }
                     }
@@ -309,13 +311,15 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
                     if (_isOnline)
                     {
                         Vector3 spawnpoint = new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z);
-                        photonView.RPC("instantiateBlood", RpcTarget.All, spawnpoint, true);
+                        photonView.RPC("instantiateBlood", RpcTarget.All, spawnpoint, true, isCritical);
                     }
                     else
                     {
-                        GameObject _blood2 = Instantiate(blood2,
+                        int randomMoreBloodIndex = Random.Range(0, MoreBloodPrefabs.Length);
+                        
+                        GameObject _blood2 = Instantiate(MoreBloodPrefabs[randomMoreBloodIndex],
                             new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
-                            blood2.transform.rotation);
+                            MoreBloodPrefabs[randomMoreBloodIndex].transform.rotation);
                         Destroy(_blood2, 15f);
                         _weaponSystem.SetIsIncapacitated(true);
                         _characterController.enabled = false;
@@ -428,6 +432,7 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _name = _playerStatus.name;
         }
         _speed = _playerStatus.speed;
+        _baseSpeed = _speed;
         totalLife = _playerStatus.health;
         life = totalLife;
         _revivalSpeed = _playerStatus.revivalSpeed;

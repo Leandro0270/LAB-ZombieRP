@@ -70,9 +70,9 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
                     if (_isDamage)
                     {
                         if(isOnline)
-                            playerStats.takeOnlineDamage(_damage*0.5f);
+                            playerStats.takeOnlineDamage(_damage*0.5f, false);
                         else
-                            playerStats.takeDamage(_damage * 0.5f);
+                            playerStats.takeDamage(_damage * 0.5f, false);
                     }
 
                     if (_isHeal)
@@ -106,7 +106,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
                 {
                     if (_isDamage)
                     {
-                        enemyStatus.takeDamage(_damage,null, false, false);
+                        enemyStatus.takeDamage(_damage,null, false, false, false);
                     }
                     
 
@@ -202,7 +202,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
     IEnumerator waiter()
     {
         yield return new WaitForSeconds(_effectDuration);
-        Destroy(_visualEffect, 1f);
+        Destroy(_visualEffect, 4f);
         Destroy(gameObject);
     }
     

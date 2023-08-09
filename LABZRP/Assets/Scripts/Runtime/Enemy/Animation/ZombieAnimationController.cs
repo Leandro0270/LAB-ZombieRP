@@ -31,7 +31,8 @@ public class ZombieAnimationController : MonoBehaviourPunCallbacks
     {
         if(isOnline)
             _photonView.RPC("triggerDownRPC", RpcTarget.Others);
-        _animator.SetTrigger("isDying");
+        else
+            _animator.SetTrigger("isDying");
     }
     
     [PunRPC]

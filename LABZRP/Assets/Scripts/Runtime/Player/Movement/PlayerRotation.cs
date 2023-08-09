@@ -37,12 +37,25 @@ public class PlayerRotation : MonoBehaviour
     {
         _canSwitchInputs = canSwitch;
     }
-    public void setRotationInput(Vector3 auxRotation)
+    public void setRotationInput(Vector2 auxRotation, bool isGamepad)
     {
-        _inputRotation.z = -auxRotation.x;
-        _inputRotation.x = auxRotation.y;
-        //O movimento vertical não será utilizado, por isso está sendo zerado
-        _inputRotation.y = 0;
+        this.isGamepad = isGamepad;
+        if (isGamepad)
+        {
+            _inputRotation.z = -auxRotation.x;
+            _inputRotation.x = auxRotation.y;
+            _inputRotation.y = 0;
+        }
+        else
+        {
+            Vector2 normalizedRotation = new Vector2(
+                (auxRotation.x / Screen.width) * 2 - 1,
+                (auxRotation.y / Screen.height) * 2 - 1
+            );
+            _inputRotation.z = -normalizedRotation.x;
+            _inputRotation.x = normalizedRotation.y;
+            _inputRotation.y = 0;
+        }
     }
 
 void Start()
@@ -55,27 +68,13 @@ void Start()
 
     //Para uso de componentes envolvendo fisicas (Nesse caso o RigidBody) é recomendado utilizar o fixed update
     void FixedUpdate(){
-        if(isGamepad && _inputRotation != Vector3.zero){
+        if(_inputRotation != Vector3.zero && !isOnlinePlayer){
             _inputRotation = _inputRotation.normalized * Time.deltaTime;
             Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(_inputRotation), 0.2f);
             if(_lateInputRotation != _inputRotation)
             {
-                if (!_status.verifyDown() && !_status.verifyDeath())
+                if (!_status.verifyDown() && !_status.verifyDeath() && _canRotate)
                     transform.rotation = newRotation;
-            }
-        }
-        if(!isGamepad && !isOnlinePlayer){
-            if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out _hit, 100, ground))
-            {
-                    //Nessa variavel está sendo feito a distância do player para onde o raycast está batendo
-                    Vector3 playerToMouse = _hit.point - (transform.position);
-                    Vector3 FixRotation = new Vector3(playerToMouse.z, 0, -playerToMouse.x);
-                    //Nessa variavel está sendo feito o calculo da rotação necessária para o player utilizando o lerp para suavizar
-                    Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(FixRotation), 0.2f);
-                    if (_canRotate)
-                    {
-                        transform.rotation = newRotation;
-                    }
             }
         }
 

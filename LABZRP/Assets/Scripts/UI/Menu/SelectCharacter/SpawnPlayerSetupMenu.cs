@@ -14,9 +14,9 @@ public class SpawnPlayerSetupMenu : MonoBehaviour
         if (PCM != null)
         {
             PlayerSetupMenuController menu;
-            menu = PCM.setPlayerSetupMenuController();
+            menu = PCM.setPlayerSetupMenuController(input);
+            input.uiInputModule = menu.GetInputSystemUIInputModule(input);
             menu.SetPlayerIndex(input.playerIndex);
-            input.uiInputModule = menu.GetInputSystemUIInputModule();
             PCM.deletePlayerSetupMenuController();
         }
     }

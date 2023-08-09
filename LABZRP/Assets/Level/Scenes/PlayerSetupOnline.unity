@@ -8265,6 +8265,8 @@ MonoBehaviour:
   WaitingForHostText: {fileID: 1510993912}
   readyCountText: {fileID: 587545307}
   LoadPanel: {fileID: 1208445881}
+  inputSystemUiInputModule: {fileID: 1230195595}
+  actionAsset: {fileID: -944628639613478452, guid: dbe0c50888fa52c44b21669c13470cc7, type: 3}
 --- !u!114 &1455388685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14428,6 +14430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerConfigurationManager: {fileID: 1455388684}
+  startButton: {fileID: 268268408}
   readyClassButton: {fileID: 1856079969}
   titletext: {fileID: 7948031289669389406}
   CharacterCustomizePanel: {fileID: 599469388993051281}
@@ -14474,7 +14477,7 @@ MonoBehaviour:
   pantsIndexText: {fileID: 1282357400}
   ShoesIndexText: {fileID: 1064221784}
   OnlineLobbyReady: {fileID: 1181528251}
-  ClientCustomizationPanel: {fileID: 599469388993051281}
+  ClientCustomizationPanel: {fileID: 280104036}
   playerModel: {fileID: 6239648510032731879}
   playerModelAnimator: {fileID: 6763421402083853406}
 --- !u!114 &7948031287990450768
