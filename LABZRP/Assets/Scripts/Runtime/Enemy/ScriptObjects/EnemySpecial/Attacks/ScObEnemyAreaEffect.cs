@@ -18,6 +18,7 @@ public class ScObEnemyAreaEffect : ScriptableObject
     public bool isDamagePlayerSplash;
     public bool isDamagePlayerOverTime;
     public bool isPlayerSpeedSlower;
+    [Range(0,1f)]
     public float PlayerSpeedSlower;
     public GameObject ParticlesAreaEffect;
     public float PlayerSplashDamage;

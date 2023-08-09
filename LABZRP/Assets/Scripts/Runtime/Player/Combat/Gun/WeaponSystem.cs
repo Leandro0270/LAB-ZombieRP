@@ -521,9 +521,8 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                         switch (ctx.phase)
                         {
                                 case InputActionPhase.Started:
-                                        float velocidadeAtual = _playerStats.getSpeed();
-                                        float velocidadeNova = velocidadeAtual * _slowWhileAimingPercent;
-                                        _playerStats.aimSlow(velocidadeNova, true);
+                                        
+                                        _playerStats.aimSlow(_slowWhileAimingPercent, true);
                                         _dispersao *= (_reducaoDispersaoMirando / 100);
                                         miraLaser.SetActive(true);
                                         _mirando = true;

@@ -33,7 +33,6 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     public float totalLife;
     public float life;
     private float _downLife = 100f;
-    private float _baseSpeed;
     private float _speed;
     private float _revivalSpeed;
     private float _timeBetweenMelee;
@@ -432,7 +431,6 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             _name = _playerStatus.name;
         }
         _speed = _playerStatus.speed;
-        _baseSpeed = _speed;
         totalLife = _playerStatus.health;
         life = totalLife;
         _revivalSpeed = _playerStatus.revivalSpeed;
@@ -555,9 +553,10 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
     }
     public void setMovementAnimationStats(PlayerMovement.PlayerDirection _direction)
     {
+        float SlowPercentage = 0;
+        bool isSpeedSlowedByRotation = false;
         if (_direction == PlayerMovement.PlayerDirection.FORWARD)
         {
-            _playerMovement.setSpeed(_speed);
             _isWalkingForward = true;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
@@ -566,7 +565,8 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if( _direction == PlayerMovement.PlayerDirection.BACK)
         {
-            _playerMovement.setSpeed(_speed*0.8f);
+            isSpeedSlowedByRotation = true;
+            SlowPercentage = 0.8f;
             _isWalkingForward = false;
             _isWalkingBackward = true;
             _isWalkingLeft = false;
@@ -575,7 +575,6 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if (_direction == PlayerMovement.PlayerDirection.LEFT)
         {
-            _playerMovement.setSpeed(_speed*0.9f);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = true;
@@ -584,7 +583,6 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else if (_direction == PlayerMovement.PlayerDirection.RIGHT)
         {
-            _playerMovement.setSpeed(_speed*0.9f);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
@@ -593,14 +591,13 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            _playerMovement.setSpeed(_speed);
             _isWalkingForward = false;
             _isWalkingBackward = false;
             _isWalkingLeft = false;
             _isWalkingRight = false;
             _isIdle = true;
         }
-        
+        _playerMovement.setRotationSlowPercentage(SlowPercentage, isSpeedSlowedByRotation);
         _playerAnimationManager.setIsWalkingForward(_isWalkingForward);
         _playerAnimationManager.setIsWalkingBackward(_isWalkingBackward);
         _playerAnimationManager.setIsWalkingLeft(_isWalkingLeft);
@@ -651,36 +648,27 @@ public class PlayerStats : MonoBehaviourPun, IPunObservable
             if (!_isSpeedSlowed)
             {
                 _isSpeedSlowed = true;
-                float updatedSpeed = _speed - speed;
-                float baseSpeed = _speed;
-                _speed = updatedSpeed;
-                _playerMovement.setSpeed(updatedSpeed);
-                StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+                _playerMovement.setEffectSpeedSlowPercentage(speed, true);
+                StartCoroutine(resetTemporarySpeed(time, 0));
             }
         }
     }
     private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
     {
         yield return new WaitForSeconds(time);
-        _speed = baseSpeed;
         _isSpeedSlowed = false;
-        _playerMovement.setSpeed(baseSpeed);
+        _playerMovement.setEffectSpeedSlowPercentage(0, false);
+
     }
 
-    public void aimSlow(float newSlow, bool auxBool)
+    public void aimSlow(float newSlow, bool isAiming)
     {
-        if (auxBool){
-            _isAiming = auxBool;
-            _playerMovement.setSpeed(newSlow);
-        }
-        else{
-            _isAiming = auxBool;
-            _playerMovement.setSpeed(_speed);
-        }
+        _isAiming = isAiming;
+        _playerMovement.setAiming(newSlow, isAiming);
 
-}
+    }
 
-    public void updateSpeedMovement()
+    public void initializePlayerMovementSpeed()
     {
         _playerMovement.setSpeed(_speed);
     }

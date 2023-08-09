@@ -37,6 +37,7 @@ public class ScObThrowableSpecs : ScriptableObject
    public float cameraShakeDuration;
    public float timeToExplode;
    public float damage;
+   [Range(0,1f)]
    public float slowDown;
    public float slowDownDuration;
    public float health;

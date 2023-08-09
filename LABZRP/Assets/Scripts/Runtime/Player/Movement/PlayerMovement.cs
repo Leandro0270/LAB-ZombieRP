@@ -22,6 +22,13 @@ public class PlayerMovement : MonoBehaviour
     private bool isLookingForward = false;
     private bool isLookingBack = false;
     private bool setup = false;
+    private bool isAiming = false;
+    private bool isRotated = false;
+    private bool isEffectSpeedSlowed = false;
+    private float _EffectSpeedSlowPercentage = 0;
+    private float _rotationSlowPercentage = 0;
+    private float _aimingSlowPercentage = 0;
+    private float currentSpeed = 0;
 
     public enum PlayerDirection
     {
@@ -50,11 +57,21 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_speed == 0 && !setup)
         {
-            _status.updateSpeedMovement();
+            _status.initializePlayerMovementSpeed();
             setup = true;
         }
 
-        Vector3 auxVecto2 = _inputMovimento.normalized * (_speed * Time.deltaTime);
+        float newSpeed = _speed;
+        if (isRotated)
+            newSpeed *= _rotationSlowPercentage;
+        if(isAiming)
+            newSpeed *= _aimingSlowPercentage;
+        if(isEffectSpeedSlowed)
+            newSpeed *= _EffectSpeedSlowPercentage;
+        
+        currentSpeed = newSpeed;
+        
+        Vector3 auxVecto2 = _inputMovimento.normalized * (newSpeed * Time.deltaTime);
         Vector3 auxVector3 = new Vector3(auxVecto2.x, 0, auxVecto2.y);
         if (_canMove && auxVector3 != Vector3.zero)
         {
@@ -127,10 +144,6 @@ public class PlayerMovement : MonoBehaviour
         _canMove = valor;
     }
     
-    public void setSpeed(float valor)
-    {
-        _speed = valor;
-    }
 
     public void setLookigDirection(float LookingAngle)
     {
@@ -163,4 +176,31 @@ public class PlayerMovement : MonoBehaviour
             isLookingRight = false;
         }
     }
+    
+    public void setEffectSpeedSlowPercentage(float porcentagemSlow, bool isEffectSpeedSlowed)
+    {
+        _EffectSpeedSlowPercentage = porcentagemSlow;
+        this.isEffectSpeedSlowed = isEffectSpeedSlowed;
+    }
+    public void setAiming(float AimingSlow, bool isAiming)
+    {
+        this.isAiming = isAiming;
+        _aimingSlowPercentage = AimingSlow;
+    }
+    public void setRotationSlowPercentage(float porcentagemSlow, bool isRotated)
+    {
+        _rotationSlowPercentage = porcentagemSlow;
+        this.isRotated = isRotated;
+    }
+    
+    public void setSpeed(float speed)
+    {
+        _speed = speed;
+    }
+
+    public float getCurrentSpeed()
+    {
+        return currentSpeed;
+    }
+   
 }

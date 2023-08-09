@@ -24,7 +24,7 @@ MonoBehaviour:
   isDamagePlayerSplash: 1
   isDamagePlayerOverTime: 1
   isPlayerSpeedSlower: 1
-  PlayerSpeedSlower: 5
+  PlayerSpeedSlower: 0.5
   ParticlesAreaEffect: {fileID: 6655085146247247102, guid: 5ee97c23f43e9da4dbaa5e1957fc2887, type: 3}
   PlayerSplashDamage: 20
   PlayerOverTimeDamage: 5
