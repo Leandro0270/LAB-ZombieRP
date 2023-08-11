@@ -40,7 +40,7 @@ public class PlayerSetupMenuController : MonoBehaviour
     private int tshirtIndex = 0;
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
-    [SerializeField] private float ignoreInputTime = 2f;
+    [SerializeField] private float ignoreInputTime = 1.5f;
     private bool inputEnabled = false;
     private bool isClassSelected = false;
     private bool isReady = false;

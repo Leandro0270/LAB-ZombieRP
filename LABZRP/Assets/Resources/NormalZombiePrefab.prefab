@@ -193,8 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemy: {fileID: 6227790603402903899}
   isOnline: 1
-  photonView: {fileID: 4687554036512629209}
-  animation: {fileID: 28239589519732905}
+  animationController: {fileID: 28239589519732905}
 --- !u!114 &1168015271937127255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,15 +206,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33ecd042622aebc4884016ad8b3b36df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 11400000, guid: c80a1977709c27e468f41b5749b94ce7, type: 2}
-  FireDamage: {fileID: 3078254144593795290}
-  LessBloodPrefabs:
-  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  MoreBloodPrefabs:
-  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  _animator: {fileID: 28239589519732905}
+  capsuleCollider: {fileID: 2501312126333154757}
+  boxCollider: {fileID: 7731260086498954267}
+  status: {fileID: 11400000, guid: c80a1977709c27e468f41b5749b94ce7, type: 2}
+  fireDamage: {fileID: 3078254144593795290}
+  lessBloodPrefabs:
+  - {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
+  moreBloodPrefabs:
+  - {fileID: 1000012909287652, guid: b6d1dfdc7c45dd0429c787a438e577b6, type: 3}
+  animator: {fileID: 28239589519732905}
+  enemyNavMeshFollow: {fileID: 1516429053355154381}
   isOnline: 1
-  photonView: {fileID: 4687554036512629209}
   explosivesPrefabs:
   - {fileID: 5410999002539148555, guid: c7bbaecd74f361e4c98750234816cf4a, type: 3}
   explosiveDeathEffect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}

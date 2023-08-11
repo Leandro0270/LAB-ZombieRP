@@ -1,92 +1,94 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
+using Runtime.Player.ScriptObjects.Combat;
 using UnityEngine;
 
-public class ThrowableItem : MonoBehaviourPunCallbacks
+namespace Runtime.Player.Combat.Throwables
 {
-    [SerializeField] private GameObject explosionArea;
-    [SerializeField] private PhotonView photonView;
-    [SerializeField] private bool isOnline = false;
-    private ScObThrowableSpecs _throwableSpecs;
-    private ScObThrowableSpecs.Type _throwableType;
-    private GameObject _throwablePrefab3DModel;
-    private bool _explodeOnImpact;
-    private float _radius;
-    private bool _affectEnemies;
-    private bool _affectAllies;
-    private float _timeToExplode;
-    private float _damage;
-    private float _slowDown;
-    private float _slowDownDuration;
-    private float _health;
-    private float _effectDuration;
-    private float _maxDistance;
-    private bool setup = false;
-    private GameObject Model;
-    private float _currentTime;
-    private bool _attractEnemies;
-    private float _attactionRadius;
-    private bool _affectCamera;
-    private float _cameraShakeAmount;
-    private float _cameraShakeDuration;
-
-    // Update is called once per frame
-    void Update()
+    public class ThrowableItem : MonoBehaviourPunCallbacks
     {
-        if (setup)
-        {
+        [SerializeField] private GameObject explosionArea;
+        [SerializeField] private bool isOnline = false;
+        [SerializeField] private MeshCollider meshCollider;
+        private ScObThrowableSpecs _throwableSpecs;
+        private ScObThrowableSpecs.Type _throwableType;
+        private GameObject _throwablePrefab3DModel;
+        private bool _explodeOnImpact;
+        private float _radius;
+        private bool _affectEnemies;
+        private bool _affectAllies;
+        private float _timeToExplode;
+        private float _damage;
+        private float _slowDown;
+        private float _slowDownDuration;
+        private float _health;
+        private float _effectDuration;
+        private float _maxDistance;
+        private bool setup = false;
+        private GameObject Model;
+        private float _currentTime;
+        private bool _attractEnemies;
+        private float _attactionRadius;
+        // private bool _affectCamera;
+        // private float _cameraShakeAmount;
+        // private float _cameraShakeDuration;
 
-            if (!_explodeOnImpact)
+        // Update is called once per frame
+        void Update()
+        {
+            if (setup)
             {
-                _currentTime += Time.deltaTime;
-                if (_currentTime >= _timeToExplode)
+
+                if (!_explodeOnImpact)
                 {
-                    Explode();
-                }
-            }
-            
-            if(_attractEnemies)
-            {
-                if (!isOnline || PhotonNetwork.IsMasterClient)
-                {
-                    Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attactionRadius);
-                    foreach (var hitCollider in hitColliders)
+                    _currentTime += Time.deltaTime;
+                    if (_currentTime >= _timeToExplode)
                     {
-                        if (hitCollider.gameObject.CompareTag("Enemy"))
+                        Explode();
+                    }
+                }
+            
+                if(_attractEnemies)
+                {
+                    if (!isOnline || PhotonNetwork.IsMasterClient)
+                    {
+                        Collider[] hitColliders = Physics.OverlapSphere(transform.position, _attactionRadius);
+                        foreach (var hitCollider in hitColliders)
                         {
-                            EnemyFollow enemyFollow = hitCollider.gameObject.GetComponent<EnemyFollow>();
-                            enemyFollow.setNewDestination(transform.position);
-                            enemyFollow.setCanAttack(false);
-                            StartCoroutine(resetEnemyTarget(enemyFollow));
+                            if (hitCollider.gameObject.CompareTag("Enemy"))
+                            {
+                                EnemyNavMeshFollow enemyNavMeshFollow = hitCollider.gameObject.GetComponent<EnemyNavMeshFollow>();
+                                enemyNavMeshFollow.setNewDestination(transform.position);
+                                enemyNavMeshFollow.setCanAttack(false);
+                                StartCoroutine(resetEnemyTarget(enemyNavMeshFollow));
+                            }
                         }
                     }
                 }
-            }
             
 
+            }
         }
-    }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (_explodeOnImpact && (other.gameObject.CompareTag("Floor")|| other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Player")))
+        private void OnTriggerEnter(Collider other)
         {
-            Explode();
+            if (_explodeOnImpact && (other.gameObject.CompareTag("Floor")|| other.gameObject.CompareTag("Enemy") || other.gameObject.CompareTag("Player")))
+            {
+                Explode();
+            }
         }
-    }
 
-    [PunRPC]
-    public void applyExplosion(int viewId)
-    {
-        GameObject explosion = PhotonView.Find(viewId).gameObject;
-        explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
-        SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
-        _sphereCollider.radius = _radius;
-    }
+        [PunRPC]
+        public void applyExplosion(int viewId)
+        {
+            GameObject explosion = PhotonView.Find(viewId).gameObject;
+            explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
+            SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
+            _sphereCollider.radius = _radius;
+        }
 
-    private void Explode()
+        private void Explode()
         {
             if (explosionArea != null)
             {
@@ -110,11 +112,11 @@ public class ThrowableItem : MonoBehaviourPunCallbacks
         }
 
     
-        public IEnumerator resetEnemyTarget(EnemyFollow enemyFollow)
+        public IEnumerator resetEnemyTarget(EnemyNavMeshFollow enemyNavMeshFollow)
         {
             yield return new WaitForSeconds(_effectDuration+1);
-            enemyFollow.setCanAttack(true);
-            enemyFollow.setNearPlayerDestination();
+            enemyNavMeshFollow.setCanAttack(true);
+            enemyNavMeshFollow.setNearPlayerDestination();
         }
 
         public void setThrowableSpecs(ScObThrowableSpecs throwableSpecs)
@@ -122,16 +124,18 @@ public class ThrowableItem : MonoBehaviourPunCallbacks
             _throwableSpecs = throwableSpecs;
             _throwablePrefab3DModel = throwableSpecs.throwablePrefab3DModel;
             _explodeOnImpact = throwableSpecs.explodeOnImpact;
+            meshCollider.sharedMesh = throwableSpecs.throwablePrefab3DModel.GetComponent<MeshFilter>().sharedMesh;
             _radius = throwableSpecs.radius;
             _timeToExplode = throwableSpecs.timeToExplode;
-            _attactionRadius = throwableSpecs.attactionRadius;
+            _attactionRadius = throwableSpecs.attractionRadius;
             _attractEnemies = throwableSpecs.attractEnemies;
-            _affectCamera = throwableSpecs.affectCamera;
-            _cameraShakeAmount = throwableSpecs.cameraShakeAmount;
-            _cameraShakeDuration = throwableSpecs.cameraShakeDuration;
+            // _affectCamera = throwableSpecs.affectCamera;
+            // _cameraShakeAmount = throwableSpecs.cameraShakeAmount;
+            // _cameraShakeDuration = throwableSpecs.cameraShakeDuration;
             Model = Instantiate(_throwablePrefab3DModel, transform.position, transform.rotation);
             Model.transform.parent = transform;
             setup = true;
         }
     
+    }
 }

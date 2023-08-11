@@ -28,7 +28,7 @@ public class PPFXRendererLayerEditor : Editor
    //set some references and do some initialization. I don`t figured out how to make a variable persistent in Unity Editor yet so most of the codes here can useless
 	void OnEnable()
 	{
-		sortingLayerNames = GetSortingLayerNames(); //First we load the name of our layers
+		sortingLayerNames = GetSortingLayerNames(); //First we load the nickname of our layers
 		l_particleSystems = (target as PPFXRendererLayer).gameObject.GetComponentsInChildren<ParticleSystem>();//Then we load our ParticleSystems
 		l_renderers = new Renderer[l_particleSystems.Length];//and Initialize our renderers array with the right size
 		

@@ -108,7 +108,7 @@ namespace ExitGames.Client.Photon
             UnityEngine.Object.DontDestroyOnLoad(this.websocketConnectionObject);
 
 
-            this.ConnectAddress += "&IPv6"; // this makes the Photon Server return a host name for the next server (NS points to MS and MS points to GS)
+            this.ConnectAddress += "&IPv6"; // this makes the Photon Server return a host nickname for the next server (NS points to MS and MS points to GS)
 
 
             // earlier, we read the proxy address/scheme and failed to connect entirely, if that wasn't successful...
@@ -158,9 +158,9 @@ namespace ExitGames.Client.Photon
         ///
         /// Requires file ProxyAutoConfig.cs and compile define: WEBSOCKET_PROXYCONFIG_SUPPORT.
         /// </remarks>
-        /// <param name="proxyAddress">Proxy address from the server configuration.</param>
-        /// <param name="url">Url to connect to (one of the Photon servers).</param>
-        /// <param name="proxyUrl">Resulting proxy URL to use.</param>
+        /// <param nickname="proxyAddress">Proxy address from the server configuration.</param>
+        /// <param nickname="url">Url to connect to (one of the Photon servers).</param>
+        /// <param nickname="proxyUrl">Resulting proxy URL to use.</param>
         /// <returns>False if there is some error and the resulting proxy address should not be used.</returns>
         private bool ReadProxyConfigScheme(string proxyAddress, string url, out string proxyUrl)
         {

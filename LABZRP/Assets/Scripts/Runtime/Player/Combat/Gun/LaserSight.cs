@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 
 public class LaserSight : MonoBehaviour
@@ -24,16 +25,17 @@ public class LaserSight : MonoBehaviour
         //
         lineRenderer = gameObject.AddComponent<LineRenderer> ();
         lineRenderer.material = materialLaser;
-        lineRenderer.SetWidth (LarguraInicial, LarguraFinal);
+        lineRenderer.startWidth = LarguraInicial;
+        lineRenderer.endWidth = LarguraFinal;
         posicLuz = new Vector3(0, 0, LarguraFinal);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (playerStats.verifyDown() || playerStats.verifyDeath() || playerStats.getIsIncapacitated())
+        if (playerStats.GetIsDown() || playerStats.GetIsDead() || playerStats.GetIsIncapacitated())
         {
-            playerStats.getWeaponSystem().cancelAim();
+            playerStats.GetWeaponSystem().cancelAim();
         }
         
         Vector3 PontoFinalDoLaser = transform.position + (transform.forward * DistanciaDoLaser);

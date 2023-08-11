@@ -16,7 +16,6 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
     [SerializeField] private int VendingMachinesPerPlayer = 2; 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private MainGameManager mainGameManager;
-    [SerializeField] private bool isIncrementalPerPlayer = false;
     private int maxVendingMachines = 1;
     private List<GameObject> spawnedVendingMachines = new List<GameObject>();
     private bool isOnline = false;

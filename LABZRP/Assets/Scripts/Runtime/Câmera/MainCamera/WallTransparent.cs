@@ -1,44 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 
-public class WallTransparent : MonoBehaviour
+namespace Runtime.Câmera.MainCamera
 {
-    public Material[] newMaterials;
-    private Material[] originalMaterials;
-    private Renderer objectRenderer;
-
-    private void Start()
+    public class WallTransparent : MonoBehaviour
     {
-        objectRenderer = GetComponent<Renderer>();
-        originalMaterials = objectRenderer.materials;
+        public Material[] newMaterials;
+        private Material[] originalMaterials;
+        private Renderer objectRenderer;
 
-        if (newMaterials.Length != originalMaterials.Length)
+        private void Start()
         {
-            Debug.LogWarning("O número de materiais originais e novos não é igual. Por favor, verifique se a quantidade de materiais corresponde.");
-        }
-    }
+            objectRenderer = GetComponent<Renderer>();
+            originalMaterials = objectRenderer.materials;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+            if (newMaterials.Length != originalMaterials.Length)
+            {
+                Debug.LogWarning("O número de materiais originais e novos não é igual. Por favor, verifique se a quantidade de materiais corresponde.");
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
         {
-            ChangeMaterials(newMaterials);
+            if (other.CompareTag("Player"))
+            {
+                ChangeMaterials(newMaterials);
+            }
         }
-    }
 
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        private void OnTriggerExit(Collider other)
         {
-            ChangeMaterials(originalMaterials);
+            if (other.CompareTag("Player"))
+            {
+                ChangeMaterials(originalMaterials);
+            }
         }
-    }
 
-    private void ChangeMaterials(Material[] materials)
-    {
-        objectRenderer.materials = materials;
+        private void ChangeMaterials(Material[] materials)
+        {
+            objectRenderer.materials = materials;
+        }
     }
 }

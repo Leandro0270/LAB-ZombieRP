@@ -51,7 +51,7 @@ namespace DigitalRuby.PyroParticles
 
         private IEnumerator CleanupEverythingCoRoutine()
         {
-            // 2 extra seconds just to make sure animation and graphics have finished ending
+            // 2 extra seconds just to make sure animationController and graphics have finished ending
             yield return new WaitForSeconds(StopTime + 2.0f);
 
             GameObject.Destroy(gameObject);

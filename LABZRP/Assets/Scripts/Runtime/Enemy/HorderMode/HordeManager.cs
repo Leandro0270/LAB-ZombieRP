@@ -1,137 +1,139 @@
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Challenges;
+using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
 
-public class HordeManager : MonoBehaviourPunCallbacks
+namespace Runtime.Enemy.HorderMode
 {
-    //GameObjects===============================================================
-    [SerializeField] private GameObject NormalZombiePrefab;
-    [SerializeField] private GameObject[] SpecialZombiesPrefabs;
-    [SerializeField] private GameObject[] spawnPoints;
-    [SerializeField] private GameObject FinalBosses;
-    
-    //Components================================================================
-    [FormerlySerializedAs("HorderText")] [SerializeField] private TextMeshProUGUI HordeText;
-    [SerializeField] private VendingMachineHorderGenerator Itemgenerator;
-    [SerializeField] private Camera mainCamera;
-    [SerializeField] private MainGameManager GameManager;
-    //Horde Parameters==========================================================
-    [SerializeField] private float firstHordeStartTime = 20f;
-    [SerializeField] private bool isHordeMode = true;
-    [SerializeField] private bool isIncrementalZombiesPerPlayer = true;
-    [SerializeField] private bool haveBaseZombieLifeIncrement = true;
-    [SerializeField] private float baseZombieLifeIncrement = 0.5f;
-    [SerializeField] private float spawnTime = 2f;
-    [SerializeField] private float spawnTimeDecrement = 0.2f;
-    [SerializeField] private float timeBetweenHordes = 5f;
-    [SerializeField] private int firstHordeZombies = 3;
-    [SerializeField] private int hordeIncrement = 6;
-    [SerializeField] private int firstSpecialZombieAppearHorde = 3;
-    [SerializeField] private float specialZombiePercentage = 25;
-    [SerializeField] private float specialZombiePercentageDecrement = 5;
-    [SerializeField] private bool isLastHordeMode = false;
-    [SerializeField] private float lastHorde = 15;
-    [SerializeField] private float timeBetweenZombiesOnLastHorde = 5f;
-    //Intern Variables=================================================================
-    private float killedZombiesInHorde = 0;
-    private float currentZombieLife = 0;
-    private int currentHordeZombies = 0;
-    private int currentHorde = 0;
-    private int nextHorde = 1;
-    private int zombiesAlive = 0;
-    private float timeBetweenHordesUI;
-    private bool isBossZombieAlive = false;
-    private bool isGameOver = false;
-    private int playersCount;
-    private float currentFirstHordeStartTime;
-    //Special events Variables==========================================================
-    [SerializeField] private ChallengeManager challengeManager;
-    [SerializeField] private List<GameObject> challengeMachines;
-    [SerializeField] private bool haveChallenges = true;
-    [SerializeField] private int challengeMachineHordeSpawn = 5;
-    [SerializeField] private bool challengeMachinesChangePosition = true;
-    [SerializeField] private int challengeMachineHordeRespawn = 5;
-    [SerializeField] private bool willSpawnDifferentDifficulties = true;
-    [SerializeField] private int mediumDifficultyHordeSpawn = 7;
-    [SerializeField] private int hardDifficultyHordeSpawn = 9;
-    private bool isSpecialEvent = false;
-    private bool isExplosiveZombieEvent = false;
-    private bool isCoffeeMachineEvent = false;
-    //Other settings variables=================================================================
-    private bool isOnline = false;
-    private bool isMasterClient = false;
-    public string[] enemyPrefabNames;
-    [SerializeField] private PhotonView photonView;
-    //=========================================================================================
-    public void Start()
-    
+    public class HordeManager : MonoBehaviourPunCallbacks
     {
-        currentFirstHordeStartTime = firstHordeStartTime;
-        mainCamera = GameManager.getMainCamera();
-        HordeText.text = "The first horde will start in " + currentHorde + " seconds";
-        Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
-        if (isOnline)
+        //GameObjects===============================================================
+        [SerializeField] private GameObject NormalZombiePrefab;
+        [SerializeField] private GameObject[] SpecialZombiesPrefabs;
+        [SerializeField] private GameObject[] spawnPoints;
+        [SerializeField] private GameObject FinalBosses;
+    
+        //Components================================================================
+        [FormerlySerializedAs("HorderText")] [SerializeField] private TextMeshProUGUI HordeText;
+        [SerializeField] private VendingMachineHorderGenerator Itemgenerator;
+        [SerializeField] private Camera mainCamera;
+        [SerializeField] private MainGameManager GameManager;
+        //Horde Parameters==========================================================
+        [SerializeField] private float firstHordeStartTime = 20f;
+        [SerializeField] private bool isIncrementalZombiesPerPlayer = true;
+        [SerializeField] private bool haveBaseZombieLifeIncrement = true;
+        [SerializeField] private float baseZombieLifeIncrement = 0.5f;
+        [SerializeField] private float spawnTime = 2f;
+        [SerializeField] private float spawnTimeDecrement = 0.2f;
+        [SerializeField] private float timeBetweenHordes = 5f;
+        [SerializeField] private int firstHordeZombies = 3;
+        [SerializeField] private int hordeIncrement = 6;
+        [SerializeField] private int firstSpecialZombieAppearHorde = 3;
+        [SerializeField] private float specialZombiePercentage = 25;
+        [SerializeField] private float specialZombiePercentageDecrement = 5;
+        [SerializeField] private bool isLastHordeMode = false;
+        [SerializeField] private float lastHorde = 15;
+        [SerializeField] private float timeBetweenZombiesOnLastHorde = 5f;
+        //Intern Variables=================================================================
+        private float killedZombiesInHorde = 0;
+        private float currentZombieLife = 0;
+        private int currentHordeZombies = 0;
+        private int currentHorde = 0;
+        private int nextHorde = 1;
+        private int zombiesAlive = 0;
+        private float timeBetweenHordesUI;
+        private bool isBossZombieAlive = false;
+        private bool isGameOver = false;
+        private int playersCount;
+        private float currentFirstHordeStartTime;
+        //Special events Variables==========================================================
+        [SerializeField] private ChallengeManager challengeManager;
+        [SerializeField] private List<GameObject> challengeMachines;
+        [SerializeField] private bool haveChallenges = true;
+        [SerializeField] private int challengeMachineHordeSpawn = 5;
+        [SerializeField] private bool challengeMachinesChangePosition = true;
+        [SerializeField] private int challengeMachineHordeRespawn = 5;
+        [SerializeField] private bool willSpawnDifferentDifficulties = true;
+        [SerializeField] private int mediumDifficultyHordeSpawn = 7;
+        [SerializeField] private int hardDifficultyHordeSpawn = 9;
+        private bool isSpecialEvent = false;
+        private bool isExplosiveZombieEvent = false;
+        private bool isCoffeeMachineEvent = false;
+        //Other settings variables=================================================================
+        private bool isOnline = false;
+        private bool isMasterClient = false;
+        public string[] enemyPrefabNames;
+        //=========================================================================================
+        public void Start()
+    
         {
-            Itemgenerator.setIsOnline(true);
-            if (isMasterClient)
-            {
-                Itemgenerator.setIsMasterClient(true);
-            }
-
-        }
-        currentHordeZombies = firstHordeZombies;
-        if(haveBaseZombieLifeIncrement)
-            currentZombieLife = NormalZombiePrefab.GetComponent<EnemyStatus>().get_life();
-        if (!isOnline)
-            StartCoroutine(HordeBreakManager());
-        
-        
-    }
-    public void setIsOnline(bool isOnline)
-    {
-        this.isOnline = isOnline;
-    }
-    
-    public void setIsMasterClient(bool isMasterClient)
-    {
-        this.isMasterClient = isMasterClient;
-    }
-    void Update()
-    {
-        if (timeBetweenHordesUI > 0 || currentFirstHordeStartTime > 0)
-        {
-            timeBetweenHordesUI -= Time.deltaTime;
-            currentFirstHordeStartTime -= Time.deltaTime;
-            //Vai printar o tempo que falta para a proxima horde formatado com no máximo 2 casas decimais
+            currentFirstHordeStartTime = firstHordeStartTime;
+            mainCamera = GameManager.getMainCamera();
+            HordeText.text = "The first horde will start in " + currentHorde + " seconds";
+            Itemgenerator = GetComponent<VendingMachineHorderGenerator>();
             if (isOnline)
             {
-                if (currentHorde == 0)
+                Itemgenerator.setIsOnline(true);
+                if (isMasterClient)
                 {
-                    string text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
-                    photonView.RPC("setHordeText", RpcTarget.All, text);
-                }
-                else
-                {
-                    string text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
-                    photonView.RPC("setHordeText", RpcTarget.All, text);
+                    Itemgenerator.setIsMasterClient(true);
                 }
 
             }
-            else
+            currentHordeZombies = firstHordeZombies;
+            if(haveBaseZombieLifeIncrement)
+                currentZombieLife = NormalZombiePrefab.GetComponent<EnemyStatus>().get_life();
+            if (!isOnline)
+                StartCoroutine(HordeBreakManager());
+        
+        
+        }
+        public void setIsOnline(bool isOnline)
+        {
+            this.isOnline = isOnline;
+        }
+    
+        public void setIsMasterClient(bool isMasterClient)
+        {
+            this.isMasterClient = isMasterClient;
+        }
+        void Update()
+        {
+            if (timeBetweenHordesUI > 0 || currentFirstHordeStartTime > 0)
             {
-                if (currentHorde == 0)
-                    HordeText.text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
+                timeBetweenHordesUI -= Time.deltaTime;
+                currentFirstHordeStartTime -= Time.deltaTime;
+                //Vai printar o tempo que falta para a proxima horde formatado com no máximo 2 casas decimais
+                if (isOnline)
+                {
+                    if (currentHorde == 0)
+                    {
+                        string text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
+                        photonView.RPC("setHordeText", RpcTarget.All, text);
+                    }
+                    else
+                    {
+                        string text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
+                        photonView.RPC("setHordeText", RpcTarget.All, text);
+                    }
+
+                }
                 else
-                    HordeText.text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
+                {
+                    if (currentHorde == 0)
+                        HordeText.text = "The first horde will start in " + currentFirstHordeStartTime.ToString("F0") + " seconds";
+                    else
+                        HordeText.text = "Next Horde in: " + timeBetweenHordesUI.ToString("F0");
+                }
             }
         }
-}
 
-    //Função que decrementa a quantidade de zumbis vivos
+        //Função que decrementa a quantidade de zumbis vivos
         public void decrementZombiesAlive(GameObject zombie)
         {
             GameManager.removeEnemy(zombie);
@@ -272,14 +274,14 @@ public class HordeManager : MonoBehaviourPunCallbacks
                         if (haveBaseZombieLifeIncrement)
                         {
                             EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                            ZombieStatus.setTotalLife(currentZombieLife);
-                            ZombieStatus.setCurrentLife(currentZombieLife);
+                            ZombieStatus.SetTotalLife(currentZombieLife);
+                            ZombieStatus.SetCurrentLife(currentZombieLife);
                         }
 
                         if (isCoffeeMachineEvent)
                         {
-                            EnemyFollow ZombieFollow = zombie.GetComponent<EnemyFollow>();
-                            ZombieFollow.setCoffeeMachineEvent(true);
+                            EnemyNavMeshFollow zombieNavMeshFollow = zombie.GetComponent<EnemyNavMeshFollow>();
+                            zombieNavMeshFollow.setCoffeeMachineEvent(true);
 
                         }
                     }
@@ -287,10 +289,10 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     if (isExplosiveZombieEvent)
                     {
                         EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                        ZombieStatus.setExplosiveZombieEvent(true);
+                        ZombieStatus.SetExplosiveZombieEvent(true);
                     }
 
-                    zombie.GetComponent<EnemyStatus>().setHordeManager(this);
+                    zombie.GetComponent<EnemyStatus>().SetHordeManager(this);
                     int photonViewId = zombie.GetComponent<PhotonView>().ViewID;
                     GameManager.addEnemyOnOnline(photonViewId);
                     photonView.RPC("incrementZombiesAlive", RpcTarget.All);
@@ -342,14 +344,14 @@ public class HordeManager : MonoBehaviourPunCallbacks
                         if (haveBaseZombieLifeIncrement)
                         {
                             EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                            ZombieStatus.setTotalLife(currentZombieLife);
-                            ZombieStatus.setCurrentLife(currentZombieLife);
+                            ZombieStatus.SetTotalLife(currentZombieLife);
+                            ZombieStatus.SetCurrentLife(currentZombieLife);
                         }
 
                         if (isCoffeeMachineEvent)
                         {
-                            EnemyFollow ZombieFollow = zombie.GetComponent<EnemyFollow>();
-                            ZombieFollow.setCoffeeMachineEvent(true);
+                            EnemyNavMeshFollow zombieNavMeshFollow = zombie.GetComponent<EnemyNavMeshFollow>();
+                            zombieNavMeshFollow.setCoffeeMachineEvent(true);
 
                         }
                     }
@@ -357,10 +359,10 @@ public class HordeManager : MonoBehaviourPunCallbacks
                     if (isExplosiveZombieEvent)
                     {
                         EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                        ZombieStatus.setExplosiveZombieEvent(true);
+                        ZombieStatus.SetExplosiveZombieEvent(true);
                     }
 
-                    zombie.GetComponent<EnemyStatus>().setHordeManager(this);
+                    zombie.GetComponent<EnemyStatus>().SetHordeManager(this);
                     GameManager.addEnemy(zombie);
                     incrementZombiesAlive();
                 }
@@ -423,18 +425,18 @@ public class HordeManager : MonoBehaviourPunCallbacks
                 foreach (var zombie in GameManager.getEnemies())
                 {
                     EnemyStatus ZombieStatus = zombie.GetComponent<EnemyStatus>();
-                    ZombieStatus.setExplosiveZombieEvent(true);
+                    ZombieStatus.SetExplosiveZombieEvent(true);
                 }
             }
         }
 
         public void setCoffeeMachineEvent(bool isCoffeeMachineEvent)
+        {
+            if (isCoffeeMachineEvent)
             {
-                if (isCoffeeMachineEvent)
-                {
-                    this.isCoffeeMachineEvent = isCoffeeMachineEvent;
-                }
+                this.isCoffeeMachineEvent = isCoffeeMachineEvent;
             }
+        }
         
         public void gameOver()
         {
@@ -458,6 +460,7 @@ public class HordeManager : MonoBehaviourPunCallbacks
         {
             this.currentHorde = currentHorde;
         }
+    }
 }
 
 

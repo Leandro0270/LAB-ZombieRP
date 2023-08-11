@@ -17,7 +17,7 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
 
     private int PlayerIndex;
     private bool isReady;
-    private string name;
+    private string _nickName;
     
     public void setPlayerCustom(ScObPlayerCustom playerCustom)
     {
@@ -48,7 +48,7 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
     public void setPlayerName(string name)
     {
         playerNameText.text = name;
-        this.name = name;
+        this._nickName = name;
     }
 
     public void removePlayer()
@@ -60,8 +60,8 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
             playerReadyText.gameObject.SetActive(false);
         }
         playerStatusText.text = "Waiting for Player";
-        name = "Player";
-        playerNameText.text = name;
+        _nickName = "Player";
+        playerNameText.text = _nickName;
         playerNameText.gameObject.SetActive(false);
         PlayerIndex = -1;
         isReady = false;
@@ -81,6 +81,6 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
     
     public string getPlayerName()
     {
-        return name;
+        return _nickName;
     }
 }

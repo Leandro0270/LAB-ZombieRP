@@ -75184,8 +75184,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemy: {fileID: 6420521476233523508}
   isOnline: 0
-  photonView: {fileID: 0}
-  animation: {fileID: 996699310881233176}
+  animationController: {fileID: 996699310881233176}
 --- !u!114 &2252458965755085624
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75198,13 +75197,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33ecd042622aebc4884016ad8b3b36df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 11400000, guid: c80a1977709c27e468f41b5749b94ce7, type: 2}
-  FireDamage: {fileID: 2724659188290676917}
-  blood1: {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  blood2: {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  _animator: {fileID: 996699310881233176}
+  capsuleCollider: {fileID: 3297121929391244714}
+  boxCollider: {fileID: 7222996290498460788}
+  status: {fileID: 11400000, guid: 00a66782468659e41a4d6474fb175466, type: 2}
+  fireDamage: {fileID: 2724659188290676917}
+  lessBloodPrefabs:
+  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
+  moreBloodPrefabs:
+  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
+  animator: {fileID: 996699310881233176}
   isOnline: 0
-  photonView: {fileID: 0}
   explosivesPrefabs:
   - {fileID: 5410999002539148555, guid: 0590fa1c28435dc45a167dc79502fd40, type: 3}
   explosiveDeathEffect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}
@@ -75234,22 +75236,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da379e64f1dbce7459c67ede0eecf530, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  zombieStatus: {fileID: 2252458965755085624}
+  navMeshAgent: {fileID: 6420521476233523508}
+  rb: {fileID: 1121972271383651160}
   timeToSinglePlayerBreakFree: 5
-  _photonView: {fileID: 0}
   animationController: {fileID: 996699310881233176}
-  Effect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}
+  visualEffect: {fileID: 1834194341294532, guid: bc8028525231c5649acf7aad4fdea3b0, type: 3}
   damage: 10
-  CoffeProjectile: {fileID: 5410999002539148555, guid: 6935b666ac664a54eb2e57b3c53d3958, type: 3}
-  "pontoDeLan\xE7amento": {fileID: 0}
-  distanciaAtivacaoPoder: 5
-  distanciaFuga: 20
-  tempoEntrePoderes: 5
-  tempoEntreAtaques: 5
-  delayLocknShoot: 2
+  coffeeProjectile: {fileID: 5410999002539148555, guid: 6935b666ac664a54eb2e57b3c53d3958, type: 3}
+  launchPoint: {fileID: 0}
+  specialActivationDistance: 10
+  runDistance: 20
+  specialAttacksDelay: 5
+  attackDelay: 2
+  delayLockNShoot: 2
   points: 40
-  FisherHook: {fileID: 0}
+  fisherHook: {fileID: 0}
   isOnline: 0
-  tipoDePoder: 2
+  enemyNavMeshFollow: {fileID: 1908603742364773282}
+  _tipoDePoder: 2
 --- !u!1 &6416785669107233308
 GameObject:
   m_ObjectHideFlags: 0

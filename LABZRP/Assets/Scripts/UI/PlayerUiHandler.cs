@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
+using Runtime.Player.Points;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerUiHandler : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private PhotonView photonView;
     private bool setup = true;
     private GameObject _player;
     private PlayerStats _playerStats;
@@ -71,7 +72,7 @@ public class PlayerUiHandler : MonoBehaviourPunCallbacks
                 if (_playerStats == null)
                 {
                     _playerStats = _player.GetComponent<PlayerStats>();
-                    _playerStats.sethealthBarUi(_healthBarUi);
+                    _playerStats.SetHealthBarUi(_healthBarUi);
                 }
                 
                 if(_playerPoints == null)

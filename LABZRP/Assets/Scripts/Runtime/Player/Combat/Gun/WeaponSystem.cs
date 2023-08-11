@@ -1,5 +1,9 @@
 using System.Collections;
 using Photon.Pun;
+using Runtime.Challenges;
+using Runtime.Player.Combat.PlayerStatus;
+using Runtime.Player.Combat.Throwables;
+using Runtime.Player.Points;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -70,10 +74,10 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         {
                 _playerStats = GetComponent<PlayerStats>();
                 _playerAnimationManager = GetComponentInChildren<PlayerAnimationManager>();
-                _danoMelee = _playerStats.getMeleeDamage();
+                _danoMelee = _playerStats.GetMeleeDamage();
                 _playerPoints = GetComponent<PlayerPoints>();
-                _tempoEntreMelee = _playerStats.getTimeBetweenMelee();
-                _challengeManager = _playerStats.getChallengeManager();
+                _tempoEntreMelee = _playerStats.GetTimeBetweenMelee();
+                _challengeManager = _playerStats.GetChallengeManager();
                 _isOnShotPause =true;
                 ApplyGunSpecs();
 
@@ -95,7 +99,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 if (!_challengeManager)
                 {
-                        _challengeManager = _playerStats.getChallengeManager();
+                        _challengeManager = _playerStats.GetChallengeManager();
                 }
 
                 if (_isOnShotPause && !_segurarGatilho && _balasPorDisparo > 1)
@@ -158,7 +162,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         {
                 if (_danoMelee == 0)
                 {
-                        _danoMelee = _playerStats.getMeleeDamage();
+                        _danoMelee = _playerStats.GetMeleeDamage();
                 } 
                 _meleePronto = false;
                 BulletScript hitboxMelee;
@@ -516,20 +520,20 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         public void AuxAimPress(InputAction.CallbackContext ctx)
         {
-                if (!_playerStats.verifyDown() && !_playerStats.getIsIncapacitated())
+                if (!_playerStats.GetIsDown() && !_playerStats.GetIsIncapacitated())
                 {
                         switch (ctx.phase)
                         {
                                 case InputActionPhase.Started:
                                         
-                                        _playerStats.aimSlow(_slowWhileAimingPercent, true);
+                                        _playerStats.AimSlow(_slowWhileAimingPercent, true);
                                         _dispersao *= (_reducaoDispersaoMirando / 100);
                                         miraLaser.SetActive(true);
                                         _mirando = true;
                                         _throwablePlayerStats.setCanceledThrow(true);
                                         break;
                                 case InputActionPhase.Canceled:
-                                        _playerStats.aimSlow(0, false);
+                                        _playerStats.AimSlow(0, false);
                                         miraLaser.SetActive(false);
                                         _dispersao *= (100 / _reducaoDispersaoMirando);
                                         _throwablePlayerStats.setCanceledThrow(false);
@@ -547,7 +551,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
         public void ReceiveAmmo(int ammo)
         {
                 PlayerStats status = GetComponent<PlayerStats>();
-                if (!status.verifyDown() && !status.verifyDeath())
+                if (!status.GetIsDown() && !status.GetIsDead())
                         _totalBalas += ammo;
                 if (_totalBalas > _maxBalas)
                         _totalBalas = _maxBalas;
@@ -567,7 +571,7 @@ public class WeaponSystem : MonoBehaviourPunCallbacks, IPunObservable
 
         public void cancelAim()
         {
-                _playerStats.aimSlow(0, false);
+                _playerStats.AimSlow(0, false);
                 miraLaser.SetActive(false);
                 _dispersao *= (100 / _reducaoDispersaoMirando);
                 _throwablePlayerStats.setCanceledThrow(false);

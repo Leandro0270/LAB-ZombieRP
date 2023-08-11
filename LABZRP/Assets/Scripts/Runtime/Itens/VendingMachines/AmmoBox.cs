@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
+using Runtime.Player.Points;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -50,9 +52,9 @@ public class AmmoBox : MonoBehaviourPunCallbacks
 
         if (playerStats)
         {
-            WeaponSystem weapon = playerStats.getWeaponSystem();
-            PlayerPoints playerPoints = playerStats.getPlayerPoints();
-            bool isInteracting = playerStats.getInteracting();
+            WeaponSystem weapon = playerStats.GetWeaponSystem();
+            PlayerPoints playerPoints = playerStats.GetPlayerPoints();
+            bool isInteracting = playerStats.GetInteracting();
             bool haveLessAmmo = (weapon.GetAtualAmmo()<weapon.GetMaxBalas());
             bool haveMoney = (playerPoints.getPoints() >= StartPrice);
             if(isInteracting && haveLessAmmo && haveMoney)

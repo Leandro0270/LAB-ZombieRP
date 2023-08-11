@@ -1,23 +1,22 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.UI;
 
-public class SpawnPlayerSetupMenu : MonoBehaviour
+namespace UI.Menu.SelectCharacter
 {
-    public PlayerInput input;
-    private void Awake()
+    public class SpawnPlayerSetupMenu : MonoBehaviour
     {
-        PlayerConfigurationManager PCM = FindObjectOfType<PlayerConfigurationManager>();
-        if (PCM != null)
+        [SerializeField] private PlayerInput input;
+        private void Awake()
         {
-            PlayerSetupMenuController menu;
-            menu = PCM.setPlayerSetupMenuController(input);
-            input.uiInputModule = menu.GetInputSystemUIInputModule(input);
-            menu.SetPlayerIndex(input.playerIndex);
-            PCM.deletePlayerSetupMenuController();
+            PlayerConfigurationManager PCM = FindObjectOfType<PlayerConfigurationManager>();
+            if (PCM != null)
+            {
+                PlayerSetupMenuController menu;
+                menu = PCM.setPlayerSetupMenuController(input);
+                input.uiInputModule = menu.GetInputSystemUIInputModule(input);
+                menu.SetPlayerIndex(input.playerIndex);
+                PCM.deletePlayerSetupMenuController();
+            }
         }
     }
 }

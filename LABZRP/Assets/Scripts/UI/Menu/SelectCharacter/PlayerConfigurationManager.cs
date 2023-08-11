@@ -75,7 +75,7 @@ public class PlayerConfigurationManager : MonoBehaviour
     }
     public void SetPlayerName(int index, string name)
     {
-        playerConfigs[index].playerStats.name = name;
+        playerConfigs[index].playerStats._nickName = name;
     }
     public void SetPlayerSkin(int index, ScObPlayerCustom playerCustom)
     {

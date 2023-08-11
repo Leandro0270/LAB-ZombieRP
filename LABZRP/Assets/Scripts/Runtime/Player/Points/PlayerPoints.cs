@@ -1,132 +1,132 @@
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
 
-public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
+namespace Runtime.Player.Points
 {
-    [SerializeField] private int pointsPerNormalZombie = 10;
-    [SerializeField] private float pointsMultiplier = 1.5f;
-    [SerializeField] private bool isMultiplierActive = false;
-    private Points_UI pointsUI;
-    private int totalPointsInGame = 0;
-    //Its serialized for debugging purposes
-    [SerializeField] private int points = 0;
-    [SerializeField] private bool isOnline = false;
-    [SerializeField] private PhotonView photonView;
-
-    public void addPointsNormalZombieKilled()
+    public class PlayerPoints : MonoBehaviourPunCallbacks, IPunObservable
     {
-        if (!isOnline || photonView.IsMine)
+        [SerializeField] private int pointsPerNormalZombie = 10;
+        [SerializeField] private float pointsMultiplier = 1.5f;
+        [SerializeField] private bool isMultiplierActive = false;
+        private Points_UI pointsUI;
+        private int totalPointsInGame = 0;
+        //Its serialized for debugging purposes
+        [SerializeField] private int points = 0;
+        [SerializeField] private bool isOnline = false;
+
+        public void addPointsNormalZombieKilled()
         {
-            if (isMultiplierActive)
+            if (!isOnline || photonView.IsMine)
             {
-                points += (int)(pointsPerNormalZombie * pointsMultiplier);
-                totalPointsInGame += (int)(pointsPerNormalZombie * pointsMultiplier);
+                if (isMultiplierActive)
+                {
+                    points += (int)(pointsPerNormalZombie * pointsMultiplier);
+                    totalPointsInGame += (int)(pointsPerNormalZombie * pointsMultiplier);
+                }
+                else
+                {
+                    points += pointsPerNormalZombie;
+                    totalPointsInGame += pointsPerNormalZombie;
+                }
             }
-            else
+            pointsUI.setPoints(points);
+
+        }
+
+        public void addPointsSpecialZombiesKilled(int points)
+        {
+            if (!isOnline || photonView.IsMine)
             {
-                points += pointsPerNormalZombie;
-                totalPointsInGame += pointsPerNormalZombie;
+                if (isMultiplierActive)
+                {
+                    this.points += (int)(points * pointsMultiplier);
+                    totalPointsInGame += (int)(points * pointsMultiplier);
+                }
+                else
+                {
+                    totalPointsInGame += points;
+                    this.points += points;
+                }
+                pointsUI.setPoints(this.points);
             }
         }
-        pointsUI.setPoints(points);
 
-    }
-
-    public void addPointsSpecialZombiesKilled(int points)
-    {
-        if (!isOnline || photonView.IsMine)
+        public void removePoints(int points)
         {
-            if (isMultiplierActive)
+
+            if (!isOnline || photonView.IsMine)
             {
-                this.points += (int)(points * pointsMultiplier);
-                totalPointsInGame += (int)(points * pointsMultiplier);
+                this.points -= points;
+                pointsUI.setPoints(this.points);
             }
-            else
-            {
-                totalPointsInGame += points;
-                this.points += points;
-            }
-            pointsUI.setPoints(this.points);
         }
-    }
+    
 
-    public void removePoints(int points)
-    {
-
-        if (!isOnline || photonView.IsMine)
+        public int getPoints()
         {
-            this.points -= points;
-            pointsUI.setPoints(this.points);
+            return points;
         }
-    }
     
-
-    public int getPoints()
-    {
-        return points;
-    }
-    
-    public void setMultiplier(bool isMultiplierActive)
-    {
-        this.isMultiplierActive = isMultiplierActive;
-    }
-    
-    [PunRPC]
-    public void addChallengePointsRPC(int points)
-    {
-        if (photonView.IsMine)
+        public void setMultiplier(bool isMultiplierActive)
         {
-            addChallengePoints(points);
+            this.isMultiplierActive = isMultiplierActive;
         }
-        pointsUI.setPoints(points);
-
-        
-    }
     
-    public void addChallengePoints(int points)
-    {
-        if (isOnline)
+        [PunRPC]
+        public void addChallengePointsRPC(int points)
         {
             if (photonView.IsMine)
             {
-                this.points += points;
+                addChallengePoints(points);
+            }
+            pointsUI.setPoints(points);
+
+        
+        }
+    
+        public void addChallengePoints(int points)
+        {
+            if (isOnline)
+            {
+                if (photonView.IsMine)
+                {
+                    this.points += points;
+                }
+                else
+                {
+                    photonView.RPC("addChallengePointsRPC", RpcTarget.All, points);
+                }
             }
             else
             {
-                photonView.RPC("addChallengePointsRPC", RpcTarget.All, points);
+                this.points += points;
+                pointsUI.setPoints(points);
             }
         }
-        else
-        {
-            this.points += points;
-            pointsUI.setPoints(points);
-        }
-    }
         
     
-    public void setPointsUI(Points_UI pointsUI)
-    {
-        this.pointsUI = pointsUI;
-    }
-    
-    public int getTotalPointsInGame()
-    {
-        return totalPointsInGame;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
+        public void setPointsUI(Points_UI pointsUI)
         {
-            stream.SendNext(points);
-            stream.SendNext(totalPointsInGame);
+            this.pointsUI = pointsUI;
         }
-        else
+    
+        public int getTotalPointsInGame()
         {
-            points = (int)stream.ReceiveNext();
-            totalPointsInGame = (int)stream.ReceiveNext();
+            return totalPointsInGame;
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(points);
+                stream.SendNext(totalPointsInGame);
+            }
+            else
+            {
+                points = (int)stream.ReceiveNext();
+                totalPointsInGame = (int)stream.ReceiveNext();
+            }
         }
     }
 }

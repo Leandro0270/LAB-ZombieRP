@@ -1,14 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
 
-public class HordeModeGameOverPlayer : MonoBehaviour
+namespace Runtime.Enemy.HorderMode
 {
-    public TextMeshProUGUI name;
-    public TextMeshProUGUI points;
-    public TextMeshProUGUI kills;
-    public TextMeshProUGUI downs;
-    public TextMeshProUGUI revives;
+    public class HordeModeGameOverPlayer : MonoBehaviour
+    {
+        [FormerlySerializedAs("_nickName")] public TextMeshProUGUI nickname;
+        public TextMeshProUGUI points;
+        public TextMeshProUGUI kills;
+        public TextMeshProUGUI downs;
+        public TextMeshProUGUI revives;
+    
+    }
 }

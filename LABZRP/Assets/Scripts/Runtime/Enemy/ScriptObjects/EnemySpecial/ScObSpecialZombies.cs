@@ -1,15 +1,15 @@
-
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "EnemySpecial")]
-public class ScObSpecialZombies : ScriptableObject
+namespace Runtime.Enemy.ScriptObjects.EnemySpecial
 {
+    [CreateAssetMenu(menuName = "EnemySpecial")]
+    public class ScObSpecialZombies : ScriptableObject
+    {
     
-    public float health;
-    public float speed;
-    public float damage;
-    public int points;
+        public float health;
+        public float speed;
+        public float damage;
+        public int points;
 
+    }
 }

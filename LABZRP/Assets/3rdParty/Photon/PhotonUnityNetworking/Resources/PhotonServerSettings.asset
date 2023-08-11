@@ -152,6 +152,17 @@ MonoBehaviour:
   - instantiateExplosionEffect
   - explode
   - visualFireEffect
+  - ChangeTransformParentRPC
+  - InstantiateBlood
+  - TakeDamage
+  - UpdateHealthBar
+  - UpdateName
+  - SetManualTarget
+  - BurnEnemyRPC
+  - DisableCapsuleColliderRPC
+  - DisableFireDamageRPC
+  - InstantiateExplosiveEffect
+  - RewardPlayerShooterRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

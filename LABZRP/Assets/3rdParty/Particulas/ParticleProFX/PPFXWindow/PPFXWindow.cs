@@ -7,7 +7,9 @@
 	(c) 2014
 =========================================================*/
 
+using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR  && !UNITY_WEBPLAYER
 using UnityEditor;
 using System.Collections.Generic;
@@ -46,7 +48,7 @@ public class PPFXWindow : EditorWindow {
 	
 	int selIndex = 0; //store current selected preset index
 	int selFolderIndex = 0; 
-	string selPrefabName = ""; //current selected prefab name
+	string selPrefabName = ""; //current selected prefab nickname
 	
 	static List<Vector2> pfxGUIScrollPos = new List<Vector2>();
 	
@@ -80,6 +82,7 @@ public class PPFXWindow : EditorWindow {
 		window.Show();
 	}
 	
+	[Obsolete("Obsolete")]
 	void OnEnable(){
 	#if UNITY_EDITOR
 	    EditorApplication.playmodeStateChanged += StateChange;
@@ -320,7 +323,7 @@ public class PPFXWindow : EditorWindow {
 			}	
 		EditorGUILayout.EndHorizontal();
 		
-		//show current selected prefab name
+		//show current selected prefab nickname
 		GUILayout.BeginArea(new Rect (10, 20, position.width, 100)); 
 		if(!Application.isPlaying && selFolderIndex < pfxFolders.Length)
 		{
@@ -462,12 +465,12 @@ public class PPFXWindow : EditorWindow {
 						EditorGUILayout.BeginHorizontal();	
 		        	}
 					
-					Texture _tex =  pfxPreviewImageList[f][x] as Texture; //pekPrefabList1[x].name
+					Texture _tex =  pfxPreviewImageList[f][x] as Texture; //pekPrefabList1[x].nickname
 				
         			
 					if(GUILayout.Button(_tex, GUILayout.Width (pfxGUIButtonWidth), GUILayout.Height (pfxGUIButtonHeight)))
 					{
-						//Debug.Log(pekPrefabList[f][x].name);
+						//Debug.Log(pekPrefabList[f][x].nickname);
 						GameObject _inst = Instantiate(pfxPrefabList[f][x], Vector3.zero, Quaternion.Euler(-90,0,0)) as GameObject;
 						Build(_inst);
 						

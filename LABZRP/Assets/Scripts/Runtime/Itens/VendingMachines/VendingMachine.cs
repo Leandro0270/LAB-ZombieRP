@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -55,7 +56,6 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     
     [SerializeField] private bool isOnline = false;
     [SerializeField] private bool isMasterClient = false;
-    [SerializeField] private PhotonView photonView;
     //debug
     [SerializeField] private bool changeItem = false;
 
@@ -117,7 +117,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         if(isOnCooldown) return;
         
         PlayerStats playerStats = other.GetComponent<PlayerStats>();
-        if (playerStats == null || !playerStats.getInteracting()) return;
+        if (playerStats == null || !playerStats.GetInteracting()) return;
         if (canBuyOnlyInHordeCooldown && !isOnHordeCooldown)
         {
             if (isOnline)
@@ -129,7 +129,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
             }
             return;
         }
-        int pontosPlayerAtual = playerStats.getPlayerPoints().getPoints();
+        int pontosPlayerAtual = playerStats.GetPlayerPoints().getPoints();
 
         if(itemType == 0)
         {
@@ -190,7 +190,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         
         isOnCooldown = true;
         itemSpawn(player);
-        playerStats.getPlayerPoints().removePoints(itens[_itemIndex].Price);
+        playerStats.GetPlayerPoints().removePoints(itens[_itemIndex].Price);
         if(isOnline)
             photonView.RPC("HandleBuyItemOnlineRPC", RpcTarget.All);
         else
@@ -205,7 +205,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
     {
         isOnCooldown = true;
         itemSpawn(player);
-        playerStats.getPlayerPoints().removePoints(_AvailableSpawnGunSpecs[_gunIndex].Price);
+        playerStats.GetPlayerPoints().removePoints(_AvailableSpawnGunSpecs[_gunIndex].Price);
         if(isOnline)
             photonView.RPC("HandleBuyItemOnlineRPC", RpcTarget.All);
         else
@@ -221,7 +221,7 @@ public class VendingMachine : MonoBehaviourPunCallbacks
         
         isOnCooldown = true;
         itemSpawn(player);
-        playerStats.getPlayerPoints().removePoints(granades[_granadeIndex].Price);
+        playerStats.GetPlayerPoints().removePoints(granades[_granadeIndex].Price);
         if(isOnline)
             photonView.RPC("HandleBuyItemOnlineRPC", RpcTarget.All);
         else

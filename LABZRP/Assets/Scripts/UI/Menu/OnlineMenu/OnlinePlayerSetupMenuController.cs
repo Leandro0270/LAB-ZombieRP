@@ -41,7 +41,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     private int pantsIndex = 0;
     private int ShoesIndex = 0;
     private ScObPlayerCustom playerCustom;
-    private String name;
+    private string _nickName;
 
 
     [SerializeField] private GameObject OnlineLobbyReady;
@@ -57,8 +57,8 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     public void SetPlayerIndex(int pi, string ClientPlayerName)
     {
         PlayerIndex = pi;
-        name = ClientPlayerName;
-        titletext.SetText(name);
+        _nickName = ClientPlayerName;
+        titletext.SetText(_nickName);
     }
     
     

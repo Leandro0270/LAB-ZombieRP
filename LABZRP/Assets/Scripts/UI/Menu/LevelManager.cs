@@ -13,7 +13,6 @@ public class LevelManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject _loaderCanvaObjcect;
     [SerializeField] private Image progressBar;
     [SerializeField] private GameObject WalkingZombieOnSlider;
-    private bool levelLoading = false;
 
     void Awake()
     {
@@ -35,8 +34,6 @@ public class LevelManager : MonoBehaviourPunCallbacks
 
     IEnumerator LoadSceneAsync(string sceneName)
     {
-        levelLoading = true;
-
         // Show loading screen
         _loaderCanvaObjcect.SetActive(true);
 
@@ -59,11 +56,10 @@ public class LevelManager : MonoBehaviourPunCallbacks
                 // Allow scene activation
                 loading.allowSceneActivation = true;
 
-                levelLoading = false;
-
                 // Call the RPC to tell everyone this client is ready
                 photonView.RPC("ClientReady", RpcTarget.AllBuffered);
             }
+            
 
             yield return null;
         }

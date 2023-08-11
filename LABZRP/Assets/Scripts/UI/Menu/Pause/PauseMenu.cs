@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
+using Runtime.Player.Inputs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -52,7 +53,7 @@ public class PauseMenu : MonoBehaviour
     {
         foreach (var player in playerInputHandlers)
         {
-            player.setGameIsPaused(false);
+            player.SetGameIsPaused(false);
         }
         GameIsPaused = false;
         if(settingsMenu.gameObject.activeSelf)

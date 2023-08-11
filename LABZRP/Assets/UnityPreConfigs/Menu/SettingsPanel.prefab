@@ -4099,7 +4099,7 @@ MonoBehaviour:
   fullScreenToggle: {fileID: 7728290632868272144}
   audioMixer: {fileID: 24100000, guid: c3279c9e24b0f554e9c8ff499d34b000, type: 2}
   resolutionDropdown: {fileID: 7728290631562194864}
-  volumeSlider: {fileID: 0}
+  volumeSlider: {fileID: 7728290632242730122}
 --- !u!1 &7728290633238168978
 GameObject:
   m_ObjectHideFlags: 0

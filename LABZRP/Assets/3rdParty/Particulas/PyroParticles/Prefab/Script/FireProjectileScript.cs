@@ -6,8 +6,8 @@ namespace DigitalRuby.PyroParticles
     /// <summary>
     /// Handle collision of a fire projectile
     /// </summary>
-    /// <param name="script">Script</param>
-    /// <param name="pos">Position</param>
+    /// <param nickname="script">Script</param>
+    /// <param nickname="pos">Position</param>
     public delegate void FireProjectileCollisionDelegate(FireProjectileScript script, Vector3 pos);
 
     /// <summary>
@@ -30,7 +30,7 @@ namespace DigitalRuby.PyroParticles
         [Tooltip("The force of the explosion upon collision.")]
         public float ProjectileExplosionForce = 50.0f;
 
-        [Tooltip("An optional delay before the collider is sent off, in case the effect has a pre fire animation.")]
+        [Tooltip("An optional delay before the collider is sent off, in case the effect has a pre fire animationController.")]
         public float ProjectileColliderDelay = 0.0f;
 
         [Tooltip("The speed of the collider.")]

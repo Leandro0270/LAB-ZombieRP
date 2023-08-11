@@ -1,206 +1,190 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Numerics;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
 
-[RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerStats))]
-public class PlayerMovement : MonoBehaviour
+namespace Runtime.Player.Movement
 {
-    private PlayerStats _status;
-    private CharacterController _controller;
-    private PlayerAnimationManager _animationManager;
-    private Vector3 _inputMovimento;
-    private bool _canMove = true;
-    private float _speed;
-    private PlayerDirection _direction;
-    private bool isLookingRight = false;
-    private bool isLookingLeft = true;
-    private bool isLookingForward = false;
-    private bool isLookingBack = false;
-    private bool setup = false;
-    private bool isAiming = false;
-    private bool isRotated = false;
-    private bool isEffectSpeedSlowed = false;
-    private float _EffectSpeedSlowPercentage = 0;
-    private float _rotationSlowPercentage = 0;
-    private float _aimingSlowPercentage = 0;
-    private float currentSpeed = 0;
-
-    public enum PlayerDirection
+    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(PlayerStats))]
+    public class PlayerMovement : MonoBehaviour
     {
-        FORWARD,
-        BACK,
-        LEFT,
-        RIGHT,
-        STANDING
-    }
+        [SerializeField] private PlayerStats status;
+        [SerializeField] private CharacterController controller;
+        private Vector3 _inputMovement;
+        private bool _canMove = true;
+        private float _speed;
+        private PlayerDirection _direction;
+        private bool _isLookingRight;
+        private bool _isLookingLeft = true;
+        private bool _isLookingForward;
+        private bool _isLookingBack;
+        private bool _setup;
+        private bool _isAiming;
+        private bool _isRotated;
+        private bool _isEffectSpeedSlowed;
+        private float _effectSpeedSlowPercentage;
+        private float _rotationSlowPercentage;
+        private float _aimingSlowPercentage;
 
-    void Start()
-    {
-        _animationManager = GetComponentInChildren<PlayerAnimationManager>();
-        _status = GetComponent<PlayerStats>();
-        _speed = _status.getSpeed();
-        _controller = GetComponent<CharacterController>();
-    }
-
-    public void SetInputMovimento(Vector3 valor)
-    {
-        if(_canMove)
-            _inputMovimento = valor;
-    }
-
-    void FixedUpdate()
-    {
-        if (_speed == 0 && !setup)
+        public enum PlayerDirection
         {
-            _status.initializePlayerMovementSpeed();
-            setup = true;
+            Forward,
+            Back,
+            Left,
+            Right,
+            Standing
         }
 
-        float newSpeed = _speed;
-        if (isRotated)
-            newSpeed *= _rotationSlowPercentage;
-        if(isAiming)
-            newSpeed *= _aimingSlowPercentage;
-        if(isEffectSpeedSlowed)
-            newSpeed *= _EffectSpeedSlowPercentage;
+        private void Start()
+        {
+            status = GetComponent<PlayerStats>();
+            _speed = status.GetSpeed(); 
+        }
+
+        public void SetInputMovement(Vector3 valor)
+        {
+            if(_canMove)
+                _inputMovement = valor;
+        }
+
+        private void FixedUpdate()
+        {
+            if (_speed == 0 && !_setup)
+            {
+                status.InitializePlayerMovementSpeed();
+                _setup = true;
+            }
+
+            float newSpeed = _speed;
+            if (_isRotated)
+                newSpeed *= _rotationSlowPercentage;
+            if(_isAiming)
+                newSpeed *= _aimingSlowPercentage;
+            if(_isEffectSpeedSlowed)
+                newSpeed *= _effectSpeedSlowPercentage;
+            
+            Vector3 auxVector2 = _inputMovement.normalized * (newSpeed * Time.deltaTime);
+            Vector3 auxVector3 = new Vector3(auxVector2.x, 0, auxVector2.y);
+            if (_canMove && auxVector3 != Vector3.zero)
+            {
+                controller.Move(auxVector3);
+                SetLookingDirection(transform.rotation.eulerAngles.y);
+                UpdateDirection(auxVector3);
+            }
+            else
+            {
+                _direction = PlayerDirection.Standing;
+            }
+            status.SetMovementAnimationStats(_direction);
+        }
+
+        void UpdateDirection(Vector3 moveVector)
+        {
+            if(moveVector.x > 0)
+            {
+                if(_isLookingForward)
+                    _direction = PlayerDirection.Right;
+                if(_isLookingBack)
+                    _direction = PlayerDirection.Left;
+                if(_isLookingRight)
+                    _direction = PlayerDirection.Forward;
+                if(_isLookingLeft)
+                    _direction = PlayerDirection.Back;
+            }
+            else if(moveVector.x < 0)
+            {
+                if(_isLookingForward)
+                    _direction = PlayerDirection.Left;
+                if(_isLookingBack)
+                    _direction = PlayerDirection.Right;
+                if(_isLookingLeft)
+                    _direction = PlayerDirection.Forward;
+                if(_isLookingRight)
+                    _direction = PlayerDirection.Back;
+            }
+            else if(moveVector.z > 0)
+            {
+                if(_isLookingForward)
+                    _direction = PlayerDirection.Forward;
+                if(_isLookingBack)
+                    _direction = PlayerDirection.Back;
+                if(_isLookingLeft)
+                    _direction = PlayerDirection.Right;
+                if(_isLookingRight)
+                    _direction = PlayerDirection.Left;
+            }
+            else if(moveVector.z < 0)
+            {
+                if(_isLookingForward)
+                    _direction = PlayerDirection.Back;
+                if(_isLookingBack)
+                    _direction = PlayerDirection.Forward;
+                if(_isLookingRight)
+                    _direction = PlayerDirection.Right;
+                if(_isLookingLeft)
+                    _direction = PlayerDirection.Left;
+            }
+        }
         
-        currentSpeed = newSpeed;
-        
-        Vector3 auxVecto2 = _inputMovimento.normalized * (newSpeed * Time.deltaTime);
-        Vector3 auxVector3 = new Vector3(auxVecto2.x, 0, auxVecto2.y);
-        if (_canMove && auxVector3 != Vector3.zero)
-        {
-            _controller.Move(auxVector3);
-            setLookigDirection(transform.rotation.eulerAngles.y);
-            UpdateDirection(auxVector3);
-        }
-        else
-        {
-            _direction = PlayerDirection.STANDING;
-        }
-        _status.setMovementAnimationStats(_direction);
-    }
-
-    void UpdateDirection(Vector3 moveVector)
-    {
-        if(moveVector.x > 0)
-        {
-            if(isLookingForward)
-                _direction = PlayerDirection.RIGHT;
-            if(isLookingBack)
-                _direction = PlayerDirection.LEFT;
-            if(isLookingRight)
-                _direction = PlayerDirection.FORWARD;
-            if(isLookingLeft)
-                _direction = PlayerDirection.BACK;
-        }
-        else if(moveVector.x < 0)
-        {
-            if(isLookingForward)
-                _direction = PlayerDirection.LEFT;
-            if(isLookingBack)
-                _direction = PlayerDirection.RIGHT;
-            if(isLookingLeft)
-                _direction = PlayerDirection.FORWARD;
-            if(isLookingRight)
-                _direction = PlayerDirection.BACK;
-        }
-        else if(moveVector.z > 0)
-        {
-            if(isLookingForward)
-                _direction = PlayerDirection.FORWARD;
-            if(isLookingBack)
-                _direction = PlayerDirection.BACK;
-            if(isLookingLeft)
-                _direction = PlayerDirection.RIGHT;
-            if(isLookingRight)
-                _direction = PlayerDirection.LEFT;
-        }
-        else if(moveVector.z < 0)
-        {
-            if(isLookingForward)
-                _direction = PlayerDirection.BACK;
-            if(isLookingBack)
-                _direction = PlayerDirection.FORWARD;
-            if(isLookingRight)
-                _direction = PlayerDirection.RIGHT;
-            if(isLookingLeft)
-                _direction = PlayerDirection.LEFT;
-        }
-    }
     
-    public PlayerDirection getDirection()
-    {
-        return _direction;
-    }
-    
-    public void setCanMove(bool valor)
-    {
-        _canMove = valor;
-    }
+        public void SetCanMove(bool valor)
+        {
+            _canMove = valor;
+        }
     
 
-    public void setLookigDirection(float LookingAngle)
-    {
-        if (LookingAngle >= 315f && LookingAngle < 45f)
-        {
-            isLookingLeft = true;
-            isLookingBack = false;
-            isLookingForward = false;
-            isLookingRight = false;
+        private void SetLookingDirection(float lookingAngle)
+        { switch (lookingAngle)
+            {
+                case >= 45f and < 135f:
+                    _isLookingForward = true;
+                    _isLookingBack = false;
+                    _isLookingLeft = false;
+                    _isLookingRight = false;
+                    break;
+                case >= 135f and < 225f:
+                    _isLookingRight = true;
+                    _isLookingBack = false;
+                    _isLookingForward = false;
+                    _isLookingLeft = false;
+                    break;
+                case >= 225f and < 315f:
+                    _isLookingBack = true;
+                    _isLookingForward = false;
+                    _isLookingLeft = false;
+                    _isLookingRight = false;
+                    break;
+                case >=315f and < 360f:
+                    _isLookingLeft = true;
+                    _isLookingBack = false;
+                    _isLookingForward = false;
+                    _isLookingRight = false;
+                    break;
+            }
         }
-        else if(LookingAngle >= 45f && LookingAngle < 135f)
-        {
-            isLookingForward = true;
-            isLookingBack = false;
-            isLookingLeft = false;
-            isLookingRight = false;
-        }
-        else if(LookingAngle >= 135f && LookingAngle < 225f)
-        {
-            isLookingRight = true;
-            isLookingBack = false;
-            isLookingForward = false;
-            isLookingLeft = false;
-        }
-        else if(LookingAngle >= 225f && LookingAngle < 315f)
-        {
-            isLookingBack = true;
-            isLookingForward = false;
-            isLookingLeft = false;
-            isLookingRight = false;
-        }
-    }
     
-    public void setEffectSpeedSlowPercentage(float porcentagemSlow, bool isEffectSpeedSlowed)
-    {
-        _EffectSpeedSlowPercentage = porcentagemSlow;
-        this.isEffectSpeedSlowed = isEffectSpeedSlowed;
-    }
-    public void setAiming(float AimingSlow, bool isAiming)
-    {
-        this.isAiming = isAiming;
-        _aimingSlowPercentage = AimingSlow;
-    }
-    public void setRotationSlowPercentage(float porcentagemSlow, bool isRotated)
-    {
-        _rotationSlowPercentage = porcentagemSlow;
-        this.isRotated = isRotated;
-    }
+        public void SetEffectSpeedSlowPercentage(float percentageSlow, bool isEffectSpeedSlowed)
+        {
+            _effectSpeedSlowPercentage = percentageSlow;
+            _isEffectSpeedSlowed = isEffectSpeedSlowed;
+        }
+        public void SetAiming(float aimingSlow, bool isAiming)
+        {
+            _isAiming = isAiming;
+            _aimingSlowPercentage = aimingSlow;
+        }
+        public void SetRotationSlowPercentage(float percentageSlow, bool isRotated)
+        {
+            _rotationSlowPercentage = percentageSlow;
+            _isRotated = isRotated;
+        }
     
-    public void setSpeed(float speed)
-    {
-        _speed = speed;
-    }
+        public void SetSpeed(float speed)
+        {
+            _speed = speed;
+        }
 
-    public float getCurrentSpeed()
-    {
-        return currentSpeed;
-    }
+
    
+    }
 }

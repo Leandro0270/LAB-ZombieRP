@@ -246,9 +246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 324e96b3a86c5104eab4511d2390d600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  photonView: {fileID: 5837373114000336273}
-  isOnline: 1
-  Fill: {fileID: 3235694773914420429}
   _slider: {fileID: 3235694773317324931}
   _fill: {fileID: 3235694773914420431}
 --- !u!1 &3235694773914420429
@@ -456,7 +453,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 865443d25201ea64aa96623e8c988ed4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  photonView: {fileID: 5837373114000336273}
   _healthBarUi: {fileID: 6327943130510339392}
   _pointsUI: {fileID: 9094132071316486475}
   _bulletsUi: {fileID: 1627465619005758641}

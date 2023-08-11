@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
@@ -12,7 +14,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] private bool haveKnockback = false;
     [SerializeField] private float knockbackForce = 10f;
     [SerializeField] private bool isMelee = false;
-    [SerializeField] private bool isWallBang = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     [SerializeField] private GameObject[] _bloodSplatterParticles;
@@ -101,7 +102,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         if (_status != null)
         {
             enemiesHitted++;
-            if (!_status.isDeadEnemy())
+            if (!_status.IsDeadEnemy())
             {
                 GameObject NewBloodParticle;
                 if (!isCritical)
@@ -123,7 +124,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 hitted = true;
                 if (_isBulletOwner)
                 {
-                    _status.takeDamage(damage, PlayerShooter,_isAiming,isMelee, isCritical);
+                    _status.TakeDamage(damage, PlayerShooter,_isAiming,isMelee, isCritical);
                     if (haveKnockback)
                     {
                         Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
@@ -155,7 +156,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
         if (status != null)
         {
-            if (!status.verifyDown())
+            if (!status.GetIsDown())
             {
                 int randomBloodEffect = UnityEngine.Random.Range(0, _bloodSplatterParticles.Length);
                     GameObject NewBloodParticle = Instantiate(_bloodSplatterParticles[randomBloodEffect], objetoDeColisao.transform.position,
@@ -165,11 +166,11 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 if (_isOnline)
                 {
                     if(_isBulletOwner)
-                        status.takeOnlineDamage(baseDamage*0.5f, false);
+                        status.TakeOnlineDamage(baseDamage*0.5f, false);
                 }
                 else
                 {
-                    status.takeDamage(baseDamage*0.5f, false);
+                    status.TakeDamage(baseDamage*0.5f, false);
                 }
 
                 if (enemiesHitted < hitableEnemies)
@@ -216,10 +217,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
 
     public void setHitableEnemies(int hitableEnemies)
     {
-        if (hitableEnemies > 1)
-        {
-            isWallBang = true;
-        }
+        
         this.hitableEnemies = hitableEnemies;
     }
 

@@ -1,35 +1,35 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class OffScreenObjectIcon : MonoBehaviour
+namespace Runtime.Câmera.MiniMapCamera
 {
-    public Texture Icon = null;
-    public Texture Arrow = null;
-    public Color Color = Color.white;
-    private Camera camera;
-    private OffScreenCameraIcons _offScreenCamera;
-
-    private void Start()
+    public class OffScreenObjectIcon : MonoBehaviour
     {
-        //find main gameManager by name
-        GameObject gameManager = GameObject.Find("GameManager");
-        MainGameManager mainGameManager = gameManager.GetComponent<MainGameManager>();
-        camera = mainGameManager.getMiniMapCamera();
-        _offScreenCamera = camera.GetComponent<OffScreenCameraIcons>();
-        if (_offScreenCamera)
-        {
-            _offScreenCamera.AddTrackedObject(this);
-        }
-    }
+        public Texture Icon = null;
+        public Texture Arrow = null;
+        public Color Color = Color.white;
+        private Camera mainCamera;
+        private OffScreenCameraIcons _offScreenCamera;
 
-    private void OnDestroy()
-    {
-        if (_offScreenCamera)
+        private void Start()
         {
-            _offScreenCamera.removeTrackedObject(this);
+            //find main gameManager by nickname
+            GameObject gameManager = GameObject.Find("GameManager");
+            MainGameManager mainGameManager = gameManager.GetComponent<MainGameManager>();
+            mainCamera = mainGameManager.getMiniMapCamera();
+            _offScreenCamera = mainCamera.GetComponent<OffScreenCameraIcons>();
+            if (_offScreenCamera)
+            {
+                _offScreenCamera.AddTrackedObject(this);
+            }
         }
-    }
+
+        private void OnDestroy()
+        {
+            if (_offScreenCamera)
+            {
+                _offScreenCamera.removeTrackedObject(this);
+            }
+        }
     
+    }
 }

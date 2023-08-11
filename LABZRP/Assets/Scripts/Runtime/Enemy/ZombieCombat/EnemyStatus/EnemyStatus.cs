@@ -1,146 +1,110 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Enemy.Animation;
+using Runtime.Enemy.HorderMode;
+using Runtime.Enemy.ScriptObjects.EnemyBase;
+using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
+namespace Runtime.Enemy.ZombieCombat.EnemyStatus
 {
-    public ScObEnemyStats _status;
-    private HordeManager hordeManager;
-    public GameObject FireDamage;
-    [SerializeField] private GameObject[] LessBloodPrefabs;
-    [SerializeField] private GameObject[] MoreBloodPrefabs;
-    private bool isDead = false;
-    private float totalLife;
-    private float _life;
-    private float _speed;
-    private float _damage;
-    private bool isSpecial = false;
-    private bool looseSpecial = false;
-    [SerializeField] private ZombieAnimationController _animator;
-    private EnemyFollow _enemyFollow;
-    private SpecialZombiesAttacks _specialZombiesAttacks;
-    private int points;
+    public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
+    {
+        [SerializeField] private CapsuleCollider capsuleCollider;
+        [SerializeField] private BoxCollider boxCollider;
+        [SerializeField] private ScObEnemyStats status;
+        private HordeManager _hordeManager;
+        [SerializeField] private GameObject fireDamage;
+        [SerializeField] private GameObject[] lessBloodPrefabs;
+        [SerializeField] private GameObject[] moreBloodPrefabs;
+        private bool _isDead;
+        private float _totalLife;
+        private float _life;
+        private float _speed;
+        private float _damage;
+        private bool _isSpecial;
+        [SerializeField] private ZombieAnimationController animator;
+        [SerializeField] private EnemyNavMeshFollow enemyNavMeshFollow;
+        private SpecialZombiesAttacks.SpecialZombiesAttacks _specialZombiesAttacks;
+        private int _points;
+        private bool _burnTickDamage = true;
+        private float _burnTickTime;
+        private bool _isBurning;
+        private float _timeBurning;
+        private bool _isSpeedSlowed;
+        [SerializeField] private bool isOnline;
     
-    private bool burnTickDamage = true;
-    private float burnTickTime = 0;
-    private bool isBurning = false;
-    private float timeBurning = 0;
-    private bool _isSpeedSlowed = false;
-    
-    [SerializeField] private bool isOnline = false;
-    [SerializeField] PhotonView photonView;
-    
-    //Special events
-    //Explosive enemies===============================================
-    [SerializeField] private GameObject[] explosivesPrefabs;
-    [SerializeField] private GameObject explosiveDeathEffect;
-    [SerializeField] private string[] randomExplosiveName;
-    private bool isOnExplosiveEvents = false;
+        //Special events
+        //Explosive enemies===============================================
+        [SerializeField] private GameObject[] explosivesPrefabs;
+        [SerializeField] private GameObject explosiveDeathEffect;
+        [SerializeField] private string[] randomExplosiveName;
+        private bool _isOnExplosiveEvents;
 
 
-    // Start is called before the first frame update
-    void Awake()
-    {
-        _enemyFollow = GetComponent<EnemyFollow>();
-        _specialZombiesAttacks = GetComponent<SpecialZombiesAttacks>();
-        totalLife = _status.health;
-        _life = totalLife;
-        _speed = _status.speed;
-        _damage = _status.damage;
-        isSpecial = _status.isSpecial;
-    }
-
-    // Update is called once per frame
-    private void Start()
-    {
-        _enemyFollow.getEnemy().speed = _speed;
-        if(isSpecial)
-            points = _specialZombiesAttacks.getPoints();
-        else
-            points = 10;
-
-    }
-
-
-    public void setLooseSpecial(bool loose)
-    {
-        looseSpecial = loose;
-    }
-    private void Update()
-    {
-        if(isOnline && !PhotonNetwork.IsMasterClient)
-            return;
-        
-        if (isBurning)
+        void Awake()
         {
-            FireDamage.SetActive(true);
-            if (burnTickDamage && !isDead)
-            {
-                takeDamage(_status.burnDamagePerSecond,null,false,false,false);
-                burnTickTime = 0;
-                burnTickDamage = false;
-            }
+            _totalLife = status.health;
+            _life = _totalLife;
+            _speed = status.speed;
+            _damage = status.damage;
+            _isSpecial = status.isSpecial;
+        }
+
+        private void Start()
+        {
+            enemyNavMeshFollow.getEnemy().speed = _speed;
+            if(_isSpecial)
+                _points = _specialZombiesAttacks.GetPoints();
             else
+                _points = 10;
+
+        }
+    
+        private void Update()
+        {
+            if(isOnline && !PhotonNetwork.IsMasterClient)
+                return;
+        
+            if (_isBurning)
             {
-                burnTickTime += Time.deltaTime;
-                if(burnTickTime >= 1)
-                    burnTickDamage = true;
-            }
+                fireDamage.SetActive(true);
+                if (_burnTickDamage && !_isDead)
+                {
+                    TakeDamage(status.burnDamagePerSecond,null,false,false,false);
+                    _burnTickTime = 0;
+                    _burnTickDamage = false;
+                }
+                else
+                {
+                    _burnTickTime += Time.deltaTime;
+                    if(_burnTickTime >= 1)
+                        _burnTickDamage = true;
+                }
             
-            timeBurning -= Time.deltaTime;
-            if (timeBurning <= 0)
-            {
-                isBurning = false;
-                FireDamage.SetActive(false);
-                if(isOnline)
-                    photonView.RPC("disableFireDamageRPC", RpcTarget.All);
+                _timeBurning -= Time.deltaTime;
+                if (_timeBurning <= 0)
+                {
+                    _isBurning = false;
+                    fireDamage.SetActive(false);
+                    if(isOnline)
+                        photonView.RPC("DisableFireDamageRPC", RpcTarget.All);
+                }
             }
         }
-    }
 
     
-    [PunRPC]
-    public void MasterClientHandleDamageRPC(float damage, int photonid, bool isAiming, bool isMelee, bool isCritical)
-    {
-        WeaponSystem playerShooter = PhotonView.Find(photonid).GetComponent<WeaponSystem>();
-        takeDamage(damage,playerShooter, isAiming, isMelee, isCritical);
-    }
-
-    public void rewardPlayerShooter(WeaponSystem playerShooter, bool isAiming, bool isMelee)
-    {
-
-        if (isAiming)
+        [PunRPC]
+        public void MasterClientHandleDamageRPC(float damage, int photonId, bool isAiming, bool isMelee, bool isCritical)
         {
-            playerShooter.addKilledZombieWithAim();
-
+            WeaponSystem playerShooter = PhotonView.Find(photonId).GetComponent<WeaponSystem>();
+            TakeDamage(damage,playerShooter, isAiming, isMelee, isCritical);
         }
 
-        else if (isMelee)
+        private void RewardPlayerShooter(WeaponSystem playerShooter, bool isAiming, bool isMelee)
         {
-            playerShooter.addKilledZombieWithMelee();
 
-        }
-
-        if (getIsSpecial())
-        {
-            int points = getPoints();
-            playerShooter.addKilledSpecialZombie(points);
-        }
-        else
-        {
-            playerShooter.addKilledNormalZombie();
-
-        }
-    }
-    
-    [PunRPC]
-    public void rewardPlayerShooterRPC(int photonId, bool isAiming, bool isMelee)
-    {
-        WeaponSystem playerShooter = PhotonView.Find(photonId).GetComponent<WeaponSystem>();
-        if (playerShooter.photonView.IsMine)
-        {
             if (isAiming)
             {
                 playerShooter.addKilledZombieWithAim();
@@ -153,9 +117,9 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
 
             }
 
-            if (getIsSpecial())
+            if (GetIsSpecial())
             {
-                int points = getPoints();
+                int points = GetPoints();
                 playerShooter.addKilledSpecialZombie(points);
             }
             else
@@ -164,396 +128,421 @@ public class EnemyStatus : MonoBehaviourPunCallbacks, IPunObservable
 
             }
         }
-    }
-
-    public void takeDamage(float damage, WeaponSystem playerShooter, bool isAiming, bool isMelee, bool isCritical)
-    {
-        
-        if (!isBurning)
+    
+        [PunRPC]
+        public void RewardPlayerShooterRPC(int photonId, bool isAiming, bool isMelee)
         {
-            int randomLessBlood = UnityEngine.Random.Range(0, LessBloodPrefabs.Length);
-            GameObject NewBloodParticle = Instantiate(LessBloodPrefabs[randomLessBlood],
-                new Vector3(transform.position.x, 57, transform.position.z),
-                LessBloodPrefabs[randomLessBlood].transform.rotation);
-            Destroy(NewBloodParticle, 8f);
-        }
-
-        if (isOnline && !PhotonNetwork.IsMasterClient)
-        {
-            int photonid = playerShooter.photonView.ViewID;
-            photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage, photonid, isAiming, isMelee, isCritical);
-        }
-        else
-        {
-            _life -= damage;
-            if (_specialZombiesAttacks)
+            WeaponSystem playerShooter = PhotonView.Find(photonId).GetComponent<WeaponSystem>();
+            if (playerShooter.photonView.IsMine)
             {
-                _specialZombiesAttacks.setLife(_life);
+                if (isAiming)
+                {
+                    playerShooter.addKilledZombieWithAim();
+
+                }
+
+                else if (isMelee)
+                {
+                    playerShooter.addKilledZombieWithMelee();
+
+                }
+
+                if (GetIsSpecial())
+                {
+                    int points = GetPoints();
+                    playerShooter.addKilledSpecialZombie(points);
+                }
+                else
+                {
+                    playerShooter.addKilledNormalZombie();
+
+                }
             }
         }
-        
-        if (_life <= 0)
+
+        public void TakeDamage(float damage, WeaponSystem playerShooter, bool isAiming, bool isMelee, bool isCritical)
         {
-            if (playerShooter != null)
+        
+            if (!_isBurning)
             {
+                int randomLessBlood = Random.Range(0, lessBloodPrefabs.Length);
+                Vector3 transformPosition = transform.position;
+                GameObject newBloodParticle = Instantiate(lessBloodPrefabs[randomLessBlood],
+                new Vector3(transformPosition.x, 57, transformPosition.z),
+                    lessBloodPrefabs[randomLessBlood].transform.rotation);
+                Destroy(newBloodParticle, 8f);
+            }
+
+            if (isOnline && !PhotonNetwork.IsMasterClient)
+            {
+                var photonId = playerShooter.photonView.ViewID;
+                photonView.RPC("MasterClientHandleDamageRPC", RpcTarget.MasterClient, damage, photonId, isAiming, isMelee, isCritical);
+            }
+            else
+            {
+                _life -= damage;
+                if (_specialZombiesAttacks)
+                {
+                    _specialZombiesAttacks.SetLife(_life);
+                }
+            }
+        
+            if (_life <= 0)
+            {
+                if (playerShooter != null)
+                {
                 
-                    killEnemy();
+                    KillEnemy();
                     if (isOnline)
                     {
-                        int photonid = playerShooter.photonView.ViewID;
-                        photonView.RPC("rewardPlayerShooterRPC", RpcTarget.All, photonid, isAiming,
+                        var photonId = playerShooter.photonView.ViewID;
+                        photonView.RPC("RewardPlayerShooterRPC", RpcTarget.All, photonId, isAiming,
                             isMelee);
                     }
                     else
-                        rewardPlayerShooter(playerShooter, isAiming, isMelee);
+                        RewardPlayerShooter(playerShooter, isAiming, isMelee);
                     
+                }
+
             }
-
-        }
         
-    }
+        }
 
-    [PunRPC]
-    public void instantiateExplosiveEffect()
-    {
-        GameObject effectInstantiate = Instantiate(explosiveDeathEffect,transform.position, Quaternion.identity);
-        Destroy(effectInstantiate, 2f);
-    }
-    public void killEnemy()
-    {
-        if (!isOnline || PhotonNetwork.IsMasterClient)
+        [PunRPC]
+        public void InstantiateExplosiveEffect()
         {
-            if (!isDead)
+            GameObject effectInstantiate = Instantiate(explosiveDeathEffect,transform.position, Quaternion.identity);
+            Destroy(effectInstantiate, 2f);
+        }
+        public void KillEnemy()
+        {
+            if (!isOnline || PhotonNetwork.IsMasterClient)
             {
-                if (isOnline)
-                    photonView.RPC("disableCapsuleColliderRPC", RpcTarget.All);
-                else
-                    GetComponent<CapsuleCollider>().enabled = false;
-                GetComponent<BoxCollider>().enabled = true;
-                isDead = true;
-                GetComponent<EnemyFollow>().setIsAlive(false);
-                if (PhotonNetwork.IsMasterClient || !isOnline)
+                if (!_isDead)
                 {
-                    hordeManager.decrementZombiesAlive(gameObject);
-                }
-
-                if (isOnExplosiveEvents && !isSpecial)
-                {
-                    if (!isOnline || PhotonNetwork.IsMasterClient)
-                    {
-                        int randomExplosiveIndex = 0;
-                        if (isOnline)
-                            randomExplosiveIndex = UnityEngine.Random.Range(0, randomExplosiveName.Length);
-                        else
-                            randomExplosiveIndex = UnityEngine.Random.Range(0, explosivesPrefabs.Length);
-
-                        GameObject randomExplosive =
-                            explosivesPrefabs[UnityEngine.Random.Range(0, explosivesPrefabs.Length)];
-                        var position = transform.position;
-
-                        if (isOnline)
-                        {
-                            PhotonNetwork.Instantiate(randomExplosiveName[randomExplosiveIndex], position,
-                                Quaternion.identity);
-                            photonView.RPC("instantiateExplosiveEffect", RpcTarget.All);
-                        }
-                        else
-                        {
-                            Instantiate(randomExplosive, position, Quaternion.identity);
-                            GameObject effectInstantiate =
-                                Instantiate(explosiveDeathEffect, position, Quaternion.identity);
-                            Destroy(effectInstantiate, 2f);
-                        }
-                    }
-
                     if (isOnline)
-                        PhotonNetwork.Destroy(gameObject);
+                        photonView.RPC("DisableCapsuleColliderRPC", RpcTarget.All);
                     else
-                        Destroy(gameObject);
-                }
-                else
-                {
-                    if (!isBurning)
-                    {
-                        int randomMoreBlood = UnityEngine.Random.Range(0, MoreBloodPrefabs.Length);
-                        GameObject NewBloodParticle = Instantiate(MoreBloodPrefabs[randomMoreBlood],
-                            new Vector3(transform.position.x, 57, transform.position.z),
-                            MoreBloodPrefabs[randomMoreBlood].transform.rotation);
-                        Destroy(NewBloodParticle, 8f);
-                    }
-
-                    _animator.setTarget(false);
-                    if (isOnline)
-                        photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
-                    else
-                        _animator.triggerDown();
-
-                    GetComponent<EnemyFollow>().setIsAlive(false);
+                        capsuleCollider.enabled = false;
+                    boxCollider.enabled = true;
+                    _isDead = true;
+                    enemyNavMeshFollow.setIsAlive(false);
                     if (PhotonNetwork.IsMasterClient || !isOnline)
                     {
-                        StartCoroutine(waiterToDestroy());
+                        _hordeManager.decrementZombiesAlive(gameObject);
+                    }
+
+                    if (_isOnExplosiveEvents && !_isSpecial)
+                    {
+                        if (!isOnline || PhotonNetwork.IsMasterClient)
+                        {
+                            int randomExplosiveIndex = 0;
+                            if (isOnline)
+                                randomExplosiveIndex = Random.Range(0, randomExplosiveName.Length);
+                            else
+                                randomExplosiveIndex = Random.Range(0, explosivesPrefabs.Length);
+
+                            GameObject randomExplosive =
+                                explosivesPrefabs[Random.Range(0, explosivesPrefabs.Length)];
+                            var position = transform.position;
+
+                            if (isOnline)
+                            {
+                                PhotonNetwork.Instantiate(randomExplosiveName[randomExplosiveIndex], position,
+                                    Quaternion.identity);
+                                photonView.RPC("InstantiateExplosiveEffect", RpcTarget.All);
+                            }
+                            else
+                            {
+                                Instantiate(randomExplosive, position, Quaternion.identity);
+                                GameObject effectInstantiate =
+                                    Instantiate(explosiveDeathEffect, position, Quaternion.identity);
+                                Destroy(effectInstantiate, 2f);
+                            }
+                        }
+
+                        if (isOnline)
+                            PhotonNetwork.Destroy(gameObject);
+                        else
+                            Destroy(gameObject);
+                    }
+                    else
+                    {
+                        if (!_isBurning)
+                        {
+                            int randomMoreBlood = Random.Range(0, moreBloodPrefabs.Length);
+                            GameObject newBloodParticle = Instantiate(moreBloodPrefabs[randomMoreBlood],
+                                new Vector3(transform.position.x, 57, transform.position.z),
+                                moreBloodPrefabs[randomMoreBlood].transform.rotation);
+                            Destroy(newBloodParticle, 8f);
+                        }
+
+                        animator.setTarget(false);
+                        if (isOnline)
+                            photonView.RPC("AnimationHandlerRPC", RpcTarget.All, "triggerDown");
+                        else
+                            animator.triggerDown();
+
+                        enemyNavMeshFollow.setIsAlive(false);
+                        if (PhotonNetwork.IsMasterClient || !isOnline)
+                        {
+                            StartCoroutine(WaiterToDestroy());
+                        }
                     }
                 }
             }
         }
-    }
     
-    [PunRPC]
-    public void disableCapsuleColliderRPC()
-    {
-        GetComponent<CapsuleCollider>().enabled = false;
-        GetComponent<BoxCollider>().enabled = true;
-        if(isOnExplosiveEvents) {
-            if (!isBurning)
-            {
-                int randomMoreBlood = UnityEngine.Random.Range(0, MoreBloodPrefabs.Length);
-                GameObject NewBloodParticle = Instantiate(MoreBloodPrefabs[randomMoreBlood],
+        [PunRPC]
+        public void DisableCapsuleColliderRPC()
+        {
+            capsuleCollider.enabled = false;
+            boxCollider.enabled = true;
+            if (_isOnExplosiveEvents || _isBurning) return;
+            int randomMoreBlood = Random.Range(0, moreBloodPrefabs.Length);
+            GameObject newBloodParticle = Instantiate(moreBloodPrefabs[randomMoreBlood],
                     new Vector3(transform.position.x, 57, transform.position.z),
-                    MoreBloodPrefabs[randomMoreBlood].transform.rotation);
-                Destroy(NewBloodParticle, 8f);
-            }
-        }
-    }
-    
-    [PunRPC]
-    public void AnimationHandlerRPC(string trigger)
-    {
-        if(trigger == "triggerDown"){
-            _animator.triggerDown();
-        }
-
-        if (trigger == "setTarget")
-        {
-            _animator.setTarget(false);
-        }
-        
-    }
-    public void setNewDestination(Vector3 destination)
-    {
-        _enemyFollow.setFollowPlayers(false);
-        _enemyFollow.setNewDestination(destination);
-    }
-    
-    [PunRPC]
-    public void StunEnemyRPC(float time, float speed)
-    {
-        StunEnemy(time);
-    }
-    public void StunEnemy(float time)
-    {
-        if (isOnline && !PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("StunEnemyRPC", RpcTarget.MasterClient, time);
-        }
-        else
-        {
-            _enemyFollow.setIsStoped(true);
-            _enemyFollow.setFollowPlayers(false);
-            _enemyFollow.setCanWalk(false);
-            StartCoroutine(resetStun(time));
+                    moreBloodPrefabs[randomMoreBlood].transform.rotation);
+            Destroy(newBloodParticle, 8f);
             
         }
-    }
-
-    [PunRPC]
-    public void burnEnemyRPC(float time)
-    {
-        FireDamage.SetActive(true);
-        if (PhotonNetwork.IsMasterClient)
-        {
-            burnEnemy(time);
-
-        }
-    }
     
-    [PunRPC]
-    public void disableFireDamageRPC()
-    {
-        FireDamage.SetActive(false);
-    }
-    public void burnEnemy(float time)
-    {
-        if (isOnline && !PhotonNetwork.IsMasterClient)
+        [PunRPC]
+        public void AnimationHandlerRPC(string trigger)
         {
-            photonView.RPC("burnEnemyRPC", RpcTarget.All, time);
-        }
-        else
-        {
-            isBurning = true;
-            timeBurning = time;
-        }
-    }
+            if(trigger == "triggerDown"){
+                animator.triggerDown();
+            }
 
-    private IEnumerator resetStun(float time)
-    {
-        yield return new WaitForSeconds(time);
-        _enemyFollow.setCanWalk(true);
-        _enemyFollow.setIsStoped(false);
-        _enemyFollow.setFollowPlayers(true);
-    }
-    IEnumerator waiterToDestroy()
-    {
-        yield return new WaitForSeconds(3);
-        if(isOnline && PhotonNetwork.IsMasterClient)
-            PhotonNetwork.Destroy(gameObject);
-        else if(!isOnline)
-            Destroy(gameObject);
-    }
-
-    [PunRPC]
-    public void ReceiveTemporarySlowRPC(float time, float speed)
-    {
-        ReceiveTemporarySlow(time, speed);
-    }
-    public void ReceiveTemporarySlow(float time, float speed)
-    {
-        if (isOnline && !PhotonNetwork.IsMasterClient)
-        {
-            photonView.RPC("ReceiveTemporarySlowRPC", RpcTarget.MasterClient, time, speed);
-        }
-        else
-        {
-            if (!_isSpeedSlowed)
+            if (trigger == "setTarget")
             {
-                _isSpeedSlowed = true;
-                float updatedSpeed = _speed - speed;
-                float baseSpeed = _speed;
-                _speed = updatedSpeed;
-                _enemyFollow.setSpeed(updatedSpeed);
-                StartCoroutine(resetTemporarySpeed(time, baseSpeed));
+                animator.setTarget(false);
+            }
+        
+        }
+        public void SetNewDestination(Vector3 destination)
+        {
+            enemyNavMeshFollow.setFollowPlayers(false);
+            enemyNavMeshFollow.setNewDestination(destination);
+        }
+    
+        [PunRPC]
+        public void StunEnemyRPC(float time, float speed)
+        {
+            StunEnemy(time);
+        }
+        public void StunEnemy(float time)
+        {
+            if (isOnline && !PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("StunEnemyRPC", RpcTarget.MasterClient, time);
+            }
+            else
+            {
+                enemyNavMeshFollow.setIsStoped(true);
+                enemyNavMeshFollow.setFollowPlayers(false);
+                enemyNavMeshFollow.setCanWalk(false);
+                StartCoroutine(ResetStun(time));
+            
             }
         }
-    }
-    
-    public bool getIsSpecial()
-    {
-        return isSpecial;
-    }
 
-    public float get_life()
-    {
-        return _status.health;
-    }
-
-    public bool isDeadEnemy()
-    {
-        return isDead;
-    }
-
-    public float getDamage()
-    {
-        return _damage;
-    }
-    
-    public EnemyFollow getEnemyFollow()
-    {
-        return _enemyFollow;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
+        [PunRPC]
+        public void BurnEnemyRPC(float time)
         {
-            stream.SendNext(isDead);
-            stream.SendNext(_life);
-            stream.SendNext(_speed);
-            stream.SendNext(_damage);
+            fireDamage.SetActive(true);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                BurnEnemy(time);
+
+            }
+        }
+    
+        [PunRPC]
+        public void DisableFireDamageRPC()
+        {
+            fireDamage.SetActive(false);
+        }
+        public void BurnEnemy(float time)
+        {
+            if (isOnline && !PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("BurnEnemyRPC", RpcTarget.All, time);
+            }
+            else
+            {
+                _isBurning = true;
+                _timeBurning = time;
+            }
+        }
+
+        private IEnumerator ResetStun(float time)
+        {
+            yield return new WaitForSeconds(time);
+            enemyNavMeshFollow.setCanWalk(true);
+            enemyNavMeshFollow.setIsStoped(false);
+            enemyNavMeshFollow.setFollowPlayers(true);
+        }
+        IEnumerator WaiterToDestroy()
+        {
+            yield return new WaitForSeconds(3);
+            if(isOnline && PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Destroy(gameObject);
+            else if(!isOnline)
+                Destroy(gameObject);
+        }
+
+        [PunRPC]
+        public void ReceiveTemporarySlowRPC(float time, float speed)
+        {
+            ReceiveTemporarySlow(time, speed);
+        }
+        public void ReceiveTemporarySlow(float time, float speed)
+        {
+            if (isOnline && !PhotonNetwork.IsMasterClient)
+            {
+                photonView.RPC("ReceiveTemporarySlowRPC", RpcTarget.MasterClient, time, speed);
+            }
+            else
+            {
+                if (!_isSpeedSlowed)
+                {
+                    _isSpeedSlowed = true;
+                    float updatedSpeed = _speed - speed;
+                    float baseSpeed = _speed;
+                    _speed = updatedSpeed;
+                    enemyNavMeshFollow.setSpeed(updatedSpeed);
+                    StartCoroutine(ResetTemporarySpeed(time, baseSpeed));
+                }
+            }
+        }
+
+        private bool GetIsSpecial()
+        {
+            return _isSpecial;
+        }
+
+        public float get_life()
+        {
+            return status.health;
+        }
+
+        public bool IsDeadEnemy()
+        {
+            return _isDead;
+        }
+
+        public float GetDamage()
+        {
+            return _damage;
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(_isDead);
+                stream.SendNext(_life);
+                stream.SendNext(_speed);
+                stream.SendNext(_damage);
   
             
-        }
-        else
-        {
-            isDead = (bool)stream.ReceiveNext();
-            _life = (float)stream.ReceiveNext();
-            _speed = (float)stream.ReceiveNext();
-            _damage = (float)stream.ReceiveNext();
+            }
+            else
+            {
+                _isDead = (bool)stream.ReceiveNext();
+                _life = (float)stream.ReceiveNext();
+                _speed = (float)stream.ReceiveNext();
+                _damage = (float)stream.ReceiveNext();
      
+            }
         }
-    }
 
-    public void ReceiveTemporaryDamage(float time, float damage)
-    {
-
-        float updatedDamage = _damage + damage;
-        float baseDamage = _damage;
-        _damage = updatedDamage;
-        StartCoroutine(resetTemporaryDamage(time, baseDamage));
-    }
-
-    private IEnumerator resetTemporaryDamage(float time, float baseDamage)
-    {
-        yield return new WaitForSeconds(time);
-        _damage = baseDamage;
-    }
-
-    public void ReceiveTemporarySpeed(float time, float speed)
-    {
-        float updatedSpeed = _speed + speed;
-        float baseSpeed = _speed;
-        _enemyFollow.setSpeed(updatedSpeed);
-        StartCoroutine(resetTemporarySpeed(time, baseSpeed));
-    }
-    private IEnumerator resetTemporarySpeed(float time, float baseSpeed)
-    {
-          yield return new WaitForSeconds(time);
-            _speed = baseSpeed;
-            _enemyFollow.setSpeed(baseSpeed);
-    }
-    
-    public void PermanentDamage(float damage)
-    {
-        _damage += damage;
-    }
-    
-    public void PermanentSpeed(float speed)
-    {
-        _speed += speed;
-        _enemyFollow.getEnemy().speed = _speed;
-    }
-    
-    public void receiveLife(float life)
-    {
-        _life += life;
-        if (_life > totalLife)
+        public void ReceiveTemporaryDamage(float time, float damage)
         {
-            _life = totalLife;
+
+            float updatedDamage = _damage + damage;
+            float baseDamage = _damage;
+            _damage = updatedDamage;
+            StartCoroutine(ResetTemporaryDamage(time, baseDamage));
         }
-    }
+
+        private IEnumerator ResetTemporaryDamage(float time, float baseDamage)
+        {
+            yield return new WaitForSeconds(time);
+            _damage = baseDamage;
+        }
+
+        public void ReceiveTemporarySpeed(float time, float speed)
+        {
+            float updatedSpeed = _speed + speed;
+            float baseSpeed = _speed;
+            enemyNavMeshFollow.setSpeed(updatedSpeed);
+            StartCoroutine(ResetTemporarySpeed(time, baseSpeed));
+        }
+        private IEnumerator ResetTemporarySpeed(float time, float baseSpeed)
+        {
+            yield return new WaitForSeconds(time);
+            _speed = baseSpeed;
+            enemyNavMeshFollow.setSpeed(baseSpeed);
+        }
     
-    public void setTotalLife(float life)
-    {
-        totalLife = life;
-    }
-    public void setCurrentLife(float life)
-    {
-        _life = life;
-    }
+        public void PermanentDamage(float damage)
+        {
+            _damage += damage;
+        }
     
-    public SpecialZombiesAttacks getSpecialZombieAttack()
-    {
-        return _specialZombiesAttacks;
-    }
-    public int getPoints()
-    {
-        return points;
-    }
+        public void PermanentSpeed(float speed)
+        {
+            _speed += speed;
+            enemyNavMeshFollow.getEnemy().speed = _speed;
+        }
     
-    public void setHordeManager(HordeManager hordeManager)
-    {
-        this.hordeManager = hordeManager;
-    }
+        public void ReceiveLife(float life)
+        {
+            _life += life;
+            if (_life > _totalLife)
+            {
+                _life = _totalLife;
+            }
+        }
     
-    public void setExplosiveZombieEvent(bool isOnExplosiveEvents)
-    {
-        this.isOnExplosiveEvents = isOnExplosiveEvents;
-    }
+        public void SetTotalLife(float life)
+        {
+            _totalLife = life;
+        }
+        public void SetCurrentLife(float life)
+        {
+            _life = life;
+        }
     
-    public void gameIsOver()
-    {
-        _enemyFollow.setFollowPlayers(false);
-        _enemyFollow.setCanWalk(false);
-        _enemyFollow.setIsStoped(true);
+        public SpecialZombiesAttacks.SpecialZombiesAttacks GetSpecialZombieAttack()
+        {
+            return _specialZombiesAttacks;
+        }
+
+        private int GetPoints()
+        {
+            return _points;
+        }
+    
+        public void SetHordeManager(HordeManager hordeManager)
+        {
+            _hordeManager = hordeManager;
+        }
+    
+        public void SetExplosiveZombieEvent(bool isOnExplosiveEvents)
+        {
+            _isOnExplosiveEvents = isOnExplosiveEvents;
+        }
+    
+        public void GameIsOver()
+        {
+            enemyNavMeshFollow.setFollowPlayers(false);
+            enemyNavMeshFollow.setCanWalk(false);
+            enemyNavMeshFollow.setIsStoped(true);
         
-    }
+        }
     
+    }
 }

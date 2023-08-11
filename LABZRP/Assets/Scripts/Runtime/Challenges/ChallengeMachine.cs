@@ -1,173 +1,167 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Enemy.ScriptObjects.HordeMode.Challenges;
+using Runtime.Player.Combat.PlayerStatus;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class ChallengeMachine : MonoBehaviourPunCallbacks
+namespace Runtime.Challenges
 {
-    [SerializeField] private Transform ModelSpawnPoint;
-    private ChallengeManager _challengeManager;
-    private bool _isActivated = true;
-    private bool _isStarted = false;
-    private bool _isCompleted = false;
-    [SerializeField] private ScObChallengesSpecs[] _challenges;
-    [Range(1, 3)]
-    [SerializeField] private int difficulty = 1;
-    private int _currentChallenge = 0;
-    private int _currentWave = 0;
-    private int _currentEnemy = 0;
-    private int _currentEnemySpawned = 0;
-    private int _currentPlayersInFrontOfMachine = 0;
-    private GameObject _current3dModel;
-    [SerializeField] private TextMeshPro ScreenPoints;
-    [SerializeField] private bool changeChallenges = false;
-    [SerializeField] private bool isOnline = false;
-    [SerializeField] private TextMeshPro challengeDescription;
-    [SerializeField] private GameObject challengeDescriptionPanel;
-    [SerializeField] private PhotonView photonView;
-
-
-    private void Start()
+    public class ChallengeMachine : MonoBehaviourPunCallbacks
     {
-        _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
-        if(!isOnline || PhotonNetwork.IsMasterClient){
-            InitializeChallengeMachine();
-        }
-        
-    }
+        [SerializeField] private Transform ModelSpawnPoint;
+        private ChallengeManager _challengeManager;
+        private bool _isActivated = true;
+        [SerializeField] private ScObChallengesSpecs[] _challenges;
+        [Range(1, 3)]
+        [SerializeField] private int difficulty = 1;
+        private int _currentChallenge = 0;
+        private int _currentPlayersInFrontOfMachine = 0;
+        private GameObject _current3dModel;
+        [SerializeField] private TextMeshPro ScreenPoints;
+        [SerializeField] private bool changeChallenges = false;
+        [SerializeField] private bool isOnline = false;
+        [SerializeField] private TextMeshPro challengeDescription;
+        [SerializeField] private GameObject challengeDescriptionPanel;
 
-    private void Update()
-    {
-        if (changeChallenges)
+
+        private void Start()
         {
-            DebugRandomizeChallenge();
+            _challengeManager = GameObject.FindGameObjectWithTag("HorderManager").GetComponent<ChallengeManager>();
+            if(!isOnline || PhotonNetwork.IsMasterClient){
+                InitializeChallengeMachine();
+            }
+        
         }
-    }
 
-    public void InitializeChallengeMachine()
-    {
-        _currentChallenge = Random.Range(0, _challenges.Length);
-        if(isOnline){
-            if(_current3dModel)
-                photonView.RPC("Model3dChallengeMachine", RpcTarget.All, true, _currentChallenge);
+        private void Update()
+        {
+            if (changeChallenges)
+            {
+                DebugRandomizeChallenge();
+            }
+        }
+
+        public void InitializeChallengeMachine()
+        {
+            _currentChallenge = Random.Range(0, _challenges.Length);
+            if(isOnline){
+                if(_current3dModel)
+                    photonView.RPC("Model3dChallengeMachine", RpcTarget.All, true, _currentChallenge);
+                else
+                {
+                    photonView.RPC("Model3dChallengeMachine", RpcTarget.All, false, _currentChallenge);
+                }
+
+            }
             else
             {
-                photonView.RPC("Model3dChallengeMachine", RpcTarget.All, false, _currentChallenge);
+                if (_current3dModel)
+                    Model3dChallengeMachine(true, _currentChallenge);
+                else
+                    Model3dChallengeMachine(false, _currentChallenge);
             }
-
         }
-        else
+
+        [PunRPC]
+        public void Model3dChallengeMachine(bool destroy, int _currentChallengeRPC)
         {
-            if (_current3dModel)
-                Model3dChallengeMachine(true, _currentChallenge);
+            if(destroy)
+                Destroy(_current3dModel);
             else
-                Model3dChallengeMachine(false, _currentChallenge);
+            {
+                challengeDescription.text = _challenges[_currentChallengeRPC].ChallengeDescription;
+                _current3dModel = Instantiate(_challenges[_currentChallengeRPC].Model3dChallengeMachine,
+                    ModelSpawnPoint.position, ModelSpawnPoint.rotation);
+                _current3dModel.transform.parent = transform;
+                ScreenPoints.text = "Recompensa:\n" +_challenges[_currentChallengeRPC].ChallengeReward;
+            }
         }
-    }
 
-    [PunRPC]
-    public void Model3dChallengeMachine(bool destroy, int _currentChallengeRPC)
-    {
-        if(destroy)
-            Destroy(_current3dModel);
-        else
+        private void OnTriggerEnter(Collider other)
         {
-            challengeDescription.text = _challenges[_currentChallengeRPC].ChallengeDescription;
-            _current3dModel = Instantiate(_challenges[_currentChallengeRPC].Model3dChallengeMachine,
-                ModelSpawnPoint.position, ModelSpawnPoint.rotation);
-            _current3dModel.transform.parent = transform;
-            ScreenPoints.text = "Recompensa:\n" +_challenges[_currentChallengeRPC].ChallengeReward;
+            if (other.CompareTag("Player"))
+            {
+                _currentPlayersInFrontOfMachine++;
+                if(_currentPlayersInFrontOfMachine == 1){
+                    challengeDescriptionPanel.SetActive(true);
+                    _current3dModel.SetActive(false);
+                }
+            }
         }
-    }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        private void OnTriggerExit(Collider other)
         {
-            _currentPlayersInFrontOfMachine++;
-            if(_currentPlayersInFrontOfMachine == 1){
-                challengeDescriptionPanel.SetActive(true);
+            if(other.CompareTag("Player"))
+                _currentPlayersInFrontOfMachine--;
+            if(_currentPlayersInFrontOfMachine == 0){
+                challengeDescriptionPanel.SetActive(false);
                 _current3dModel.SetActive(false);
             }
         }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if(other.CompareTag("Player"))
-            _currentPlayersInFrontOfMachine--;
-        if(_currentPlayersInFrontOfMachine == 0){
-            challengeDescriptionPanel.SetActive(false);
-            _current3dModel.SetActive(false);
-        }
-    }
 
 
-    private void OnTriggerStay(Collider other)
-    {
-        if (!isOnline || PhotonNetwork.IsMasterClient)
+        private void OnTriggerStay(Collider other)
         {
-            PlayerStats playerStats = other.GetComponent<PlayerStats>();
-            if (playerStats && _isActivated)
+            if (!isOnline || PhotonNetwork.IsMasterClient)
             {
-                if (playerStats.getInteracting() && !playerStats.verifyDown())
+                PlayerStats playerStats = other.GetComponent<PlayerStats>();
+                if (playerStats && _isActivated)
                 {
-                    if (_challengeManager.StartChallenge(_challenges[_currentChallenge], this))
+                    if (playerStats.GetInteracting() && !playerStats.GetIsDown())
                     {
-                        _isActivated = false;
-                        _isStarted = true;
-                        ScObChallengesSpecs challenge = _challenges[_currentChallenge];
-                        challenge.zombiesToKill = (_challenges[_currentChallenge].zombiesToKill * difficulty) +
-                                                  (_challengeManager.getPlayerCount() * 15);
-                        challenge.ChallengeReward = (_challenges[_currentChallenge].ChallengeReward * difficulty);
-                        _challengeManager.StartChallenge(_challenges[_currentChallenge], this);
+                        if (_challengeManager.StartChallenge(_challenges[_currentChallenge], this))
+                        {
+                            _isActivated = false;
+                            ScObChallengesSpecs challenge = _challenges[_currentChallenge];
+                            challenge.zombiesToKill = (_challenges[_currentChallenge].zombiesToKill * difficulty) +
+                                                      (_challengeManager.getPlayerCount() * 15);
+                            challenge.ChallengeReward = (_challenges[_currentChallenge].ChallengeReward * difficulty);
+                            _challengeManager.StartChallenge(_challenges[_currentChallenge], this);
 
+                        }
                     }
                 }
             }
         }
-    }
     
-    public ScObChallengesSpecs getCurrentChallenge()
-    {
-        return _challenges[_currentChallenge];
-    }
+        public ScObChallengesSpecs getCurrentChallenge()
+        {
+            return _challenges[_currentChallenge];
+        }
 
-    public void setIsActivated(bool value)
-    {
-        if (isOnline)
-            photonView.RPC("setIsActivatedRPC", RpcTarget.All, value);
-        else
+        public void setIsActivated(bool value)
+        {
+            if (isOnline)
+                photonView.RPC("setIsActivatedRPC", RpcTarget.All, value);
+            else
+                _isActivated = value;
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(_currentChallenge);
+            }
+            else
+            {
+                _currentChallenge = (int) stream.ReceiveNext();
+            }
+        }
+
+        [PunRPC]
+        public void setIsActivatedRPC(bool value)
+        {
             _isActivated = value;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(_currentChallenge);
         }
-        else
+
+        private void DebugRandomizeChallenge()
         {
-            _currentChallenge = (int) stream.ReceiveNext();
+            changeChallenges = false;
+            InitializeChallengeMachine();
         }
-    }
-
-    [PunRPC]
-    public void setIsActivatedRPC(bool value)
-    {
-        _isActivated = value;
-    }
-
-    private void DebugRandomizeChallenge()
-    {
-        changeChallenges = false;
-        InitializeChallengeMachine();
-    }
     
     
+    }
 }

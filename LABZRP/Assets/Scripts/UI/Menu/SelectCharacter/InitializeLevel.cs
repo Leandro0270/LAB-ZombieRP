@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Player.Inputs;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,13 +13,11 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     [SerializeField] private Transform[] playerSpawns;
     [SerializeField] private MainGameManager mainGameManager;
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private PhotonView photonView;
-    private int[] playersOnLobbyByActorNumber;
     private List<OnlinePlayerConfiguration> pc;
     private List<GameObject> players = new List<GameObject>();
     int photonViewID;
     private int playersReady = 1;
-    private bool startedGame = false;
+    private bool startedGame;
 
     private void Awake()
     {
@@ -48,7 +47,6 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
             pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
             mainGameManager.getHordeManager().setIsOnline(true);
             mainGameManager.getChallengeManager().setIsOnline(true);
-            playersOnLobbyByActorNumber = onlinePlayerConfigurationManager.getPlayersOnLobbyByActorNumber();
             if (!PhotonNetwork.LocalPlayer.IsMasterClient)
             {
                 photonView.RPC("sceneLoaded", RpcTarget.MasterClient);

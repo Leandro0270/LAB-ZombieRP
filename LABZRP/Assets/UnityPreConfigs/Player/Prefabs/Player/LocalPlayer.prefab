@@ -227,19 +227,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   delayBlood: 1.5
-  LessBloodPrefabs:
+  lessBloodPrefabs:
   - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  MoreBloodPrefabs:
+  moreBloodPrefabs:
   - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  BloodSplashPrefabs:
-  - {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}
+  playerAnimationManager: {fileID: 7704960691108931514}
   fireEffect: {fileID: 5102542545529860270}
-  dispersaoSangue: 1
+  bloodDispersion: 4
   totalLife: 0
   life: 0
-  PlayerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
-  _playerHead: {fileID: 6071763367816855199}
-  _playerIndicator: {fileID: 8476164450946481546}
+  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
+  playerHead: {fileID: 6071763367816855199}
+  characterController: {fileID: 2607379241762753282}
+  reviveScript: {fileID: 1534977132509532281}
+  playerMovement: {fileID: 4110660743282712486}
+  playerRotation: {fileID: 4110660743282712481}
+  weaponSystem: {fileID: 4110660743282712484}
+  playerPoints: {fileID: 1921763957812739907}
+  throwablePlayerStats: {fileID: 4962438788449095720}
+  playerIndicator: {fileID: 8476164450946481546}
+  boxCollider: {fileID: 3281851553285552828}
 --- !u!114 &4110660743282712486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -252,6 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efa0f18f6ed132e4badcf28666fc23d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  status: {fileID: 4110660743282712487}
+  controller: {fileID: 2607379241762753282}
 --- !u!114 &4110660743282712481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,10 +273,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4622c425b90ec47bd0acd39227ff8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _move: {fileID: 0}
-  ground:
-    serializedVersion: 2
-    m_Bits: 8
+  _status: {fileID: 4110660743282712487}
 --- !u!114 &4110660743282712480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,14 +286,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8adb12746eeef5e45b841ac9bcc14fd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _OnlinePlayerInput: {fileID: 0}
-  _photonView: {fileID: 0}
-  _move: {fileID: 0}
-  _rotate: {fileID: 0}
-  _attack: {fileID: 0}
-  _status: {fileID: 0}
-  _customize: {fileID: 0}
-  _throwableStats: {fileID: 0}
+  move: {fileID: 4110660743282712486}
+  rotate: {fileID: 4110660743282712481}
+  attack: {fileID: 4110660743282712484}
+  status: {fileID: 4110660743282712487}
+  customize: {fileID: 8166761122169303627}
+  throwableStats: {fileID: 4962438788449095720}
+  onlinePlayerInput: {fileID: 0}
   delay: 1.5
 --- !u!114 &1534977132509532281
 MonoBehaviour:
@@ -320,7 +325,6 @@ MonoBehaviour:
   DecalSpawnPoint: {fileID: 5597692463332652274}
   coolDownBetweenThrows: 1.5
   isOnline: 0
-  photonView: {fileID: 0}
   throwableItemPrefab: {fileID: 2216045802385621327, guid: d5d2cd53e6d08d5498ddbe99c0d8d96f, type: 3}
 --- !u!65 &3281851553285552828
 BoxCollider:
@@ -389,7 +393,6 @@ MonoBehaviour:
   isMultiplierActive: 0
   points: 0
   isOnline: 0
-  photonView: {fileID: 0}
 --- !u!143 &2607379241762753282
 CharacterController:
   m_ObjectHideFlags: 0
@@ -878,8 +881,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 0}
-  photonView: {fileID: 0}
-  isOnline: 0
 --- !u!1 &6071763367816855199 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

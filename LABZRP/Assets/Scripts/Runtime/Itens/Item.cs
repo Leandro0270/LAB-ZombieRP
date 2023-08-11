@@ -1,17 +1,16 @@
 using System;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class Item : MonoBehaviourPunCallbacks
 {
     [SerializeField] private bool isOnline = false;
-    [SerializeField] private PhotonView photonView;
-    public bool isThrowable;
     public ScObItem ItemScOB;
     private GameObject StartItem;
 
-    void OnTriggerEnter(Collider objetoDeColisao)
+    private void OnTriggerEnter(Collider objetoDeColisao)
     {
         if(StartItem){
             PlayerStats status = objetoDeColisao.GetComponent<PlayerStats>();
@@ -110,7 +109,7 @@ public class Item : MonoBehaviourPunCallbacks
                 {
                     if (!isOnline || isMine)
                     {
-                        if (status.addItemThrowable(ItemScOB.throwable))
+                        if (status.AddItemThrowable(ItemScOB.throwable))
                         {
                             if (isOnline)
                             {

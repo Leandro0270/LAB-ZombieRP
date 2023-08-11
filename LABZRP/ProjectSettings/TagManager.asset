@@ -18,6 +18,9 @@ TagManager:
   - door
   - Bullet
   - MainMenuOptions
+  - PlayersUiSpawn
+  - Fire
+  - ExplosiveBarrel
   layers:
   - Default
   - TransparentFX

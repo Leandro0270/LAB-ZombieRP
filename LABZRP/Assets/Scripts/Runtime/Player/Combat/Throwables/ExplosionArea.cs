@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Player.Combat.PlayerStatus;
+using Runtime.Player.ScriptObjects.Combat;
 using UnityEngine;
 
 public class ExplosionArea : MonoBehaviourPunCallbacks
 {
     [SerializeField] private ScObThrowableSpecs _throwableSpecs;
     [SerializeField] private bool isOnline = false;
-    [SerializeField] private PhotonView photonView;
     [SerializeField] private bool isManualSetup = false;
     private ScObThrowableSpecs.Type _throwableType;
     
@@ -70,9 +72,9 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
                     if (_isDamage)
                     {
                         if(isOnline)
-                            playerStats.takeOnlineDamage(_damage*0.5f, false);
+                            playerStats.TakeOnlineDamage(_damage*0.5f, false);
                         else
-                            playerStats.takeDamage(_damage * 0.5f, false);
+                            playerStats.TakeDamage(_damage * 0.5f, false);
                     }
 
                     if (_isHeal)
@@ -106,7 +108,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
                 {
                     if (_isDamage)
                     {
-                        enemyStatus.takeDamage(_damage,null, false, false, false);
+                        enemyStatus.TakeDamage(_damage,null, false, false, false);
                     }
                     
 
@@ -124,7 +126,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
 
                     if (_isBurning)
                     {
-                        enemyStatus.burnEnemy(_burnDuration);
+                        enemyStatus.BurnEnemy(_burnDuration);
                     }
                 }
             }
@@ -165,7 +167,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
             {
                 if(_isBurning)
                 {
-                    enemyStatus.burnEnemy(_burnDuration);
+                    enemyStatus.BurnEnemy(_burnDuration);
                 }
             }
         }

@@ -3,6 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Photon.Realtime;
+using Runtime.Câmera.MainCamera;
+using Runtime.Challenges;
+using Runtime.Enemy.HorderMode;
+using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -16,7 +22,6 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     private List<GameObject> enemies;
     private List<GameObject> itens;
     [SerializeField] private List<AmmoBox> ammoBoxes;
-    [SerializeField] private PhotonView photonView;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private HordeManager hordeManager;
     [SerializeField] private ChallengeManager challengeManager;
@@ -131,7 +136,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject enemy in enemies)
         {
-            enemy.GetComponent<EnemyStatus>().killEnemy();
+            enemy.GetComponent<EnemyStatus>().KillEnemy();
         }
     }
 
@@ -172,7 +177,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject player in players)
         {
-            player.GetComponent<PlayerStats>().takeDamage(100000, false);
+            player.GetComponent<PlayerStats>().TakeDamage(100000, false);
         }
     }
 
@@ -225,7 +230,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject enemy in enemies)
         {
-            enemy.GetComponent<EnemyFollow>().setNearPlayerDestination();
+            enemy.GetComponent<EnemyNavMeshFollow>().setNearPlayerDestination();
         }
     }
     public HordeManager getHordeManager()
@@ -237,7 +242,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         foreach (GameObject enemy in enemies)
         {
-            enemy.GetComponent<EnemyFollow>().setCoffeeMachineEvent(false);
+            enemy.GetComponent<EnemyNavMeshFollow>().setCoffeeMachineEvent(false);
         }
         resetZombiesTarget();
     }
@@ -256,7 +261,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
             hordeManager.gameOver();
             foreach (var zombie in enemies)
             {
-                zombie.GetComponent<EnemyStatus>().gameIsOver();
+                zombie.GetComponent<EnemyStatus>().GameIsOver();
             }
             gameOverUI.gameOver();
         }
@@ -295,7 +300,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
             hordeManager.updateHordeOnline();
             foreach (var zombie in enemies)
             {
-                zombie.GetComponent<EnemyStatus>().gameIsOver();
+                zombie.GetComponent<EnemyStatus>().GameIsOver();
             }
         }
         gameOverUI.gameOver();

@@ -277,7 +277,6 @@ MonoBehaviour:
   ScreenPoints: {fileID: 3905148560051671263}
   isOnline: 1
   isMasterClient: 0
-  photonView: {fileID: -314365475235654212}
   changeItem: 0
 --- !u!65 &2976012021871002689
 BoxCollider:

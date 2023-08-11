@@ -6,10 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class HealthBar_UI : MonoBehaviourPunCallbacks, IPunObservable
 {
-    [SerializeField] PhotonView photonView;
-    [SerializeField] private bool isOnline = false;
     private Color _color;
-    public GameObject Fill;
     [SerializeField] private Slider _slider;
     [SerializeField] private Image _fill;
 

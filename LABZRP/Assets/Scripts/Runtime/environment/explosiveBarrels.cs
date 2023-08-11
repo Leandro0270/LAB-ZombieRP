@@ -15,7 +15,6 @@ public class explosiveBarrels : MonoBehaviourPunCallbacks
     [SerializeField] private float fireDamage = 8;
     [Range(0,1)]
     [SerializeField] private float startBurnPercentage = 0.7f;
-    [SerializeField] private PhotonView photonView;
     private float currentBarrelLife;
     private float currentFireDamageTickTime = 0;
     private bool isOnline = false;
@@ -72,7 +71,7 @@ public class explosiveBarrels : MonoBehaviourPunCallbacks
     {
         if (isOnline && !PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC("takeDamage", RpcTarget.MasterClient, damage);
+            photonView.RPC("TakeDamage", RpcTarget.MasterClient, damage);
             return;
         }
 

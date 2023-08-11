@@ -30,7 +30,6 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      [SerializeField] private List<OnlineLobbyPlayersShower> lobbyPlayersShower;
      [SerializeField] private List<OnlineLobbyPlayersShower> availableLobbyPlayersShower = new List<OnlineLobbyPlayersShower>();
      List<OnlinePlayerConfiguration> playerConfigs = new List<OnlinePlayerConfiguration>();
-     [SerializeField] private PhotonView photonView;
      [SerializeField] private List<Material> Skin;
      [SerializeField] private List<Material> Eyes;
      [SerializeField] private List<Material> tshirt;
@@ -45,19 +44,13 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
      [SerializeField] private TextMeshProUGUI WaitingForHostText;
      [SerializeField] private TextMeshProUGUI readyCountText;
      [SerializeField] private GameObject LoadPanel;
-     [SerializeField] private InputSystemUIInputModule inputSystemUiInputModule;
-     private bool selectedClass = false;
-     private bool selectedSkin = false;
-     private bool clientPlayerIsReady = false;
      private int localPlayerIndex;
      private bool hideClientPanel = false;
      private Player[] playersNaSala;
      private bool isReplay = true;
      private int readyCount = 0;
      private int playersCount = 0;
-     private bool gameStarted = false;
      private bool initializedConfigs = false;
-     private bool isRestatedLobby = false;
      private int[] playersOnLobbyByActorNumber = new int[4];
      private InputActionMap actionMap;
      public InputActionAsset actionAsset;

@@ -1,292 +1,272 @@
-using System;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
+using Runtime.Player.Combat.Throwables;
+using Runtime.Player.Movement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
-public class PlayerInputHandler : MonoBehaviourPunCallbacks
+namespace Runtime.Player.Inputs
 {
-    
-    [SerializeField] PlayerInput _OnlinePlayerInput;
-    [SerializeField] PhotonView _photonView;
-    private PlayerController _controls;
-    private PauseMenu _pause;
-    private OnlinePlayerConfiguration _OnlinePlayerConfig;
-    private PlayerConfiguration _playerConfig;
-    private bool gameIsPaused = false;
-    [SerializeField] private PlayerMovement _move;
-    [SerializeField] private PlayerRotation _rotate;
-    [SerializeField] private WeaponSystem _attack;
-    [SerializeField] private PlayerStats _status;
-    [SerializeField] private CustomizePlayerInGame _customize;
-    [SerializeField] private ThrowablePlayerStats _throwableStats;
-    private MainGameManager _mainGameManager;
-    public float delay = 2f;
-    private float delayTimer = 0f;
-
-    private void Awake()
+    public class PlayerInputHandler : MonoBehaviourPunCallbacks
     {
-        _move = GetComponent<PlayerMovement>();
-        _rotate = GetComponent<PlayerRotation>();
-        _attack = GetComponent<WeaponSystem>();
-        _status = GetComponent<PlayerStats>();
-        _customize = GetComponent<CustomizePlayerInGame>();
-        _controls = new PlayerController();
-        _throwableStats = GetComponent<ThrowablePlayerStats>();
-    }
-    private void Start()
-    {
-        _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
-        _mainGameManager.addPlayer(gameObject);
-        _pause = _mainGameManager.getPauseMenu();
-        _pause.addPlayer(this);
-
-    }
-
-    private void Update()
-    {
-        if (delayTimer > 0)
-        {
-            delayTimer -= Time.deltaTime;
-        }
-    }
-    
-    public void InitializeOnlinePlayer(OnlinePlayerConfiguration pc)
-    {
-        _OnlinePlayerConfig = pc;
-        if (_photonView.IsMine)
-        {
-            _OnlinePlayerInput.onActionTriggered += Input_onActionTriggered;
-        }
-        else
-        {
-            _OnlinePlayerInput.enabled = false;
-            _rotate.setIsOnlinePlayer(true);
-        }
-
-        if (_status != null)
-        {
-            _status = GetComponent<PlayerStats>();
-            _status.setIsOnline(true);
-            _status.setPlayerStats(_OnlinePlayerConfig.playerStats);
-        }
-
-        if (_attack != null)
-        {
-            _attack = GetComponent<WeaponSystem>();
-            _attack.setIsOnline(true);
-            _attack.SetGunStatus(_OnlinePlayerConfig.playerStats.startGun);
-        }
-
-        if (_customize != null)
-        {
-            _customize = GetComponent<CustomizePlayerInGame>();
-            _customize.SetSkin(_OnlinePlayerConfig.playerCustom);
-        }
-    }
-        
     
     
-    public void InitializePlayer(PlayerConfiguration pc)
-    {
-        _playerConfig = pc;
-        _playerConfig.Input.onActionTriggered += Input_onActionTriggered;
-        if (_status != null)
-            _status.setPlayerStats(pc.playerStats);
-        
-
-        if (_attack != null)
-            _attack.SetGunStatus(pc.playerStats.startGun);
-        if (_customize != null)
-            _customize.SetSkin(pc.playerCustom);
-        //Pega o dispositivo que o jogador está usando
-        if (_rotate != null)
-            if (_playerConfig.Input.devices[0].device is Gamepad)
-                _rotate.SetGamepadValidation(true);
-
-    }
-
-    private void Input_onActionTriggered(CallbackContext obj)
-    {
-        if (obj.action.name == _controls.Gameplay.Move.name)
+        private PlayerController _controls;
+        private PauseMenu _pause;
+        private OnlinePlayerConfiguration _onlinePlayerConfig;
+        private PlayerConfiguration _playerConfig;
+        private bool _gameIsPaused;
+        [SerializeField] private PlayerMovement move;
+        [SerializeField] private PlayerRotation rotate;
+        [SerializeField] private WeaponSystem attack;
+        [SerializeField] private PlayerStats status;
+        [SerializeField] private CustomizePlayerInGame customize;
+        [SerializeField] private ThrowablePlayerStats throwableStats;
+        [SerializeField] private PlayerInput onlinePlayerInput;
+        private MainGameManager _mainGameManager;
+        public float delay = 2f;
+        private float _delayTimer;
+    
+        private void Start()
         {
-            if(!gameIsPaused)
-                OnMove(obj);
+            _controls = new PlayerController();
+            _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
+            _mainGameManager.addPlayer(gameObject);
+            _pause = _mainGameManager.getPauseMenu();
+            _pause.addPlayer(this);
+
         }
 
-        if (obj.action.name == _controls.Gameplay.Rotation.name)
+        private void Update()
         {
-            if(!gameIsPaused)
-                OnJoinRotation(obj);
-        }
-
-        if (obj.action.name == _controls.Gameplay.Reload.name)
-        {
-            if(!gameIsPaused)
-                OnReload();
-        }
-
-        if (obj.action.name == _controls.Gameplay.Melee.name)
-        {
-            if (!gameIsPaused)
+            if (_delayTimer > 0)
             {
-                if (delayTimer <= 0)
-                {
-                    OnMelee();
-                    delayTimer = delay;
-                }
-            }
-
-        }
-
-        if (obj.action.name == _controls.Gameplay.ShootHold.name)
-        {
-            if(!gameIsPaused)
-                OnShootPress(obj);
-        }
-
-        if (obj.action.name == _controls.Gameplay.Aim.name)
-        {
-            if(!gameIsPaused)
-                OnAimPress(obj);
-        }
-
-        if (obj.action.name == _controls.Gameplay.ChangeThrowable.name)
-        {
-            if(!gameIsPaused)
-                onChangeThrowable();
-        }
-
-        if (obj.action.name == _controls.Gameplay.Pause.name)
-        {
-            if (delayTimer <= 0)
-            {
-                OnPause();
-                delayTimer = delay;
+                _delayTimer -= Time.deltaTime;
             }
         }
-
-        if (obj.action.name == _controls.Gameplay.Select.name)
-        {
-            if (!gameIsPaused)
-            {
-                switch (obj.phase)
-                {
-                    case InputActionPhase.Started:
-                        OnSelect(true);
-                        break;
-                    case InputActionPhase.Canceled:
-                        OnSelect(false);
-                        break;
-                }
-            }
-        }
-
-        if (obj.action.name == _controls.Gameplay.Throwable.name)
-        {
-            if (!gameIsPaused)
-            {
-                switch (obj.phase)
-                {
-                    case InputActionPhase.Started:
-                        onAimThrowable(true);
-                        break;
-                    case InputActionPhase.Canceled:
-                        onAimThrowable(false);
-                        break;
-                }
-            }
-
-        }
-        
-        if (obj.action.name == _controls.Gameplay.CancelAction.name)
-        {
-
-            cancelActions();
-        }
-    }
-
-
-
-    private void OnPause()
-    {
-        _pause.gameObject.SetActive(true);
-        gameIsPaused = _pause.EscButton();
-    }
     
-    private void OnMove(CallbackContext context)
-    {
-        if (_move != null)
+        public void InitializeOnlinePlayer(OnlinePlayerConfiguration pc)
         {
-            _move.SetInputMovimento(context.ReadValue<Vector2>());
-        }
-    }
-
-    private void OnJoinRotation(CallbackContext ctx)
-    {
-        if (_rotate != null)
-        {
-            PlayerInput playerInput;
-            if(_OnlinePlayerConfig != null)
-                playerInput = _OnlinePlayerInput;
+            _onlinePlayerConfig = pc;
+            if (photonView.IsMine)
+            {
+                onlinePlayerInput.onActionTriggered += Input_onActionTriggered;
+            }
             else
-                playerInput = _playerConfig.Input;
+            {
+                onlinePlayerInput.enabled = false;
+                rotate.setIsOnlinePlayer(true);
+            }
 
-            if (ctx.ReadValue<Vector2>() != new Vector2(0, 0))
-                _rotate.setRotationInput(ctx.ReadValue<Vector2>(),playerInput.devices[0] is Gamepad);
+            if (status != null)
+            {
+                status.setIsOnline(true);
+                status.SetPlayerStats(_onlinePlayerConfig.playerStats);
+            }
+
+            if (attack != null)
+            {
+                attack.setIsOnline(true);
+                attack.SetGunStatus(_onlinePlayerConfig.playerStats.startGun);
+            }
+
+            if (customize != null)
+            {
+                customize.SetSkin(_onlinePlayerConfig.playerCustom);
+            }
         }
-    }
-
-    private void OnReload()
-    {
-        _attack.AuxReload();
-
-    }
-
-    private void OnMelee()
-    {
-        _attack.AuxMelee();
-
-    }
-
-    private void OnShootPress(CallbackContext ctx)
-    {
-        _attack.AuxShootPress(ctx);
-
-    }
-
-    private void OnSelect(bool value)
-    {
-        _status.setInteracting(value);
-
-    }
-
-    private void OnAimPress(CallbackContext ctx)
-    {
-        _attack.AuxAimPress(ctx);
-    }
-
-    private void onAimThrowable(bool isAiming)
-    {
-        _throwableStats.setAiming(isAiming);
-    }
-    
-    private void onChangeThrowable()
-    {
-        _throwableStats.changeToNextItem();
-        _throwableStats.cancelThrowAction();
-
-    }
-
-    private void cancelActions()
-    {
-        _throwableStats.cancelThrowAction();
-    }
-
+        
     
     
-    public void setGameIsPaused(bool value)
-    {
-        gameIsPaused = value;
+        public void InitializePlayer(PlayerConfiguration pc)
+        {
+            _playerConfig = pc;
+            _playerConfig.Input.onActionTriggered += Input_onActionTriggered;
+            if (status != null)
+                status.SetPlayerStats(pc.playerStats);
+            if (attack != null)
+                attack.SetGunStatus(pc.playerStats.startGun);
+            if (customize != null)
+                customize.SetSkin(pc.playerCustom);
+        }
+
+        private void Input_onActionTriggered(CallbackContext obj)
+        {
+            if (obj.action.name == _controls.Gameplay.Move.name)
+            {
+                if(!_gameIsPaused)
+                    OnMove(obj);
+            }
+
+            if (obj.action.name == _controls.Gameplay.Rotation.name)
+            {
+                if(!_gameIsPaused)
+                    OnJoinRotation(obj);
+            }
+            if (obj.action.name == _controls.Gameplay.Reload.name)
+            {
+                if(!_gameIsPaused)
+                    OnReload();
+            }
+
+            if (obj.action.name == _controls.Gameplay.Melee.name)
+            {
+                if (!_gameIsPaused)
+                {
+                    if (_delayTimer <= 0)
+                    {
+                        OnMelee();
+                        _delayTimer = delay;
+                    }
+                }
+
+            }
+
+            if (obj.action.name == _controls.Gameplay.ShootHold.name)
+            {
+                if(!_gameIsPaused)
+                    OnShootPress(obj);
+            }
+
+            if (obj.action.name == _controls.Gameplay.Aim.name)
+            {
+                if(!_gameIsPaused)
+                    OnAimPress(obj);
+            }
+
+            if (obj.action.name == _controls.Gameplay.ChangeThrowable.name)
+            {
+                if(!_gameIsPaused)
+                    OnChangeThrowable();
+            }
+
+            if (obj.action.name == _controls.Gameplay.Pause.name)
+            {
+                if (_delayTimer <= 0)
+                {
+                    OnPause();
+                    _delayTimer = delay;
+                }
+            }
+
+            if (obj.action.name == _controls.Gameplay.Select.name)
+            {
+                if (!_gameIsPaused)
+                {
+                    switch (obj.phase)
+                    {
+                        case InputActionPhase.Started:
+                            OnSelect(true);
+                            break;
+                        case InputActionPhase.Canceled:
+                            OnSelect(false);
+                            break;
+                    }
+                }
+            }
+
+            if (obj.action.name == _controls.Gameplay.Throwable.name)
+            {
+                if (!_gameIsPaused)
+                {
+                    switch (obj.phase)
+                    {
+                        case InputActionPhase.Started:
+                            OnAimThrowable(true);
+                            break;
+                        case InputActionPhase.Canceled:
+                            OnAimThrowable(false);
+                            break;
+                    }
+                }
+
+            }
+        
+            if (obj.action.name == _controls.Gameplay.CancelAction.name)
+            {
+
+                CancelActions();
+            }
+        }
+
+
+
+        private void OnPause()
+        {
+            _pause.gameObject.SetActive(true);
+            _gameIsPaused = _pause.EscButton();
+        }
+    
+        private void OnMove(CallbackContext context)
+        {
+            if (move != null)
+            {
+                move.SetInputMovement(context.ReadValue<Vector2>());
+            }
+        }
+
+        private void OnJoinRotation(CallbackContext ctx)
+        {
+            if (rotate != null)
+            {
+                PlayerInput playerInput;
+                if(_onlinePlayerConfig != null)
+                    playerInput = onlinePlayerInput;
+                else
+                    playerInput = _playerConfig.Input;
+
+                if (ctx.ReadValue<Vector2>() != new Vector2(0, 0))
+                    rotate.SetRotationInput(ctx.ReadValue<Vector2>(),playerInput.devices[0] is Gamepad);
+            }
+        }
+
+        private void OnReload()
+        {
+            attack.AuxReload();
+
+        }
+
+        private void OnMelee()
+        {
+            attack.AuxMelee();
+
+        }
+
+        private void OnShootPress(CallbackContext ctx)
+        {
+            attack.AuxShootPress(ctx);
+
+        }
+
+        private void OnSelect(bool value)
+        {
+            status.SetInteracting(value);
+
+        }
+
+        private void OnAimPress(CallbackContext ctx)
+        {
+            attack.AuxAimPress(ctx);
+        }
+
+        private void OnAimThrowable(bool isAiming)
+        {
+            throwableStats.setAiming(isAiming);
+        }
+        private void OnChangeThrowable()
+        {
+            throwableStats.changeToNextItem();
+            throwableStats.cancelThrowAction();
+
+        }
+        private void CancelActions()
+        {
+            throwableStats.cancelThrowAction();
+        }
+        public void SetGameIsPaused(bool value)
+        {
+            _gameIsPaused = value;
+        }
     }
 }

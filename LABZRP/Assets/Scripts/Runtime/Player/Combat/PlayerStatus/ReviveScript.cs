@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +42,7 @@ public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (!_isReviving)
             {
-                _timeToRevive = ctx.GetComponent<PlayerStats>().getRevivalSpeed();
+                _timeToRevive = ctx.GetComponent<PlayerStats>().GetRevivalSpeed();
                 MaxRevivalSpeed = _timeToRevive;
                 
             }
@@ -52,15 +53,15 @@ public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (ctx.GetComponent<PlayerStats>() != null)
         {
-             bool pressing = ctx.GetComponent<PlayerStats>().getInteracting();
+             bool pressing = ctx.GetComponent<PlayerStats>().GetInteracting();
 
-            if (pressing && _playerStats.verifyDown() && !_playerStats.verifyDeath())
+            if (pressing && _playerStats.GetIsDown() && !_playerStats.GetIsDead())
             {
                 _isReviving = true;
                 instantiateRevivalUI();
                 _RevivalUIInstance.transform.position = Camera.main.WorldToScreenPoint(ctx.gameObject.transform.position + new Vector3(0, 6, 0));
                 _RevivalUIInstance.maxValue = MaxRevivalSpeed;
-                _playerStats.stopDeathCounting(true);
+                _playerStats.StopDeathCounting(true);
                 _timeToRevive -= Time.deltaTime;
                 if (_timeToRevive <= 0)
                 {
@@ -71,11 +72,11 @@ public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
             
-            if (ctx.GetComponent<PlayerStats>().getInteracting() == false && _playerStats.verifyDown())
+            if (ctx.GetComponent<PlayerStats>().GetInteracting() == false && _playerStats.GetIsDown())
             {
                 if (_RevivalUIInstance != null)
                 {
-                    _playerStats.stopDeathCounting(false);
+                    _playerStats.StopDeathCounting(false);
                     _isReviving = false;
                     _timeToRevive = MaxRevivalSpeed;
                     Destroy(_RevivalUIInstance.gameObject);
@@ -88,7 +89,7 @@ public class ReviveScript : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (other.GetComponent<PlayerStats>() != null)
         {
-            _playerStats.stopDeathCounting(false);
+            _playerStats.StopDeathCounting(false);
             _isReviving = false;
             if(_RevivalUIInstance != null)
                 Destroy(_RevivalUIInstance.gameObject);

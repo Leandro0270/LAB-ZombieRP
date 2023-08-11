@@ -54,7 +54,7 @@ public class PPFXDemoScene : MonoBehaviour {
 			//{
 			//	if(prefabs[i] != null)
 			//	{
-			//		string _name = prefabs[i].name.Replace("ppfx","");
+			//		string _name = prefabs[i].nickname.Replace("ppfx","");
 			//		if(GUILayout.Button(_name,GUILayout.Width(120), GUILayout.Height(20)))
 			//		{
 			//			spawnScript.inst = prefabs[i];
