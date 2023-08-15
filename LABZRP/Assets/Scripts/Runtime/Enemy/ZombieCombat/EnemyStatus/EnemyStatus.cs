@@ -4,6 +4,7 @@ using Runtime.Enemy.Animation;
 using Runtime.Enemy.HorderMode;
 using Runtime.Enemy.ScriptObjects.EnemyBase;
 using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
+using Runtime.Player.Combat.Gun;
 using UnityEngine;
 using UnityEngine.Serialization;
 
