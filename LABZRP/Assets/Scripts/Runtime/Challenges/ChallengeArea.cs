@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Runtime.Player.Combat.Gun;
 using UnityEngine;
 
 namespace Runtime.Challenges

@@ -84,8 +84,7 @@ namespace Runtime.Player.Combat.Throwables
         {
             GameObject explosion = PhotonView.Find(viewId).gameObject;
             explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
-            SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
-            _sphereCollider.radius = _radius;
+          
         }
 
         private void Explode()
@@ -102,8 +101,6 @@ namespace Runtime.Player.Combat.Throwables
                 {
                     GameObject explosion = Instantiate(explosionArea, transform.position, transform.rotation);
                     explosion.GetComponent<ExplosionArea>().Setup(_throwableSpecs);
-                    SphereCollider _sphereCollider = explosion.GetComponent<SphereCollider>();
-                    _sphereCollider.radius = _radius;
                 }
             }
 

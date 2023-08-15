@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Points;
 using TMPro;

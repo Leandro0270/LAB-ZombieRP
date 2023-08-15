@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: Gunner
   m_EditorClassIdentifier: 
   classIndex: 2
-  name: Gunner
+  nickName: Gunner
   maxThrowableCapacity: 2
   maxAuxiliaryCapacity: 0
   maxGunCapacity: 0
   health: 120
   speed: 9
   revivalSpeed: 14
-  timeBeteweenMelee: 2
-  meleeDamage: 8
+  startMeleeSpecs: {fileID: 11400000, guid: 976691156d7b94446b574a5ec8f30f7a, type: 2}
   startGun: {fileID: 11400000, guid: 977f969efc7f96d4eb17a2a2e287d815, type: 2}
-  MainColor: {r: 0.4272493, g: 0.6886792, b: 0.40606087, a: 1}
-  PlayerIndicator: {fileID: 2100000, guid: 4887c700084bd5a45a5a9dd34ef3a375, type: 2}
+  mainColor: {r: 0.4272493, g: 0.6886792, b: 0.40606087, a: 1}
+  playerIndicator: {fileID: 2100000, guid: 4887c700084bd5a45a5a9dd34ef3a375, type: 2}
   burnDamagePerSecond: 5

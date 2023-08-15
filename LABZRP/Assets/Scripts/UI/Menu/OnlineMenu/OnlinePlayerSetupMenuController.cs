@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
+using Runtime.Player.ScriptObjects.Combat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

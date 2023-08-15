@@ -1,5 +1,6 @@
 using System;
 using Photon.Pun;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using UnityEngine.Serialization;

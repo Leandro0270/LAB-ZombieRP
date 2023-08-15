@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: Tank
   m_EditorClassIdentifier: 
   classIndex: 3
-  name: Tank
+  nickName: Tank
   maxThrowableCapacity: 2
   maxAuxiliaryCapacity: 0
   maxGunCapacity: 0
   health: 140
   speed: 8
   revivalSpeed: 16
-  timeBeteweenMelee: 4
-  meleeDamage: 15
+  startMeleeSpecs: {fileID: 11400000, guid: 976691156d7b94446b574a5ec8f30f7a, type: 2}
   startGun: {fileID: 11400000, guid: 7de8376654b4dd9498765013af6340c4, type: 2}
-  MainColor: {r: 0.7924528, g: 0.47430065, b: 0.19063722, a: 1}
-  PlayerIndicator: {fileID: 2100000, guid: ddfed5d81054a0c4b90dee917f580ab5, type: 2}
+  mainColor: {r: 0.7924528, g: 0.47430065, b: 0.19063722, a: 1}
+  playerIndicator: {fileID: 2100000, guid: ddfed5d81054a0c4b90dee917f580ab5, type: 2}
   burnDamagePerSecond: 3

@@ -110,6 +110,7 @@ namespace Runtime.Challenges
                 {
                     if (playerStats.GetInteracting() && !playerStats.GetIsDown())
                     {
+                        Debug.Log("Desafio começou");
                         if (_challengeManager.StartChallenge(_challenges[_currentChallenge], this))
                         {
                             _isActivated = false;

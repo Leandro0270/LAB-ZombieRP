@@ -322,6 +322,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 20584447}
     - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: ignoreInputTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: skin.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -389,6 +393,10 @@ PrefabInstance:
       propertyPath: characterCustomizePanel
       value: 
       objectReference: {fileID: 1674225183}
+    - target: {fileID: 5453530274926093948, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5453530276072924866, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -476,6 +484,18 @@ PrefabInstance:
     - target: {fileID: 5453530276072924867, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Name
       value: PlayerSetupPanel_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276079515226, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276142552578, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276359334721, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
@@ -663,6 +683,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 497793252}
     - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: ignoreInputTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: skin.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -730,6 +754,10 @@ PrefabInstance:
       propertyPath: characterCustomizePanel
       value: 
       objectReference: {fileID: 1182023471}
+    - target: {fileID: 5453530274926093948, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5453530276072924866, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -817,6 +845,18 @@ PrefabInstance:
     - target: {fileID: 5453530276072924867, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Name
       value: PlayerSetupPanel_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276079515226, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276142552578, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276359334721, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
@@ -1234,6 +1274,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 926367853}
     - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: ignoreInputTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: skin.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -1301,6 +1345,10 @@ PrefabInstance:
       propertyPath: characterCustomizePanel
       value: 
       objectReference: {fileID: 168495053}
+    - target: {fileID: 5453530274926093948, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5453530276072924866, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1388,6 +1436,18 @@ PrefabInstance:
     - target: {fileID: 5453530276072924867, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Name
       value: PlayerSetupPanel_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276079515226, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276142552578, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276359334721, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []
@@ -2088,6 +2148,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2003574140}
     - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: ignoreInputTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5123098129828283065, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: skin.Array.size
       value: 5
       objectReference: {fileID: 0}
@@ -2155,6 +2219,10 @@ PrefabInstance:
       propertyPath: characterCustomizePanel
       value: 
       objectReference: {fileID: 1734997789}
+    - target: {fileID: 5453530274926093948, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5453530276072924866, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -2242,6 +2310,18 @@ PrefabInstance:
     - target: {fileID: 5453530276072924867, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
       propertyPath: m_Name
       value: PlayerSetupPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276079515226, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276142552578, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5453530276359334721, guid: 5c9032bd7138e5c4e8bc56d980136258, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: Runtime.Player.ScriptObjects.Combat.ScObPlayerStats, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_AddedGameObjects: []

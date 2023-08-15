@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.environment;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -13,7 +15,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] private bool haveKnockback = false;
     [SerializeField] private float knockbackForce = 10f;
-    [SerializeField] private bool isMelee = false;
     private WeaponSystem PlayerShooter;
     public GameObject BulletHole;
     [SerializeField] private GameObject[] _bloodSplatterParticles;
@@ -86,7 +87,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (_isBulletOwner || !_isOnline)
             {
-                objetoDeColisao.GetComponent<explosiveBarrels>().takeDamage(damage);
+                objetoDeColisao.GetComponent<ExplosiveBarrels>().takeDamage(damage);
                 destroyBullet();
                 if (_isOnline)
                 {
@@ -124,7 +125,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
                 hitted = true;
                 if (_isBulletOwner)
                 {
-                    _status.TakeDamage(damage, PlayerShooter,_isAiming,isMelee, isCritical);
+                    _status.TakeDamage(damage, PlayerShooter,_isAiming,false, isCritical);
                     if (haveKnockback)
                     {
                         Rigidbody rb = objetoDeColisao.GetComponent<Rigidbody>();
@@ -251,12 +252,7 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         GameObject shooter = PhotonView.Find(shooterID).gameObject;
         PlayerShooter = shooter.GetComponent<WeaponSystem>();
     }
-
-    public void setMelee(bool melee)
-    {
-        isMelee = melee;
-    }
-
+    
     public void setHaveKnockback(bool knockback)
     {
         haveKnockback = knockback;
@@ -285,13 +281,11 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
     public void destroyOnlineBullet()
     {
         _collider.enabled = false;
-        if (!isMelee)
-        {
-            _UAlightD.enabled = false;
-            _light.enabled = false;
-            _meshRenderer.enabled = false;
-            _particleSystem.Stop();
-        }
+        _UAlightD.enabled = false;
+        _light.enabled = false;
+        _meshRenderer.enabled = false;
+        _particleSystem.Stop();
+        
     }
     private void destroyBullet()
     {
@@ -303,13 +297,11 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             _collider.enabled = false;
-            if (!isMelee)
-            {
-                _UAlightD.enabled = false;
-                _light.enabled = false;
-                _meshRenderer.enabled = false;
-                _particleSystem.Stop();
-            }
+            _UAlightD.enabled = false;
+            _light.enabled = false;
+            _meshRenderer.enabled = false;
+            _particleSystem.Stop();
+            
             
         }
     }
@@ -320,7 +312,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             stream.SendNext(haveKnockback);
             stream.SendNext(knockbackForce);
-            stream.SendNext(isMelee);
             stream.SendNext(damage);
             stream.SendNext(distancia);
             stream.SendNext(velocidadeBala);
@@ -335,7 +326,6 @@ public class BulletScript : MonoBehaviourPunCallbacks, IPunObservable
         {
             haveKnockback = (bool)stream.ReceiveNext();
             knockbackForce = (float)stream.ReceiveNext();
-            isMelee = (bool)stream.ReceiveNext();
             damage = (float)stream.ReceiveNext();
             distancia = (float)stream.ReceiveNext();
             velocidadeBala = (float)stream.ReceiveNext();

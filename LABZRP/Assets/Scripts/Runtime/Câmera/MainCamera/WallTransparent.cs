@@ -12,11 +12,6 @@ namespace Runtime.Câmera.MainCamera
         {
             objectRenderer = GetComponent<Renderer>();
             originalMaterials = objectRenderer.materials;
-
-            if (newMaterials.Length != originalMaterials.Length)
-            {
-                Debug.LogWarning("O número de materiais originais e novos não é igual. Por favor, verifique se a quantidade de materiais corresponde.");
-            }
         }
 
         private void OnTriggerEnter(Collider other)

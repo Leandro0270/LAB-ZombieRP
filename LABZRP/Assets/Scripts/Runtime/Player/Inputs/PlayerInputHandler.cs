@@ -1,4 +1,5 @@
 using Photon.Pun;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Combat.Throwables;
 using Runtime.Player.Movement;
@@ -68,7 +69,7 @@ namespace Runtime.Player.Inputs
             if (attack != null)
             {
                 attack.setIsOnline(true);
-                attack.SetGunStatus(_onlinePlayerConfig.playerStats.startGun);
+                attack.InitializeCombatScriptStatus(_onlinePlayerConfig.playerStats.startGun, _onlinePlayerConfig.playerStats.startMeleeSpecs);
             }
 
             if (customize != null)
@@ -86,7 +87,8 @@ namespace Runtime.Player.Inputs
             if (status != null)
                 status.SetPlayerStats(pc.playerStats);
             if (attack != null)
-                attack.SetGunStatus(pc.playerStats.startGun);
+                attack.InitializeCombatScriptStatus(pc.playerStats.startGun,pc.playerStats.startMeleeSpecs);
+            
             if (customize != null)
                 customize.SetSkin(pc.playerCustom);
         }

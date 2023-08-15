@@ -8,6 +8,7 @@ using Runtime.Challenges;
 using Runtime.Enemy.HorderMode;
 using Runtime.Enemy.ZombieCombat.EnemyStatus;
 using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
 using Random = UnityEngine.Random;

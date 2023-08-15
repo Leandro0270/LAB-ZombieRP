@@ -40,7 +40,7 @@ public class SettingsMenu : MonoBehaviour
         {
             string option = _resolutions[i].width + " x " + _resolutions[i].height + " " + _resolutions[i].refreshRate + "Hz";
             options.Add(option);
-            if(_resolutions[i].width == Screen.currentResolution.width && _resolutions[i].height == Screen.currentResolution.height && _resolutions[i].refreshRate == Screen.currentResolution.refreshRate);
+            if(_resolutions[i].width == Screen.currentResolution.width && _resolutions[i].height == Screen.currentResolution.height && _resolutions[i].refreshRate == Screen.currentResolution.refreshRate)
                 currentResolutionIndex = i;
         }
         resolutionIndex = currentResolutionIndex;

@@ -1,5 +1,6 @@
 using Runtime.Player.Combat.PlayerStatus;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
 using Vector3 = UnityEngine.Vector3;
@@ -12,7 +13,7 @@ namespace Runtime.Player.Movement
     public class PlayerRotation : MonoBehaviour
     {
         private bool _isOnlinePlayer;
-        [SerializeField] private PlayerStats _status;
+        [FormerlySerializedAs("_status")] [SerializeField] private PlayerStats status;
         private Vector3 _inputRotation;
         private Vector3 _inputMouse;
         private Vector3 _lateInputRotation;
@@ -45,10 +46,12 @@ namespace Runtime.Player.Movement
             if(_inputRotation != Vector3.zero && !_isOnlinePlayer){
                 _inputRotation = _inputRotation.normalized * Time.deltaTime;
                 Quaternion newRotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(_inputRotation), 0.2f);
-                if(_lateInputRotation != _inputRotation)
+                if (_lateInputRotation != _inputRotation)
                 {
-                    if (!_status.GetIsDown() && !_status.GetIsDead() && _canRotate)
+                    if (!status.GetIsDown() && !status.GetIsDead() && _canRotate)
+                    {
                         transform.rotation = newRotation;
+                    }
                 }
             }
 

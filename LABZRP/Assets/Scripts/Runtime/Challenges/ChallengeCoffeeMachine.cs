@@ -11,17 +11,17 @@ namespace Runtime.Challenges
         [SerializeField] private GameObject greenMug;
         [SerializeField] private GameObject mugExplosionAreaEffect;
         [SerializeField] private  GameObject effectSpawnPoint;
-        private bool challengeStarted = false;
+        private bool _challengeStarted = false;
         private bool _isGreenUp = true;
         private bool _isOrangeUp = true;
         [SerializeField] private GameObject damageEffect;
         [SerializeField] private float StartLife = 100f;
-        private float currentLife = 100f;
+        private float _currentLife = 100f;
         [SerializeField] private bool isOnline = false;
 
         private void Start()
         {
-            currentLife = StartLife;
+            _currentLife = StartLife;
         }
 
         public void setChallengeManager(ChallengeManager challengeManager)
@@ -31,24 +31,24 @@ namespace Runtime.Challenges
 
         public void takeHit(float damage)
         {
-            if (challengeStarted)
+            if (_challengeStarted)
             {
                 GameObject effect = Instantiate(damageEffect, transform.position, transform.rotation);
                 Destroy(effect, 2f);
-                currentLife -= damage;
-                if (currentLife <= 0)
+                _currentLife -= damage;
+                if (_currentLife <= 0)
                 {
                     explodeMug(redMug);
                     _challengeManager.destroyCoffeeMachine();
                 }
                 else
                 {
-                    if ((currentLife <= ((StartLife / 3) * 2)) && _isGreenUp)
+                    if ((_currentLife <= ((StartLife / 3) * 2)) && _isGreenUp)
                     {
                         _isGreenUp = false;
                         explodeMug(greenMug);
                     }
-                    else if ((currentLife <= (StartLife / 3)) && _isOrangeUp)
+                    else if ((_currentLife <= (StartLife / 3)) && _isOrangeUp)
                     {
                         _isOrangeUp = false;
                         explodeMug(orangeMug);
@@ -69,7 +69,7 @@ namespace Runtime.Challenges
     
         public void startChallenge()
         {
-            challengeStarted = true;
+            _challengeStarted = true;
         }
     
     
@@ -77,13 +77,13 @@ namespace Runtime.Challenges
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(currentLife);
+                stream.SendNext(_currentLife);
             
             
             }
             else
             {
-                currentLife = (float)stream.ReceiveNext();
+                _currentLife = (float)stream.ReceiveNext();
            
             }
         }

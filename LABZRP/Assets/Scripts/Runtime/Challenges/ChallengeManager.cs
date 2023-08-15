@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Photon.Pun;
 using Runtime.Enemy.HorderMode;
 using Runtime.Enemy.ScriptObjects.HordeMode.Challenges;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Combat.Throwables;
 using Runtime.Player.Points;

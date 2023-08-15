@@ -191,6 +191,7 @@ Transform:
   - {fileID: 4352006254671922561}
   - {fileID: 4103646071180661684}
   - {fileID: 2521272247440160121}
+  - {fileID: 2292030566523085807}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -206,14 +207,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61c2b5747bd284b9610fc74dc5d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _throwablePlayerStats: {fileID: 4962438788449095720}
-  miraLaser: {fileID: 4787241468040720977}
-  canoDaArma: {fileID: 1809394511760243526}
-  MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
-  _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
-  armaSpawn: {fileID: 4110660743618978061}
-  _photonView: {fileID: 0}
+  isOnline: 0
+  throwablePlayerStats: {fileID: 4962438788449095720}
+  playerStats: {fileID: 4110660743282712487}
+  playerPoints: {fileID: 1921763957812739907}
+  playerAnimationManager: {fileID: 7704960691108931514}
+  bulletPrefab: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
+  bulletSpawnPoint: {fileID: 1809394511760243526}
+  gunModelSpawnPoint: {fileID: 4110660743618978061}
+  laserSightObject: {fileID: 4787241468040720977}
+  meleeSystem: {fileID: 3370607651216202958}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,7 +606,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6353441003427387304}
-  m_LocalRotation: {x: -0.5000001, y: -0.5, z: 0.50000006, w: 0.49999994}
+  m_LocalRotation: {x: -0.52266806, y: -0.5226679, z: 0.4762544, w: 0.47625422}
   m_LocalPosition: {x: -2.37, y: -0.77, z: 0.5}
   m_LocalScale: {x: 79.32001, y: 79.31999, z: 79.32}
   m_ConstrainProportionsScale: 0
@@ -610,7 +614,7 @@ Transform:
   - {fileID: 5595388170336756655}
   m_Father: {fileID: 4103646071180661684}
   m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -95.321, z: 90}
 --- !u!1 &7396965800722704209
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,6 +679,70 @@ Transform:
   m_Father: {fileID: 4110660743282712491}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8210622279376060507
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2292030566523085807}
+  - component: {fileID: 3511191597641170636}
+  - component: {fileID: 3370607651216202958}
+  m_Layer: 0
+  m_Name: MeleeHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2292030566523085807
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8210622279376060507}
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -1.982, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4110660743282712491}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!65 &3511191597641170636
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8210622279376060507}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.02, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3370607651216202958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8210622279376060507}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89808d1eff1c50d4ba234c420b96f3df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponSystem: {fileID: 4110660743282712484}
+  meleeCollider: {fileID: 3511191597641170636}
+  playerTag: Player
+  enemyTag: Enemy
+  explosiveBarrelTag: ExplosiveBarrel
+  isOnline: 0
 --- !u!1001 &6695203684995679639
 PrefabInstance:
   m_ObjectHideFlags: 0

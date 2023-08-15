@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
+using Runtime.Player.ScriptObjects.Combat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;

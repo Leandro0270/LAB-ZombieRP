@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae8bf3c1b8f77a45b96f2bd812681bd, type: 3}
+  m_Name: BaseAttack
+  m_EditorClassIdentifier: 
+  meleeId: 1
+  meleeName: BaseAttack
+  haveMesh: 0
+  meleePrefab3DModel: {fileID: 0}
+  damage: 8
+  delayBetweenAttacks: 3
+  attackDuration: 1
+  attackRange: 3
+  horizontalArea: 1
+  verticalArea: 1
+  haveCriticalChance: 1
+  criticalChance: 5
+  criticalDamagePercentage: 50
+  haveKnockBack: 1
+  knockBackForce: 20
+  hittableEnemies: 1
+  attackSound: {fileID: 0}
+  attackEffect: {fileID: 0}

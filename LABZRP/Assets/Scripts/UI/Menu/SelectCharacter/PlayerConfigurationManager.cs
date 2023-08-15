@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Runtime.Player.ScriptObjects.Combat;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
@@ -75,7 +76,7 @@ public class PlayerConfigurationManager : MonoBehaviour
     }
     public void SetPlayerName(int index, string name)
     {
-        playerConfigs[index].playerStats._nickName = name;
+        playerConfigs[index].playerStats.nickName = name;
     }
     public void SetPlayerSkin(int index, ScObPlayerCustom playerCustom)
     {

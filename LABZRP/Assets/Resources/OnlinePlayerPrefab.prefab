@@ -194,6 +194,7 @@ Transform:
   - {fileID: 4352006254671922561}
   - {fileID: 4103646071180661684}
   - {fileID: 2521272247440160121}
+  - {fileID: 2032435354629589497}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -209,14 +210,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de61c2b5747bd284b9610fc74dc5d752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _throwablePlayerStats: {fileID: 4962438788449095720}
-  miraLaser: {fileID: 4787241468040720977}
-  canoDaArma: {fileID: 1809394511760243526}
-  MeleeHitBox: {fileID: 655831150207542014, guid: 35f253b01fe211f418e5ec4bf0aa008f, type: 3}
-  _bala: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
-  armaSpawn: {fileID: 4110660743618978061}
-  _photonView: {fileID: -294461941703932716}
+  isOnline: 1
+  throwablePlayerStats: {fileID: 4962438788449095720}
+  playerStats: {fileID: 4110660743282712487}
+  playerPoints: {fileID: 1921763957812739907}
+  playerAnimationManager: {fileID: 7704960691108931514}
+  bulletPoolName: bullet
+  bulletPrefab: {fileID: 2344096171901005769, guid: 3cbb38038331a244eafb98e9e3e015f3, type: 3}
   reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
+  bulletSpawnPoint: {fileID: 1809394511760243526}
+  gunModelSpawnPoint: {fileID: 4110660743618978061}
+  laserSightObject: {fileID: 4787241468040720977}
+  meleeSystem: {fileID: 1417894168938231606}
 --- !u!114 &4110660743282712487
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,18 +234,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isOnline: 1
+  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
+  playerHead: {fileID: 6071763367816855199}
   delayBlood: 1.5
   lessBloodPrefabs:
   - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   moreBloodPrefabs:
   - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  playerAnimationManager: {fileID: 7704960691108931514}
   fireEffect: {fileID: 5102542545529860270}
   bloodDispersion: 4
-  totalLife: 0
-  life: 0
-  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
-  playerHead: {fileID: 6071763367816855199}
   characterController: {fileID: 2607379241762753282}
   reviveScript: {fileID: 1534977132509532281}
   playerMovement: {fileID: 4110660743282712486}
@@ -249,6 +252,7 @@ MonoBehaviour:
   playerPoints: {fileID: 1921763957812739907}
   throwablePlayerStats: {fileID: 4962438788449095720}
   playerIndicator: {fileID: 8476164450946481546}
+  playerAnimationManager: {fileID: 7704960691108931514}
   boxCollider: {fileID: 3281851553285552828}
 --- !u!114 &4110660743282712486
 MonoBehaviour:
@@ -755,6 +759,70 @@ Transform:
   m_Father: {fileID: 4110660743282712491}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8627430586662421281
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2032435354629589497}
+  - component: {fileID: 7812676283152328328}
+  - component: {fileID: 1417894168938231606}
+  m_Layer: 0
+  m_Name: MeleeHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2032435354629589497
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8627430586662421281}
+  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -1.9819999, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4110660743282712491}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!65 &7812676283152328328
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8627430586662421281}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.02, y: 2, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1417894168938231606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8627430586662421281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89808d1eff1c50d4ba234c420b96f3df, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  weaponSystem: {fileID: 0}
+  meleeCollider: {fileID: 7812676283152328328}
+  playerTag: Player
+  enemyTag: Enemy
+  explosiveBarrelTag: ExplosiveBarrel
+  isOnline: 1
 --- !u!1001 &6695203684995679639
 PrefabInstance:
   m_ObjectHideFlags: 0

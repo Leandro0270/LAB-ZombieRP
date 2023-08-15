@@ -13,16 +13,15 @@ MonoBehaviour:
   m_Name: Damage
   m_EditorClassIdentifier: 
   classIndex: 1
-  name: Damage
+  nickName: Damage
   maxThrowableCapacity: 1
   maxAuxiliaryCapacity: 0
   maxGunCapacity: 1
   health: 80
   speed: 12
   revivalSpeed: 11
-  timeBeteweenMelee: 1
-  meleeDamage: 8
+  startMeleeSpecs: {fileID: 11400000, guid: 976691156d7b94446b574a5ec8f30f7a, type: 2}
   startGun: {fileID: 11400000, guid: 2e15403a531c1354095939853d566b64, type: 2}
-  MainColor: {r: 0.6792453, g: 0.27233893, b: 0.27233893, a: 1}
-  PlayerIndicator: {fileID: 2100000, guid: 79d7a5a89369f6a468dc0a912e327073, type: 2}
+  mainColor: {r: 0.6792453, g: 0.27233893, b: 0.27233893, a: 1}
+  playerIndicator: {fileID: 2100000, guid: 79d7a5a89369f6a468dc0a912e327073, type: 2}
   burnDamagePerSecond: 5

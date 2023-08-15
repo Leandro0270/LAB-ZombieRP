@@ -4,6 +4,7 @@ using Photon.Pun;
 using Runtime.Câmera.MainCamera;
 using Runtime.Challenges;
 using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.Throwables;
 using Runtime.Player.Movement;
 using Runtime.Player.Points;
@@ -15,56 +16,12 @@ using Random = UnityEngine.Random;
 
 namespace Runtime.Player.Combat.PlayerStatus
 {
-    public class PlayerStats : MonoBehaviourPun, IPunObservable
+    public class PlayerStats : MonoBehaviourPunCallbacks, IPunObservable
     {
     
-        //VISUAL
-        public float delayBlood = 1f;
-        private float _delayBloodTimer;
-        [SerializeField] private GameObject[] lessBloodPrefabs;
-        [SerializeField] private GameObject[] moreBloodPrefabs;
+        [Header("=======================REQUIRED SCRIPTS=======================")]
+        [Space (20)]
         [SerializeField] private PlayerAnimationManager playerAnimationManager;
-        [SerializeField] private GameObject fireEffect;
-        [SerializeField] private float bloodDispersion = 4;
-    
-        //Player Specs
-   
-        private ScObPlayerStats _playerStatus;
-        private string _name;
-        private bool _isBurning;
-        private bool _isStunned;
-        private bool _isDown;
-        private bool _isDead;
-        public float totalLife;
-        public float life;
-        private float _downLife = 100f;
-        private float _speed;
-        private float _revivalSpeed;
-        private float _timeBetweenMelee;
-        private float _meleeDamage;
-        private bool _interacting;
-        private bool _stopDeathLife;
-        private bool _setupColorComplete;
-        private bool _isIncapacitated;
-        private bool _isSpeedSlowed;
-        private int _maxThrowables;
-        private bool _isWalkingForward;
-        private bool _isWalkingBackward;
-        private bool _isWalkingLeft;
-        private bool _isWalkingRight;
-        private bool _isIdle;
-        private bool _burnTickDamage = true;
-        private float _burnTickTime;
-        private float _timeBurning;
-        private EnemyStatus _enemyIncapacitator;
-        //======================================================================================================
-        //UI
-        private HealthBar_UI _healthBarUi;
-        [SerializeField] private GameObject playerUI;
-        private Color _characterColor;
-        [SerializeField] private GameObject playerHead;
-        //======================================================================================================
-        //Script components
         [SerializeField] private CharacterController characterController;
         [SerializeField] private ReviveScript reviveScript;
         [SerializeField] private PlayerMovement playerMovement;
@@ -74,65 +31,125 @@ namespace Runtime.Player.Combat.PlayerStatus
         [SerializeField] private ThrowablePlayerStats throwablePlayerStats;
         [SerializeField] private DecalProjector playerIndicator;
         [SerializeField] private BoxCollider boxCollider;
+        [Space (20)]
+        [Header("=======================REQUIRED PREFABS=======================")]
+        [Space (20)]
+        //VISUAL
+        [SerializeField] private GameObject[] lessBloodPrefabs;
+        [SerializeField] private GameObject[] moreBloodPrefabs;
+        [SerializeField] private GameObject playerUI;
+        [SerializeField] private float bloodDispersion = 4;
+        
+        [Space (20)]
+        [Header("=======================GAMEOBJECTS REFERENCES=======================")]
+        [Space (20)]
+        [SerializeField] private GameObject fireEffect;
+        [SerializeField] private GameObject playerHead;
+        
+        
+        [Space (20)]
+        [Header("=======================OTHER SETTINGS REFERENCES=======================")]
+        [Space (20)]
+        [SerializeField] private float delayBlood = 1f;
+        [SerializeField] private bool isOnline;
+
+   
+        //Internal variables =================================================================
+        
+        //Required Scripts
         private MainGameManager _mainGameManager;
         private CameraMovement _camera;
         private VendingMachineHorderGenerator _vendingMachineHordeGenerator;
+        
+        
+        //Player specs
+        private ScObPlayerStats _playerStatus;
+        private string _name;
+        private bool 
+        _isBurning,
+        _isStunned,
+        _isDown,
+        _isDead,
+        _interacting,
+        _stopDeathLife,
+        _setupColorComplete,
+        _isIncapacitated,
+        _isSpeedSlowed;
 
-        //======================================================================================================
+        private float _totalLife,
+            _speed,
+            _revivalSpeed;
+        
+        private int _maxThrowables;
+        
+        private Color _characterColor;
+            
+        //In game variables
+        private float _currentLife,
+            _downLife = 100f,
+            _burnTickTime,_timeBurning;
+        private EnemyStatus _enemyIncapacitator;
+        private float _delayBloodTimer;
+        
+        //Player Look Direction
+        private bool _isWalkingForward;
+        private bool _isWalkingBackward;
+        private bool _isWalkingLeft;
+        private bool _isWalkingRight;
+        private bool _isIdle;
+            
+            
+        //instance variables
+        private HealthBar_UI _healthBarUi;
+        
         //ChallengeManager Variables
         private bool _challengeInProgress;
         private ChallengeManager _challengeManager;
-        //NoHitChallenge=========================================
-        
-        //==================================================================================
-        private bool _isOnline;
 
 
 
 
 
 //======================================================================================================
-//Unity base functions
 
         private void Start()
         {
             _InitializePlayerSpecs();
-            _mainGameManager =GameObject.Find("GameManager").GetComponent<MainGameManager>();
+            _mainGameManager = GameObject.Find("GameManager").GetComponent<MainGameManager>();
 
         }
-    
 
+        private void ReduceDownedPlayerLife()
+        {
+            _downLife -= Time.deltaTime;
+            _healthBarUi.SetHealth((int)_downLife);
+            if(_downLife <= 0)
+                PlayerDeath();
+        }
         private void Update()
         {
-
             if(!_setupColorComplete)
             {
                 if(_healthBarUi){
                     if (_healthBarUi.getColor() != _characterColor)
                     {
-                    
                         _healthBarUi.setColor(_characterColor);
                         _setupColorComplete = true;
                     }
                 }
             }
+            
+            
             if (_isDown && !_isDead && !_stopDeathLife)
             {
-                _healthBarUi.setColor(Color.gray);
-                _healthBarUi.SetHealth((int)_downLife);
-                _downLife -= Time.deltaTime;
-            
-            }
-            if (_downLife <= 0)
-            {
-                PlayerDeath();
+                ReduceDownedPlayerLife();
             }
         
-            if(_isDown)
-                if(_healthBarUi.getColor() != _characterColor)
-                    _healthBarUi.setColor(Color.gray);
+
             if(_delayBloodTimer > 0)
                 _delayBloodTimer -= Time.deltaTime;
+            
+            
             if (_isIncapacitated)
             {
                 if (!_isDown)
@@ -143,21 +160,19 @@ namespace Runtime.Player.Combat.PlayerStatus
                     }
                 } 
             }
+            
+            
             if (_isBurning)
             {
                 fireEffect.SetActive(true);
-                if (_burnTickDamage)
+                if (_burnTickTime >= 1)
                 {
                     TakeDamage(_playerStatus.burnDamagePerSecond, false);
                     _burnTickTime = 0;
-                    _burnTickDamage = false;
                 }
                 else
-                {
                     _burnTickTime += Time.deltaTime;
-                    if(_burnTickTime >= 1)
-                        _burnTickDamage = true;
-                }
+                
             
                 _timeBurning -= Time.deltaTime;
                 if (_timeBurning <= 0)
@@ -167,7 +182,7 @@ namespace Runtime.Player.Combat.PlayerStatus
                 }
             }
 
-            if (_isOnline && !photonView.IsMine)
+            if (isOnline && !photonView.IsMine)
             {
                 playerAnimationManager.setIsWalkingForward(_isWalkingForward);
                 playerAnimationManager.setIsWalkingBackward(_isWalkingBackward);
@@ -185,7 +200,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(life);
+                stream.SendNext(_currentLife);
                 stream.SendNext(_isDead);
                 stream.SendNext(_isDown);
                 stream.SendNext(_isIncapacitated);
@@ -202,7 +217,7 @@ namespace Runtime.Player.Combat.PlayerStatus
             }
             else
             {
-                life = (float)stream.ReceiveNext();
+                _currentLife = (float)stream.ReceiveNext();
                 _isDead = (bool)stream.ReceiveNext();
                 _isDown = (bool)stream.ReceiveNext();
                 _isIncapacitated = (bool)stream.ReceiveNext();
@@ -275,11 +290,11 @@ namespace Runtime.Player.Combat.PlayerStatus
                     {
                         _challengeManager.setTakedHit(true);
                     }
-                    life -= damage;
+                    _currentLife -= damage;
               
-                    if (_isOnline)
+                    if (isOnline)
                     {                      
-                        photonView.RPC("UpdateHealthBar", RpcTarget.All, life);
+                        photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
                         if (!_isBurning)
                         {
                             float y = Random.Range(-bloodDispersion, bloodDispersion);
@@ -292,7 +307,7 @@ namespace Runtime.Player.Combat.PlayerStatus
                     }
                     else
                     {
-                        _healthBarUi.SetHealth((int)life);
+                        _healthBarUi.SetHealth((int)_currentLife);
                         if (!_isBurning)
                         {
                             float y = Random.Range(-bloodDispersion, bloodDispersion);
@@ -310,41 +325,47 @@ namespace Runtime.Player.Combat.PlayerStatus
                     }
                 
 
-                    if (life < 1)
+                    if (_currentLife < 1)
                     {
-                        _isDown = true;
-                        if (_isOnline)
-                        {
-                            Vector3 spawnPoint = new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z);
-                            photonView.RPC("InstantiateBlood", RpcTarget.All, spawnPoint, true, isCritical);
-                        }
-                        else
-                        {
-                            int randomMoreBloodIndex = Random.Range(0, moreBloodPrefabs.Length);
-                        
-                            GameObject _blood2 = Instantiate(moreBloodPrefabs[randomMoreBloodIndex],
-                                new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
-                                moreBloodPrefabs[randomMoreBloodIndex].transform.rotation);
-                            Destroy(_blood2, 15f);
-                            weaponSystem.SetIsIncapacitated(true);
-                            characterController.enabled = false;
-                            boxCollider.enabled = true;
-                            _camera.removePlayer(gameObject);
-                            playerMovement.SetCanMove(false);
-                            playerRotation.SetCanRotate(false);
-                            playerAnimationManager.setDowning();
-                            playerAnimationManager.setDown(true);
-                            weaponSystem.SetGunVisable(false);
-                            _healthBarUi.setColor(Color.gray);
-                            reviveScript.addDownCount();
-                        }
-                        _mainGameManager.removeDownedPlayer(this.gameObject);
+                        DownPlayer(isCritical);
                     }
                 }
             }
         }
-    
-    
+
+        private void DownPlayer(bool isCritical)
+        {
+                _isDown = true;
+                _healthBarUi.setColor(Color.gray);
+                
+                if (isOnline)
+                {
+                    Vector3 spawnPoint = new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z);
+                    photonView.RPC("InstantiateBlood", RpcTarget.All, spawnPoint, true, isCritical);
+                }
+                else
+                {
+                    int randomMoreBloodIndex = Random.Range(0, moreBloodPrefabs.Length);
+                        
+                    GameObject _blood2 = Instantiate(moreBloodPrefabs[randomMoreBloodIndex],
+                        new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z),
+                        moreBloodPrefabs[randomMoreBloodIndex].transform.rotation);
+                    Destroy(_blood2, 15f);
+                    weaponSystem.SetIsIncapacitated(true);
+                    characterController.enabled = false;
+                    boxCollider.enabled = true;
+                    _camera.removePlayer(gameObject);
+                    playerMovement.SetCanMove(false);
+                    playerRotation.SetCanRotate(false);
+                    playerAnimationManager.setDowning();
+                    playerAnimationManager.setDown(true);
+                    weaponSystem.SetGunVisable(false);
+                    _healthBarUi.setColor(Color.gray);
+                    reviveScript.addDownCount();
+                }
+                _mainGameManager.removeDownedPlayer(this.gameObject);
+            
+        }
 
     
         public void Revived()
@@ -360,14 +381,14 @@ namespace Runtime.Player.Combat.PlayerStatus
                 playerMovement.SetCanMove(true);
                 _isDown = false;
                 playerAnimationManager.setDown(false);
-                life = totalLife * 0.3f;
+                _currentLife = _totalLife * 0.3f;
                 _camera.addPlayer(gameObject);
                 weaponSystem.SetGunVisable(true);
                 _healthBarUi.setColor(_characterColor);
-                if(_isOnline)
-                    photonView.RPC("UpdateHealthBar", RpcTarget.All, life);
+                if(isOnline)
+                    photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
                 else
-                    _healthBarUi.SetHealth((int)life);
+                    _healthBarUi.SetHealth((int)_currentLife);
             }
         
         }
@@ -384,24 +405,24 @@ namespace Runtime.Player.Combat.PlayerStatus
         public void ReceiveHeal(float heal)
         {
         
-            if (_isOnline)
+            if (isOnline)
             {
                 if (photonView.IsMine)
                 {
                     if (!_isDown && !_isDead)
-                        life += heal;
-                    if (life > totalLife)
-                        life = totalLife;
+                        _currentLife += heal;
+                    if (_currentLife > _totalLife)
+                        _currentLife = _totalLife;
                 }
-                photonView.RPC("UpdateHealthBar", RpcTarget.All, life);
+                photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
             }
             else
             {
-                _healthBarUi.SetHealth((int)life);
+                _healthBarUi.SetHealth((int)_currentLife);
                 if (!_isDown && !_isDead)
-                    life += heal;
-                if (life > totalLife)
-                    life = totalLife;
+                    _currentLife += heal;
+                if (_currentLife > _totalLife)
+                    _currentLife = _totalLife;
             }
 
         }
@@ -419,21 +440,19 @@ namespace Runtime.Player.Combat.PlayerStatus
         private void _InitializePlayerSpecs()
         {
             _maxThrowables = _playerStatus.maxThrowableCapacity;
-            _characterColor = _playerStatus.MainColor;
-            if (_isOnline)
+            _characterColor = _playerStatus.mainColor;
+            if (isOnline)
             {
                 photonView.RPC("UpdateName", RpcTarget.All, PhotonNetwork.LocalPlayer.NickName);
             }
             else
             {
-                _name = _playerStatus._nickName;
+                _name = _playerStatus.nickName;
             }
             _speed = _playerStatus.speed;
-            totalLife = _playerStatus.health;
-            life = totalLife;
+            _totalLife = _playerStatus.health;
+            _currentLife = _totalLife;
             _revivalSpeed = _playerStatus.revivalSpeed;
-            _timeBetweenMelee = _playerStatus.timeBeteweenMelee;
-            _meleeDamage = _playerStatus.meleeDamage;
             var findHordeManager = GameObject.FindGameObjectWithTag("HorderManager");
             _vendingMachineHordeGenerator = findHordeManager.GetComponent<VendingMachineHorderGenerator>();
             _challengeManager = findHordeManager.GetComponent<ChallengeManager>();
@@ -444,7 +463,7 @@ namespace Runtime.Player.Combat.PlayerStatus
             if (findCanvaHud == null)
                 Debug.LogError("Não foi encontrado o Canvas HUD, posicione ele na cena");
             PlayerUiHandler playerUiConfig;
-            if (_isOnline)
+            if (isOnline)
             {
                 if (photonView.IsMine)
                 {
@@ -465,7 +484,7 @@ namespace Runtime.Player.Combat.PlayerStatus
                 playerUiConfig.transform.parent = findCanvaHud.transform;
                 playerUiConfig.setPlayer(this.gameObject);
             }
-            playerIndicator.material = _playerStatus.PlayerIndicator;
+            playerIndicator.material = _playerStatus.playerIndicator;
             throwablePlayerStats.setMaxCapacity(_maxThrowables);
         }
 
@@ -483,7 +502,7 @@ namespace Runtime.Player.Combat.PlayerStatus
     
         public void BurnPlayer(float time)
         {
-            if (_isOnline && photonView.IsMine)
+            if (isOnline && photonView.IsMine)
             {
                 _isBurning = true;
                 _timeBurning = time;
@@ -545,7 +564,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         }
         public void setIsOnline(bool isOnline)
         {
-            _isOnline = isOnline;
+            this.isOnline = isOnline;
         }
         public void SetMovementAnimationStats(PlayerMovement.PlayerDirection direction)
         {
@@ -617,7 +636,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         {
             _healthBarUi = healthBarUi;
             healthBarUi.setColor(_characterColor);
-            healthBarUi.setMaxHealth((int)totalLife);
+            healthBarUi.setMaxHealth((int)_totalLife);
         }
         public bool GetIsDown()
         {
@@ -631,17 +650,17 @@ namespace Runtime.Player.Combat.PlayerStatus
     
         public float GetLife()
         {
-            return life;
+            return _currentLife;
         }
     
         public float GetTotalLife()
         {
-            return totalLife;
+            return _totalLife;
         }
     
         public void ReceiveTemporarySlow(float time, float speed)
         {
-            if (photonView.IsMine || !_isOnline)
+            if (photonView.IsMine || !isOnline)
             {
                 if (!_isSpeedSlowed)
                 {
@@ -669,16 +688,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         {
             playerMovement.SetSpeed(_speed);
         }
-
-        public float GetMeleeDamage()
-        {
-            return _meleeDamage;
-        }
-    
-        public float GetTimeBetweenMelee()
-        {
-            return _timeBetweenMelee;
-        }
+        
     
         public float GetRevivalSpeed()
         {
@@ -753,7 +763,7 @@ namespace Runtime.Player.Combat.PlayerStatus
     
         public void StunPlayer(float time)
         {
-            if (!_isOnline || photonView.IsMine)
+            if (!isOnline || photonView.IsMine)
             {
                 _isStunned = true;
                 playerMovement.SetCanMove(false);

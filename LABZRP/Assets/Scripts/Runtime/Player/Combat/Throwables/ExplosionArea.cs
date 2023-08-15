@@ -12,6 +12,7 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
     [SerializeField] private ScObThrowableSpecs _throwableSpecs;
     [SerializeField] private bool isOnline = false;
     [SerializeField] private bool isManualSetup = false;
+    [SerializeField] private SphereCollider sphereCollider;
     private ScObThrowableSpecs.Type _throwableType;
     
     //specs
@@ -189,6 +190,10 @@ public class ExplosionArea : MonoBehaviourPunCallbacks
         _isSlowing = _throwableSpecs.isSlowDown;
         _slowDown = _throwableSpecs.slowDown;
         _slowDownDuration = _throwableSpecs.slowDownDuration;
+        if (sphereCollider == null)
+            sphereCollider.GetComponent<SphereCollider>();
+        else
+            sphereCollider.radius = _throwableSpecs.radius;
         _isStunning = _throwableSpecs.isStun;
         _stunDuration = _throwableSpecs.stunDuration;
         _isBurning = _throwableSpecs.isBurn;
