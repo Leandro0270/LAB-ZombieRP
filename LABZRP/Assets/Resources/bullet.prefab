@@ -136,7 +136,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   haveKnockback: 1
   knockbackForce: 10
-  isMelee: 0
   BulletHole: {fileID: 5816881631203203802, guid: 1730c0f53f0585540a1e6cee3c81235d, type: 3}
   _bloodSplatterParticles:
   - {fileID: 1000012909287652, guid: 1ad9f89dfde689f4b98d732e9ada3b2a, type: 3}

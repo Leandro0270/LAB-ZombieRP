@@ -234,16 +234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isOnline: 1
-  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
-  playerHead: {fileID: 6071763367816855199}
-  delayBlood: 1.5
-  lessBloodPrefabs:
-  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  moreBloodPrefabs:
-  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
-  fireEffect: {fileID: 5102542545529860270}
-  bloodDispersion: 4
+  playerAnimationManager: {fileID: 7704960691108931514}
   characterController: {fileID: 2607379241762753282}
   reviveScript: {fileID: 1534977132509532281}
   playerMovement: {fileID: 4110660743282712486}
@@ -252,8 +243,17 @@ MonoBehaviour:
   playerPoints: {fileID: 1921763957812739907}
   throwablePlayerStats: {fileID: 4962438788449095720}
   playerIndicator: {fileID: 8476164450946481546}
-  playerAnimationManager: {fileID: 7704960691108931514}
   boxCollider: {fileID: 3281851553285552828}
+  lessBloodPrefabs:
+  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
+  moreBloodPrefabs:
+  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
+  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
+  bloodDispersion: 4
+  fireEffect: {fileID: 5102542545529860270}
+  playerHead: {fileID: 6071763367816855199}
+  delayBlood: 1.5
+  isOnline: 1
 --- !u!114 &4110660743282712486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,7 +280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4622c425b90ec47bd0acd39227ff8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 4110660743282712487}
+  status: {fileID: 4110660743282712487}
 --- !u!114 &4110660743282712480
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1722,7 +1722,6 @@ MonoBehaviour:
   isOnline: 1
   challengeDescription: {fileID: 8452844933412807709}
   challengeDescriptionPanel: {fileID: 4956315262188427038}
-  photonView: {fileID: -4657378432716232966}
 --- !u!65 &2655267100666191477
 BoxCollider:
   m_ObjectHideFlags: 0

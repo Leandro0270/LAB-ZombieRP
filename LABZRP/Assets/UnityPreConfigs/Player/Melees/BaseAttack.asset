@@ -17,7 +17,7 @@ MonoBehaviour:
   haveMesh: 0
   meleePrefab3DModel: {fileID: 0}
   damage: 8
-  delayBetweenAttacks: 3
+  delayBetweenAttacks: 1.5
   attackDuration: 1
   attackRange: 3
   horizontalArea: 1

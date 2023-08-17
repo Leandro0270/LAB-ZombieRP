@@ -58,7 +58,6 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
         else if(PhotonNetwork.CurrentLobby.Equals(inGameLobby))
         {
             onlineMenuManager.setText("Entrando na sala...");
-            SceneManager.LoadScene("PlayerSetupOnline");
             var roomOptions = new RoomOptions 
             {
                 IsVisible = true, 
@@ -72,6 +71,7 @@ public class OnlineGameManager : MonoBehaviourPunCallbacks
                 CustomRoomPropertiesForLobby = new string[] { "C0", "C1" }
             };
             PhotonNetwork.JoinOrCreateRoom(RoomCode, roomOptions, inGameLobby);
+            SceneManager.LoadScene("PlayerSetupOnline");
         }
     }
     

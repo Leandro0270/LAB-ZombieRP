@@ -47,17 +47,7 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
             pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
             mainGameManager.getHordeManager().setIsOnline(true);
             mainGameManager.getChallengeManager().setIsOnline(true);
-            if (!PhotonNetwork.LocalPlayer.IsMasterClient)
-            {
-                photonView.RPC("sceneLoaded", RpcTarget.MasterClient);
-            }
-            else
-            {
-                photonView.RPC("sceneLoaded", RpcTarget.MasterClient);
-                mainGameManager.setIsMasterClient(true);
-                mainGameManager.getHordeManager().setIsMasterClient(true);
-
-            }
+            photonView.RPC("SceneLoaded", RpcTarget.MasterClient);
         }
         else
         {
@@ -105,13 +95,18 @@ public class InitializeLevel : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void sceneLoaded()
+    public void SceneLoaded()
     {
+        mainGameManager.setIsMasterClient(true);
+        mainGameManager.getHordeManager().setIsMasterClient(true);
+        Debug.Log("SceneLoaded");
         playersReady++;
         if (playersReady == pc.Count)
         {
-            photonView.RPC("instantiatePlayer", RpcTarget.All);
+            Debug.Log("mainGameManager é nulo? "+(mainGameManager == null));
             mainGameManager.StartGameHorde();
+            Debug.Log("Players todos ready" + (playersReady == pc.Count));
+            photonView.RPC("instantiatePlayer", RpcTarget.All);
         }
     }
     

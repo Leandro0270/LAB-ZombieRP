@@ -380,6 +380,7 @@ namespace Runtime.Enemy.HorderMode
 
         public void HordeBreakManagerManualStart()
         {
+            Debug.Log("ManualHordeBreakManager no horde manager");
             StartCoroutine(HordeBreakManager());
         }
         IEnumerator HordeBreakManager()
@@ -387,8 +388,10 @@ namespace Runtime.Enemy.HorderMode
             if (currentHorde == 0)
             {
                 yield return new WaitForSeconds(firstHordeStartTime);
+                Debug.Log("Passou do firstHordeStartTime");
                 if (isIncrementalZombiesPerPlayer)
                 {
+                    Debug.Log("É incremental");
                     playersCount = GameManager.getPlayersCount();
                     firstHordeZombies *= playersCount;
                     hordeIncrement *= playersCount;
@@ -400,7 +403,8 @@ namespace Runtime.Enemy.HorderMode
             {
                 currentZombieLife += (currentZombieLife * baseZombieLifeIncrement);
             }
-            
+
+            Debug.Log("Vai spawnar zumbi");
             StartCoroutine(SpawnZombie());
         }
         

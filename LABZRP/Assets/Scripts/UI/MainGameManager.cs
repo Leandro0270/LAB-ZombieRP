@@ -82,8 +82,9 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         if (isOnline && !isMasterClient)
         {
-            int photonViewID = player.GetComponent<PhotonView>().ViewID;
+            var photonViewID = player.GetComponent<PhotonView>().ViewID;
             photonView.RPC("removeDownedPlayerRPC", RpcTarget.MasterClient, photonViewID);
+            return;
             
         }
         if (alivePlayers.Contains(player))
@@ -155,6 +156,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
 
     public void StartGameHorde()
     {
+        Debug.Log("StartGameHorde no mainGameManager");
         hordeManager.HordeBreakManagerManualStart();
     }
     [PunRPC]

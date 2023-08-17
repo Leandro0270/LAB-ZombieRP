@@ -550,11 +550,9 @@ namespace Runtime.Player.Combat.Gun
                 }
                 public void AuxReload()
                 {
-                        if (_currentMagazineBullets < _magazineSize && !_reloading && !_meleeReady)
-                        {
-                                Recarregar();
-                                throwablePlayerStats.setCanceledThrow(true);
-                        }
+                        if (_currentMagazineBullets >= _magazineSize || _reloading || !_meleeReady) return;
+                        Recarregar();
+                        throwablePlayerStats.setCanceledThrow(true);
                 }
         
                 public void AuxShootPress(InputAction.CallbackContext ctx)

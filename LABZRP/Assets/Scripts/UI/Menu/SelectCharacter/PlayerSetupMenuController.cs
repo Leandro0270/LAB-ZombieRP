@@ -32,7 +32,8 @@ public class PlayerSetupMenuController : MonoBehaviour
     [SerializeField] private InputSystemUIInputModule inputSystemUiInputModule;
     [SerializeField] private GameObject returnPanel;
     [SerializeField] private GameObject cancelButton;
-    [SerializeField] PlayerInput playerInput;
+    [SerializeField] private Animator playerAnimation;
+    private PlayerInput _playerInput;
     private PlayerController _playerController;
 
 
@@ -52,7 +53,7 @@ public class PlayerSetupMenuController : MonoBehaviour
 
         inputEnabled = false;
         _playerController = new PlayerController();
-        playerInput.onActionTriggered += Input_onActionTriggered;
+        _playerInput.onActionTriggered += Input_onActionTriggered;
         PlayerIndex = pi;
         titletext.SetText("Player " + (pi + 1));
         ignoreInputTime = Time.time + ignoreInputTime;
@@ -84,7 +85,7 @@ public class PlayerSetupMenuController : MonoBehaviour
     
     public InputSystemUIInputModule GetInputSystemUIInputModule(PlayerInput playerInput)
     {
-        this.playerInput = playerInput;
+        this._playerInput = playerInput;
         return inputSystemUiInputModule;
     }
     public void SetClass(ScObPlayerStats player)
@@ -123,6 +124,7 @@ public class PlayerSetupMenuController : MonoBehaviour
         readyButton.gameObject.SetActive(false);
         characterCustomizePanel.SetActive(false);
         readyPanel.SetActive(true);
+        playerAnimation.SetBool("isReady", true);
         isReady = true;
         
     }
@@ -205,15 +207,15 @@ public class PlayerSetupMenuController : MonoBehaviour
 
     private void OnDisable()
     {
-        if(playerInput != null)
-            playerInput.onActionTriggered -= Input_onActionTriggered;
+        if(_playerInput != null)
+            _playerInput.onActionTriggered -= Input_onActionTriggered;
 
     }
 
     private void OnDestroy()
     {
-        if(playerInput != null)
-            playerInput.onActionTriggered -= Input_onActionTriggered;
+        if(_playerInput != null)
+            _playerInput.onActionTriggered -= Input_onActionTriggered;
     }
 
     public void SelectFirstClass()
@@ -239,7 +241,14 @@ public class PlayerSetupMenuController : MonoBehaviour
                 if (isClassSelected && !isReady)
                     cancelSelectClass();
                 else if (isReady)
+                {
+                    playerAnimation.SetBool("isReady", false);
+                    readyPanel.SetActive(false);
+                    readyButton.gameObject.SetActive(true);
+                    isReady = false;
+                    characterCustomizePanel.SetActive(true);
                     PlayerConfigurationManager.Instance.CancelReadyPlayer(PlayerIndex);
+                }
                 else
                 {
                     bool canShow = PlayerConfigurationManager.Instance.ShowReturnMenu(PlayerIndex, this);

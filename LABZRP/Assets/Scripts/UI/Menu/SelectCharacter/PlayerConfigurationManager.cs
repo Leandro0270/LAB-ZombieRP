@@ -14,7 +14,6 @@ public class PlayerConfigurationManager : MonoBehaviour
 
     [SerializeField] private Button returnButton;
     [SerializeField] private GameObject returnMenu;
-    [SerializeField] private GameObject[] playerPrefabs;
     private List<PlayerConfiguration> playerConfigs;
     private int readyCount = 0;
     private int PlayerPausedIndex = -1;
@@ -117,10 +116,6 @@ public class PlayerConfigurationManager : MonoBehaviour
     public void HideReturnMenu()
     {
         returnMenu.SetActive(false);
-        foreach (GameObject players in playerPrefabs)
-        {
-            players.SetActive(true);
-        }
         showedReturnMenu = false;
         currentPlayerPausedMenu.SelectFirstClass();
         currentPlayerPausedMenu = null;
@@ -137,10 +132,6 @@ public class PlayerConfigurationManager : MonoBehaviour
             return false;
         }
         returnMenu.SetActive(true);
-        foreach (GameObject players in playerPrefabs)
-        {
-            players.SetActive(false);
-        }
         if (PlayerPausedIndex == -1 && !showedReturnMenu)
         {
                 PlayerPausedIndex = playerPausedIndex;

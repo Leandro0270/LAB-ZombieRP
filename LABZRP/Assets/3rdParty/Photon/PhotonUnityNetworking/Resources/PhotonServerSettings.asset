@@ -163,6 +163,7 @@ MonoBehaviour:
   - DisableFireDamageRPC
   - InstantiateExplosiveEffect
   - RewardPlayerShooterRPC
+  - SceneLoaded
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

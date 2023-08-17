@@ -39,6 +39,7 @@ public class OnlineLobbyPlayersShower : MonoBehaviourPunCallbacks
     public void setIsReady(bool isReady)
     {
         this.isReady = isReady;
+        playerModelAnimator.SetBool("isReady", this.isReady);
         playerModel.SetActive(this.isReady);
             playerStatusText.gameObject.SetActive(!this.isReady);
             playerReadyText.gameObject.SetActive(this.isReady);

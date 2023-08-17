@@ -73,29 +73,24 @@ public class OnlinePlayerConfigurationManager : MonoBehaviourPunCallbacks
          cancelAction.performed += OnCancel;
          availableLobbyPlayersShower = lobbyPlayersShower;
          PhotonNetwork.AutomaticallySyncScene = true;
-         if (isReplay && PhotonNetwork.IsConnected)
+         if (!isReplay || !PhotonNetwork.IsConnected) return;
+         playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
+         isMasterClient = PhotonNetwork.IsMasterClient;
+         playersCount = PhotonNetwork.CurrentRoom.PlayerCount;
+         roomCode = PhotonNetwork.CurrentRoom.Name;
+         roomCodeText.text = "Código da sala: " + roomCode;
+         if (!isMasterClient) return;
+         roomCodeText.text += "\n Você é o host da sala";
+         int[] availablesPlayersIndexArray = AvailablesPlayersIndex.ToArray();
+         initializeJoinedPlayer();
+         Array.Sort(playersNaSala, (x, y) => x.ActorNumber.CompareTo(y.ActorNumber));
+                 
+         for(int i=0 ; i < playersNaSala.Length; i++)
          {
-             playersNaSala = PhotonNetwork.CurrentRoom.Players.Values.ToArray();
-             isMasterClient = PhotonNetwork.IsMasterClient;
-             playersCount = PhotonNetwork.CurrentRoom.PlayerCount;
-             roomCode = PhotonNetwork.CurrentRoom.Name;
-             roomCodeText.text = "Código da sala: " + roomCode;
-             if (isMasterClient)
-             {
-                 roomCodeText.text += "\n Você é o host da sala";
-                 int[] availablesPlayersIndexArray = AvailablesPlayersIndex.ToArray();
-                 initializeJoinedPlayer();
-                 Array.Sort(playersNaSala, (x, y) => x.ActorNumber.CompareTo(y.ActorNumber));
-                 
-                 for(int i=0 ; i < playersNaSala.Length; i++)
-                 {
-                     playersOnLobbyByActorNumber[i] = playersNaSala[i].ActorNumber;
-                 }
-                 int[]playersOnLobbyByActorNumberArray = playersOnLobbyByActorNumber.ToArray();
-                 photonView.RPC("UpdateAvailablesPlayerIndex", RpcTarget.All, availablesPlayersIndexArray, playersOnLobbyByActorNumberArray);
-                 
-             }
+             playersOnLobbyByActorNumber[i] = playersNaSala[i].ActorNumber;
          }
+         int[]playersOnLobbyByActorNumberArray = playersOnLobbyByActorNumber.ToArray();
+         photonView.RPC("UpdateAvailablesPlayerIndex", RpcTarget.All, availablesPlayersIndexArray, playersOnLobbyByActorNumberArray);
 
      }
      

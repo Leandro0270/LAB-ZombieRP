@@ -13,6 +13,7 @@ using UnityEngine.UI;
 public class OnlinePlayerSetupMenuController : MonoBehaviour
 {
     private int PlayerIndex;
+    
     [SerializeField] private OnlinePlayerConfigurationManager playerConfigurationManager;
     [SerializeField] private Button startButton;
     [SerializeField] private Button readyClassButton;
@@ -72,7 +73,8 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
     public void OnCancel()
     {
         if (_isReady)
-        {
+        {       
+                playerModelAnimator.SetBool("isReady", false);
                 ClientCustomizationPanel.SetActive(true);
                 gameObject.transform.SetParent(ClientCustomizationPanel.transform);
                 OnlineLobbyReady.SetActive(false);
@@ -135,6 +137,7 @@ public class OnlinePlayerSetupMenuController : MonoBehaviour
         ScOb.pantsIndex = pantsIndex;
         ScOb.Shoes = Shoes[ShoesIndex];
         ScOb.ShoesIndex = ShoesIndex;
+        playerModelAnimator.SetBool("isReady", true);
         playerConfigurationManager.PunSetPlayerSkin(PlayerIndex, ScOb);
         playerConfigurationManager.PunReadyPlayer(PlayerIndex);
             
