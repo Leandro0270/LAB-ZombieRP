@@ -21,6 +21,7 @@ TagManager:
   - PlayersUiSpawn
   - Fire
   - ExplosiveBarrel
+  - OnlinePlayerConfigurationManager
   layers:
   - Default
   - TransparentFX
@@ -39,7 +40,7 @@ TagManager:
   - 
   - 
   - MiniMap
-  - 
+  - PlayerHeadHud
   - 
   - 
   - 

@@ -1,50 +1,62 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
-public class HealthBar_UI : MonoBehaviourPunCallbacks, IPunObservable
+
+namespace UI.Life
 {
-    private Color _color;
-    [SerializeField] private Slider _slider;
-    [SerializeField] private Image _fill;
+    public class HealthBar_UI : MonoBehaviourPunCallbacks, IPunObservable
+    {
+        private Color _playerColor;
+        [SerializeField] private Color downLifeColor;
+        [FormerlySerializedAs("_slider")] [SerializeField] private Slider slider;
+        [FormerlySerializedAs("_fill")] [SerializeField] private Image fill;
 
-    public void setMaxHealth(int health)
-    {
-        _slider.maxValue = health;
-        _slider.value = health;
-    }
-    public void SetHealth(int health)
-    {
-        _slider.value = health;
-    }
-
-    public void setColor(Color color)
-    {
-        _fill.color = color;
-    }
-    
-    
-    public Color getColor()
-    {
-        return _fill.color;
-    }
-    
-    
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
+        public void SetMaxHealth(float health)
         {
-            stream.SendNext(_slider.maxValue);
-            stream.SendNext(_slider.value);
+            slider.maxValue = health;
+            slider.value = health;
         }
-        else
+        public void SetHealth(float health)
         {
-            _slider.maxValue = (float)stream.ReceiveNext();
-            _slider.value = (float)stream.ReceiveNext();
+            slider.value = health;
+        }
+
+        public void RevivePlayer()
+        {
+            fill.color = _playerColor;
+        }
+        public void DownPlayer()
+        {
+            fill.color = downLifeColor;
+        }
+        public void SetupPlayerColor(Color color)
+        {
+            _playerColor = color;
+            fill.color = color;
+        }
+    
+    
+        public Color GetPlayerSetupColor()
+        {
+            return _playerColor;
+        }
+    
+    
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(slider.maxValue);
+                stream.SendNext(slider.value);
+            }
+            else
+            {
+                slider.maxValue = (float)stream.ReceiveNext();
+                slider.value = (float)stream.ReceiveNext();
             
 
+            }
         }
     }
 }

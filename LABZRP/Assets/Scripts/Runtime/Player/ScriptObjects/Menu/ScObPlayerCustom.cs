@@ -14,4 +14,8 @@ public class ScObPlayerCustom : ScriptableObject
     public int pantsIndex;
     public Material Shoes;
     public int ShoesIndex;
+    public GameObject Hair;
+    public int HairIndex;
+    public GameObject Accessory;
+    public int AccessoryIndex;
 }

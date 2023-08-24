@@ -191,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d74829943d4aafd4d8685debf1b088b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 6227790603402903899}
+  EnemyNavMeshAgent: {fileID: 6227790603402903899}
   isOnline: 1
   animationController: {fileID: 28239589519732905}
 --- !u!114 &1168015271937127255

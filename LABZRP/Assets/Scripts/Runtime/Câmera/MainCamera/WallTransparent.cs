@@ -5,13 +5,13 @@ namespace Runtime.Câmera.MainCamera
     public class WallTransparent : MonoBehaviour
     {
         public Material[] newMaterials;
-        private Material[] originalMaterials;
-        private Renderer objectRenderer;
+        private Material[] _originalMaterials;
+        private Renderer _objectRenderer;
 
         private void Start()
         {
-            objectRenderer = GetComponent<Renderer>();
-            originalMaterials = objectRenderer.materials;
+            _objectRenderer = GetComponent<Renderer>();
+            _originalMaterials = _objectRenderer.materials;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -26,13 +26,13 @@ namespace Runtime.Câmera.MainCamera
         {
             if (other.CompareTag("Player"))
             {
-                ChangeMaterials(originalMaterials);
+                ChangeMaterials(_originalMaterials);
             }
         }
 
         private void ChangeMaterials(Material[] materials)
         {
-            objectRenderer.materials = materials;
+            _objectRenderer.materials = materials;
         }
     }
 }

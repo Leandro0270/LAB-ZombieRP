@@ -121,7 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dad0c1b0bb3969848b40eafc8a824010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: {fileID: 6577735662597985229}
+  nickname: {fileID: 6577735662597985229}
   points: {fileID: 2045432376126361533}
   kills: {fileID: 6254092378708002542}
   downs: {fileID: 6716244460668960626}

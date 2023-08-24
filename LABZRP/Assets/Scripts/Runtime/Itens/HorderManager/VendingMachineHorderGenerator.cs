@@ -78,6 +78,8 @@ public class VendingMachineHorderGenerator : MonoBehaviourPunCallbacks
                         NotVisibleSpawnPoints.Add(spawnPoint);
                     }
                 }
+                if(NotVisibleSpawnPoints.Count == 0)
+                    NotVisibleSpawnPoints.AddRange(VendingMachinesSpawnPoints);
                 
                 for (int i = 0; i < currentVendingMachineToSpawn; i++)
                 {

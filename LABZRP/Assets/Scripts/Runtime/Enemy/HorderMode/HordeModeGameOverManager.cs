@@ -3,6 +3,7 @@ using Photon.Pun;
 using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Points;
+using Runtime.UI.GameOverPlayerSlot;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;

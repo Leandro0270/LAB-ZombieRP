@@ -244,6 +244,7 @@ MonoBehaviour:
   throwablePlayerStats: {fileID: 4962438788449095720}
   playerIndicator: {fileID: 8476164450946481546}
   boxCollider: {fileID: 3281851553285552828}
+  customizePlayerInGame: {fileID: 8166761122169303627}
   lessBloodPrefabs:
   - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
   moreBloodPrefabs:
@@ -251,7 +252,6 @@ MonoBehaviour:
   playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
   bloodDispersion: 4
   fireEffect: {fileID: 5102542545529860270}
-  playerHead: {fileID: 6071763367816855199}
   delayBlood: 1.5
   isOnline: 1
 --- !u!114 &4110660743282712486
@@ -1055,12 +1055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a77111fbdeb5db4cb835a3aa81319dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 972973158037288966}
---- !u!1 &6071763367816855199 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
-  m_PrefabInstance: {fileID: 6695203684995679639}
-  m_PrefabAsset: {fileID: 0}
+  animator: {fileID: 972973158037288966}
 --- !u!23 &6584152666732624451 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 555560891962376148, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}

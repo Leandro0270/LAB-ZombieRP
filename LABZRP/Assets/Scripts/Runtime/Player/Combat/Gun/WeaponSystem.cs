@@ -1,6 +1,7 @@
 using System.Collections;
 using Photon.Pun;
 using Runtime.Challenges;
+using Runtime.Player.Animation;
 using Runtime.Player.Combat.Melee;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Combat.Throwables;
@@ -518,19 +519,17 @@ namespace Runtime.Player.Combat.Gun
                         _criticalDamagePercentage = _gunSpecs.criticalDamagePercentage;
                         _criticalChanceIncrementalPerBullet = _gunSpecs.criticalChanceIncrementalPerBullet;
                         _criticalBaseChancePercentage = _gunSpecs.criticalBaseChancePercentage;
-                        StartCoroutine(waitToEnableGun(2));
+                        StartCoroutine(WaitToEnableGun(2));
                         _meleeReady = true;
                         _gunModelStart = Instantiate(_gunSpecs.modelo3d, gunModelSpawnPoint.transform.position,
                                 gunModelSpawnPoint.transform.rotation);
                         _gunModelStart.transform.parent = gunModelSpawnPoint.transform;
-                        _bulletsUI.setIsShotgun(_isShotgun, _bulletsPerShots);
-                        _bulletsUI.setBalasPente(_currentMagazineBullets);
-                        _bulletsUI.setBalasTotal(_currentBulletStorage);
+                        
                 }
-        
-                public IEnumerator waitToEnableGun(float atraso)
+
+                private IEnumerator WaitToEnableGun(float delay)
                 {
-                        yield return new WaitForSeconds(atraso);
+                        yield return new WaitForSeconds(delay);
                         _currentPauseBetweenShots = 0;
                         _readyForShooting = true;
                 }
@@ -755,6 +754,9 @@ namespace Runtime.Player.Combat.Gun
                 public void setBullets_UI(BULLETS_UI bullets)
                 {
                         _bulletsUI = bullets;
+                        _bulletsUI.setIsShotgun(_isShotgun, _bulletsPerShots);
+                        _bulletsUI.setBalasPente(_currentMagazineBullets);
+                        _bulletsUI.setBalasTotal(_currentBulletStorage);
                         _bulletsUI.initializeHud(_magazineSize, _currentBulletStorage, _isShotgun,_bulletsPerShots);
                 }
 

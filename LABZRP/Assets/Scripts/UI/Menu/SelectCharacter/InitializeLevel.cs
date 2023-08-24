@@ -1,128 +1,134 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 using Runtime.Player.Inputs;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class InitializeLevel : MonoBehaviourPunCallbacks
+namespace UI.Menu.SelectCharacter
 {
-    private OnlinePlayerConfigurationManager onlinePlayerConfigurationManager;
-    [SerializeField] private GameObject waitingForPlayersPanel;
-    [SerializeField] private Transform[] playerSpawns;
-    [SerializeField] private MainGameManager mainGameManager;
-    [SerializeField] private GameObject playerPrefab;
-    private List<OnlinePlayerConfiguration> pc;
-    private List<GameObject> players = new List<GameObject>();
-    int photonViewID;
-    private int playersReady = 1;
-    private bool startedGame;
-
-    private void Awake()
+    public class InitializeLevel : MonoBehaviourPunCallbacks
     {
-        GameObject gameObjectonlinePlayerConfigurationManager = GameObject.Find("OnlinePlayerConfigurationManager");
-        if (gameObjectonlinePlayerConfigurationManager != null)
+        private OnlinePlayerConfigurationManager _onlinePlayerConfigurationManager;
+        private PlayerConfigurationManager _playerConfigurationManager;
+        [SerializeField] private GameObject waitingForPlayersPanel;
+        [SerializeField] private Transform[] playerSpawns;
+        [SerializeField] private MainGameManager mainGameManager;
+        [SerializeField] private GameObject playerPrefab;
+        private List<OnlinePlayerConfiguration> _onlinePlayerConfigs = new List<OnlinePlayerConfiguration>();
+        private List<PlayerConfiguration> _localPlayerConfigs = new List<PlayerConfiguration>();
+        private List<PlayerInputHandler> _players = new List<PlayerInputHandler>();
+        private int _photonViewID;
+        private int _playerReady = 0;
+        private bool _isOnline;
+        //private bool _startedGame;
+
+        private void Awake()
         {
-            onlinePlayerConfigurationManager = gameObjectonlinePlayerConfigurationManager.GetComponent<OnlinePlayerConfigurationManager>();
+            if (PhotonNetwork.IsConnected)
+            {        
+                GameObject gameObjectOnlinePlayerConfigurationManager = GameObject.Find("OnlinePlayerConfigurationManager");
+                _onlinePlayerConfigurationManager = gameObjectOnlinePlayerConfigurationManager.GetComponent<OnlinePlayerConfigurationManager>();
+                _onlinePlayerConfigs = _onlinePlayerConfigurationManager.GetPlayerConfigs();
+                _isOnline = true;
+            }
+            else
+            {
+                GameObject gameObjectPlayerConfigurationManager = GameObject.Find("PlayerConfigurationManager");
+                _playerConfigurationManager = gameObjectPlayerConfigurationManager.GetComponent<PlayerConfigurationManager>();
+                _localPlayerConfigs = _playerConfigurationManager.GetPlayerConfigs();
+            }
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+
         }
-        SceneManager.sceneLoaded += OnSceneLoaded;
-
-    }
-
-    private void Update()
-    {
-        if ((startedGame && waitingForPlayersPanel.activeSelf) || !PhotonNetwork.IsConnected)
-            waitingForPlayersPanel.SetActive(false);
         
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        //Verifica se há um instancia de PlayerConfigurationManager
-        if (PlayerConfigurationManager.Instance == null)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            mainGameManager.setIsOnline(true);
-            mainGameManager.setOnlinePlayerConfigurationManager(onlinePlayerConfigurationManager.gameObject);
-            pc = onlinePlayerConfigurationManager.GetPlayerConfigs();
-            mainGameManager.getHordeManager().setIsOnline(true);
-            mainGameManager.getChallengeManager().setIsOnline(true);
-            photonView.RPC("SceneLoaded", RpcTarget.MasterClient);
-        }
-        else
-        {
-            waitingForPlayersPanel.SetActive(false);
-            var playerConfigs = PlayerConfigurationManager.Instance.GetPlayerConfigs().ToArray();
-            for (int i = 0; i < playerConfigs.Length; i++)
+            if (_isOnline)
             {
-                var player = Instantiate(playerPrefab, playerSpawns[i].position, playerSpawns[i].rotation,
-                    gameObject.transform);
-                player.GetComponent<PlayerInputHandler>().InitializePlayer(playerConfigs[i]);
+                mainGameManager.setIsOnline(true);
+                mainGameManager.setOnlinePlayerConfigurationManager(_onlinePlayerConfigurationManager.gameObject);
+                _onlinePlayerConfigs = _onlinePlayerConfigurationManager.GetPlayerConfigs();
+                mainGameManager.getHordeManager().SetIsOnline(true);
+                mainGameManager.getChallengeManager().setIsOnline(true);
+                photonView.RPC("SceneLoaded", RpcTarget.MasterClient);
             }
-            mainGameManager.setPlayerConfigurationManager(PlayerConfigurationManager.Instance.gameObject);
-
-        }
-    }
-
-
-    [PunRPC]
-    public void setConfigsToplayer(int index, int photonId)
-    {
-        GameObject player = PhotonView.Find(photonId).gameObject;
-        players.Add(player);
-        player.GetComponent<PlayerInputHandler>().InitializeOnlinePlayer(pc[index]);
-    }
-
-    [PunRPC]
-    public void instantiatePlayer()
-    {
-        startedGame = true;
-        int playerindex = -1;
-
-        foreach (OnlinePlayerConfiguration NewPlayerConfiguration in pc)
-        {
-            if (NewPlayerConfiguration.player == PhotonNetwork.LocalPlayer)
+            else
             {
-                playerindex = NewPlayerConfiguration.PlayerIndex;
-                break;
+                waitingForPlayersPanel.SetActive(false);
+                mainGameManager.SetPlayerConfigurationManager(_playerConfigurationManager.gameObject);
+                Debug.Log(_localPlayerConfigs.Count);
+                for (int index = 0; index < _localPlayerConfigs.Count; index++)
+                {
+                    Debug.Log(index);
+                    GameObject player = Instantiate(playerPrefab, playerSpawns[index].position,
+                        playerSpawns[index].rotation,
+                        gameObject.transform);
+                    PlayerInputHandler playerInputHandler = player.GetComponent<PlayerInputHandler>();
+                    _players.Add(playerInputHandler);
+                    playerInputHandler.InitializePlayer(_localPlayerConfigs[index]);
+                }
             }
         }
 
-        GameObject player = PhotonNetwork.Instantiate("OnlinePlayerPrefab", playerSpawns[playerindex].position,
-            playerSpawns[playerindex].rotation);
-        photonViewID = player.GetComponent<PhotonView>().ViewID;
-        photonView.RPC("setConfigsToplayer", RpcTarget.All, playerindex, photonViewID);
-    }
 
-    [PunRPC]
-    public void SceneLoaded()
-    {
-        mainGameManager.setIsMasterClient(true);
-        mainGameManager.getHordeManager().setIsMasterClient(true);
-        Debug.Log("SceneLoaded");
-        playersReady++;
-        if (playersReady == pc.Count)
+        [PunRPC]
+        public void SetConfigsToPlayer(int index, int photonId)
         {
-            Debug.Log("mainGameManager é nulo? "+(mainGameManager == null));
+            GameObject player = PhotonView.Find(photonId).gameObject;
+            PlayerInputHandler playerInputHandler = player.GetComponent<PlayerInputHandler>();
+            _players.Add(playerInputHandler);
+            playerInputHandler.InitializeOnlinePlayer(_onlinePlayerConfigs[index]);
+        }
+
+        [PunRPC]
+        public void instantiatePlayer()
+        {
+            //_startedGame = true;
+            int playerindex = -1;
+
+            foreach (OnlinePlayerConfiguration NewPlayerConfiguration in _onlinePlayerConfigs)
+            {
+                if (NewPlayerConfiguration.player == PhotonNetwork.LocalPlayer)
+                {
+                    playerindex = NewPlayerConfiguration.PlayerIndex;
+                    break;
+                }
+            }
+
+            GameObject player = PhotonNetwork.Instantiate("OnlinePlayerPrefab", playerSpawns[playerindex].position,
+                playerSpawns[playerindex].rotation);
+            _photonViewID = player.GetComponent<PhotonView>().ViewID;
+            photonView.RPC("SetConfigsToPlayer", RpcTarget.All, playerindex, _photonViewID);
+        }
+
+        [PunRPC]
+        public void SceneLoaded()
+        {
+            mainGameManager.setIsMasterClient(true);
+            mainGameManager.getHordeManager().setIsMasterClient(true);
+            _playerReady++;
+            if (_playerReady != _onlinePlayerConfigs.Count) return;
+        
             mainGameManager.StartGameHorde();
-            Debug.Log("Players todos ready" + (playersReady == pc.Count));
             photonView.RPC("instantiatePlayer", RpcTarget.All);
         }
+    
+        private void OnDestroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     }
-    
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }

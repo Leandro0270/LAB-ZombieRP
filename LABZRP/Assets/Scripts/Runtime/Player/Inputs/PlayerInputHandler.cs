@@ -3,6 +3,7 @@ using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
 using Runtime.Player.Combat.Throwables;
 using Runtime.Player.Movement;
+using Runtime.Player.PlayerCustomization;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
@@ -59,6 +60,10 @@ namespace Runtime.Player.Inputs
                 onlinePlayerInput.enabled = false;
                 rotate.setIsOnlinePlayer(true);
             }
+            
+            if (customize != null)
+                customize.SetSkin(_onlinePlayerConfig.playerCustom);
+
 
             if (status != null)
             {
@@ -66,16 +71,11 @@ namespace Runtime.Player.Inputs
                 status.SetPlayerStats(_onlinePlayerConfig.playerStats);
             }
 
-            if (attack != null)
-            {
-                attack.setIsOnline(true);
-                attack.InitializeCombatScriptStatus(_onlinePlayerConfig.playerStats.startGun, _onlinePlayerConfig.playerStats.startMeleeSpecs);
-            }
+            if (attack == null) return;
+            attack.setIsOnline(true);
+            attack.InitializeCombatScriptStatus(_onlinePlayerConfig.playerStats.startGun, _onlinePlayerConfig.playerStats.startMeleeSpecs);
 
-            if (customize != null)
-            {
-                customize.SetSkin(_onlinePlayerConfig.playerCustom);
-            }
+
         }
         
     
@@ -84,13 +84,17 @@ namespace Runtime.Player.Inputs
         {
             _playerConfig = pc;
             _playerConfig.Input.onActionTriggered += Input_onActionTriggered;
+            if (customize != null)
+                customize.SetSkin(pc.playerCustom);
+            
             if (status != null)
                 status.SetPlayerStats(pc.playerStats);
+            
+
             if (attack != null)
                 attack.InitializeCombatScriptStatus(pc.playerStats.startGun,pc.playerStats.startMeleeSpecs);
             
-            if (customize != null)
-                customize.SetSkin(pc.playerCustom);
+
         }
 
         private void Input_onActionTriggered(CallbackContext obj)

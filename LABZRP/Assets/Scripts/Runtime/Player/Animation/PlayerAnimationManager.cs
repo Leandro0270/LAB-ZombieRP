@@ -1,52 +1,48 @@
 using Photon.Pun;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class PlayerAnimationManager : MonoBehaviourPunCallbacks
+namespace Runtime.Player.Animation
 {
-    [SerializeField] private Animator _animator;
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerAnimationManager : MonoBehaviourPunCallbacks
     {
-        if(_animator == null)
-            _animator = GetComponent<Animator>();
- 
-    }
+        [FormerlySerializedAs("_animator")] [SerializeField] private Animator animator;
+
+        public void setIsIdle(bool idle)
+        {
+            animator.SetBool("isIdle", idle);
+        }
+        public void setIsWalkingForward(bool walking)
+        {
+            animator.SetBool("isWalkingForward", walking);
+        }
+        public void setIsWalkingBackward(bool walking)
+        {
+            animator.SetBool("isWalkingBackward", walking);
+        }
+        public void setIsWalkingLeft(bool walking)
+        {
+            animator.SetBool("isWalkingLeft", walking);
+        }
+        public void setIsWalkingRight(bool walking)
+        {
+            animator.SetBool("isWalkingRight", walking);
+        }
+        public void setAttack()
+        {
+            animator.SetTrigger("Melee");
+        }
+        public void setDown(bool down)
+        {
+            animator.SetBool("isDown", down);
+        }
     
-    
-    public void setIsIdle(bool idle)
-    {
-        _animator.SetBool("isIdle", idle);
-    }
-    public void setIsWalkingForward(bool walking)
-    {
-        _animator.SetBool("isWalkingForward", walking);
-    }
-    public void setIsWalkingBackward(bool walking)
-    {
-        _animator.SetBool("isWalkingBackward", walking);
-    }
-    public void setIsWalkingLeft(bool walking)
-    {
-        _animator.SetBool("isWalkingLeft", walking);
-    }
-    public void setIsWalkingRight(bool walking)
-    {
-        _animator.SetBool("isWalkingRight", walking);
-    }
-    public void setAttack()
-    {
-        _animator.SetTrigger("Melee");
-    }
-    public void setDown(bool down)
-    {
-        _animator.SetBool("isDown", down);
-    }
-    
-    public void setDowning()
-    {
-        _animator.SetTrigger("Downing");
-    }
+        public void setDowning()
+        {
+            animator.SetTrigger("Downing");
+        }
     
     
     
+    }
 }

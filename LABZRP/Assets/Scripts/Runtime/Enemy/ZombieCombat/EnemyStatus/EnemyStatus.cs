@@ -230,7 +230,7 @@ namespace Runtime.Enemy.ZombieCombat.EnemyStatus
                     enemyNavMeshFollow.setIsAlive(false);
                     if (PhotonNetwork.IsMasterClient || !isOnline)
                     {
-                        _hordeManager.decrementZombiesAlive(gameObject);
+                        _hordeManager.DecrementZombiesAlive(gameObject);
                     }
 
                     if (_isOnExplosiveEvents && !_isSpecial)
@@ -423,7 +423,7 @@ namespace Runtime.Enemy.ZombieCombat.EnemyStatus
             return _isSpecial;
         }
 
-        public float get_life()
+        public float getBaseLife()
         {
             return status.health;
         }

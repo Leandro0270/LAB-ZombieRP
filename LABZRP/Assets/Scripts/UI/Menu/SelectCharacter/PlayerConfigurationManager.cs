@@ -98,15 +98,24 @@ public class PlayerConfigurationManager : MonoBehaviour
     
     public void loadScene(string scene)
     {
-        if (scene == "MainMenu")
+        switch (scene)
         {
-            SceneManager.LoadScene(scene);
-            Destroy(gameObject);
+            case "MainMenu":
+                SceneManager.LoadScene(scene);
+                Destroy(gameObject);
+                break;
+            case "SampleScene":
+                StartCoroutine(loadScene("SampleScene", 3f));
+                break;
         }
-        else
-            SceneManager.LoadScene(scene);
     }
     
+    //corrotina para esperar um tempo antes de dar loadscene, passando o parametro do nome da cena e o tempo
+    public IEnumerator loadScene(string scene, float time)
+    {
+        yield return new WaitForSeconds(time);
+        SceneManager.LoadScene(scene);
+    }
     public void CancelReadyPlayer(int index)
     {
         playerConfigs[index].isReady = false;
@@ -146,11 +155,9 @@ public class PlayerConfigurationManager : MonoBehaviour
     
     public void HandlePlayerJoined(PlayerInput pi)
     {
-        if (!playerConfigs.Any(p => p.PlayerIndex == pi.playerIndex))
-        {
-            pi.transform.SetParent(transform);
-            playerConfigs.Add(new PlayerConfiguration(pi));
-        }
+        if (playerConfigs.Any(p => p.PlayerIndex == pi.playerIndex)) return;
+        pi.transform.SetParent(transform);
+        playerConfigs.Add(new PlayerConfiguration(pi));
     }
 
 }

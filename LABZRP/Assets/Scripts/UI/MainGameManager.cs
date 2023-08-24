@@ -10,6 +10,7 @@ using Runtime.Enemy.ZombieCombat.EnemyStatus;
 using Runtime.Enemy.ZombieCombat.ZombieBehaviour;
 using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.PlayerStatus;
+using UI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -31,6 +32,8 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject onlinePlayerConfigurationManager;
     [SerializeField] private Camera minimapCamera;
     [SerializeField] private PauseMenu pauseMenu;
+    [SerializeField] private List<PlayerHeadUiHandler> availablePlayerHeads;
+    private List<PlayerHeadUiHandler> _usedPlayerHeads;
 
 
     public bool _killAllPlayers = false;
@@ -100,6 +103,20 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         
         
     }
+
+    public PlayerHeadUiHandler getPlayerHeadUiHandler()
+    {
+        _usedPlayerHeads ??= new List<PlayerHeadUiHandler>();
+        if (availablePlayerHeads[0] == null)
+        {
+            Debug.Log("Null");
+            return null;
+        }
+        PlayerHeadUiHandler newPlayerHead = availablePlayerHeads[0];
+        availablePlayerHeads.Remove(newPlayerHead);
+        _usedPlayerHeads.Add(newPlayerHead);
+        return newPlayerHead;
+    }
     public Camera getMiniMapCamera()
     {
         return minimapCamera;
@@ -114,6 +131,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
     {
         players.Add(player);
         alivePlayers.Add(player);
+        hordeManager.AddPlayer(player);
         player.GetComponent<WeaponSystem>().set_challengeManager(challengeManager);
     }
     
@@ -122,7 +140,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         enemies.Add(enemy);
     }
     
-    public void addEnemyOnOnline(int PhotonViewID)
+    public void addEnemyOnline(int PhotonViewID)
     {
         photonView.RPC("addEnemyOnOnlineRPC", RpcTarget.All, PhotonViewID);
     }
@@ -309,7 +327,7 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         gameOverUI.gameOver();
     }
 
-    public void setPlayerConfigurationManager(GameObject playerConfigurationManager)
+    public void SetPlayerConfigurationManager(GameObject playerConfigurationManager)
     {
         this.playerConfigurationManager = playerConfigurationManager;
     }
@@ -341,7 +359,6 @@ public class MainGameManager : MonoBehaviourPunCallbacks
         this.isOnline = isOnline;
         pauseMenu.setIsOnline(isOnline);
         GameObject mainCameraObject = mainCamera.gameObject;
-        mainCameraObject.GetComponent<CameraMovement>().setIsOnline(isOnline);
     }
 
 

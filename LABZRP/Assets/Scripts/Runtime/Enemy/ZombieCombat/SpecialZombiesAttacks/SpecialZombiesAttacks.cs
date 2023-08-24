@@ -62,7 +62,7 @@ namespace Runtime.Enemy.ZombieCombat.SpecialZombiesAttacks
             _players = GameObject.FindGameObjectsWithTag("Player");
             _currentSpecialAttacksDelay = specialAttacksDelay;
             _target = GetTarget(_players);
-            _zombieLife = zombieStatus.get_life();
+            _zombieLife = zombieStatus.getBaseLife();
             enemyNavMeshFollow.setIsSpecial(true);
 
         }

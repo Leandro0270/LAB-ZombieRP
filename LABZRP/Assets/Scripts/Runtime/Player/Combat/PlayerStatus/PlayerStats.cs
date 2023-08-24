@@ -4,11 +4,15 @@ using Photon.Pun;
 using Runtime.Câmera.MainCamera;
 using Runtime.Challenges;
 using Runtime.Enemy.ZombieCombat.EnemyStatus;
+using Runtime.Player.Animation;
 using Runtime.Player.Combat.Gun;
 using Runtime.Player.Combat.Throwables;
 using Runtime.Player.Movement;
+using Runtime.Player.PlayerCustomization;
 using Runtime.Player.Points;
 using Runtime.Player.ScriptObjects.Combat;
+using UI;
+using UI.Life;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
@@ -31,6 +35,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         [SerializeField] private ThrowablePlayerStats throwablePlayerStats;
         [SerializeField] private DecalProjector playerIndicator;
         [SerializeField] private BoxCollider boxCollider;
+        [SerializeField] private CustomizePlayerInGame customizePlayerInGame;
         [Space (20)]
         [Header("=======================REQUIRED PREFABS=======================")]
         [Space (20)]
@@ -44,7 +49,6 @@ namespace Runtime.Player.Combat.PlayerStatus
         [Header("=======================GAMEOBJECTS REFERENCES=======================")]
         [Space (20)]
         [SerializeField] private GameObject fireEffect;
-        [SerializeField] private GameObject playerHead;
         
         
         [Space (20)]
@@ -58,7 +62,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         
         //Required Scripts
         private MainGameManager _mainGameManager;
-        private CameraMovement _camera;
+        private CmGameplay _camera;
         private VendingMachineHorderGenerator _vendingMachineHordeGenerator;
         
         
@@ -101,6 +105,7 @@ namespace Runtime.Player.Combat.PlayerStatus
             
         //instance variables
         private HealthBar_UI _healthBarUi;
+        private PlayerHeadUiHandler _playerHeadUiHandler;
         
         //ChallengeManager Variables
         private bool _challengeInProgress;
@@ -114,15 +119,14 @@ namespace Runtime.Player.Combat.PlayerStatus
 
         private void Start()
         {
-            _InitializePlayerSpecs();
             _mainGameManager = GameObject.Find("GameManager").GetComponent<MainGameManager>();
-
+            _InitializePlayerSpecs();
         }
 
         private void ReduceDownedPlayerLife()
         {
             _downLife -= Time.deltaTime;
-            _healthBarUi.SetHealth((int)_downLife);
+            _healthBarUi.SetHealth(_downLife);
             if(_downLife <= 0)
                 PlayerDeath();
         }
@@ -130,13 +134,14 @@ namespace Runtime.Player.Combat.PlayerStatus
         {
             if(!_setupColorComplete)
             {
-                if(_healthBarUi){
-                    if (_healthBarUi.getColor() != _characterColor)
+                if (_healthBarUi is null) return;
+                
+                    if (_healthBarUi.GetPlayerSetupColor() != _characterColor)
                     {
-                        _healthBarUi.setColor(_characterColor);
+                        _healthBarUi.SetupPlayerColor(_characterColor);
                         _setupColorComplete = true;
                     }
-                }
+                
             }
             
             
@@ -236,7 +241,7 @@ namespace Runtime.Player.Combat.PlayerStatus
 
         public void TakeOnlineDamage(float damage, bool isCritical)
         {
-            photonView.RPC("TakeDamage", RpcTarget.All, damage, isCritical);
+            photonView.RPC("TakeDamage", RpcTarget.Others, damage, isCritical);
         }
 
         [PunRPC]
@@ -265,13 +270,13 @@ namespace Runtime.Player.Combat.PlayerStatus
                 weaponSystem.SetIsIncapacitated(true);
                 characterController.enabled = false;
                 boxCollider.enabled = true;
-                _camera.removePlayer(gameObject);
+                _camera.RemoveTargetPlayer(gameObject.transform);
                 playerMovement.SetCanMove(false);
                 playerRotation.SetCanRotate(false);
                 playerAnimationManager.setDowning();
                 playerAnimationManager.setDown(true);
                 weaponSystem.SetGunVisable(false);
-                _healthBarUi.setColor(Color.gray);
+                _healthBarUi.DownPlayer();
                 reviveScript.addDownCount();
             }
 
@@ -282,62 +287,59 @@ namespace Runtime.Player.Combat.PlayerStatus
         [PunRPC]
         public void TakeDamage(float damage, bool isCritical)
         {
-            if(photonView.IsMine){
+            if (!photonView.IsMine || _isDown || _isDead) return;
             
-                if (!_isDown && !_isDead)
+            
+            if (_challengeInProgress)
+                _challengeManager.setTakedHit(true);
+            
+            _currentLife -= damage;
+            _playerHeadUiHandler.TakeDamage();
+            if (isOnline)
+            {                      
+                photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
+                if (!_isBurning)
                 {
-                    if (_challengeInProgress)
+                    float y = Random.Range(-bloodDispersion, bloodDispersion);
+                    float x = Random.Range(-bloodDispersion, bloodDispersion);
+                    var position = transform.position;
+                    Vector3 spawnPosition = new Vector3(position.x + y, position.y - 2f,
+                        position.z + x);
+                    photonView.RPC("InstantiateBlood", RpcTarget.All, spawnPosition, false, isCritical);
+                }
+            }
+            else
+            {
+                _healthBarUi.SetHealth(_currentLife);
+                if (!_isBurning)
+                {
+                    float y = Random.Range(-bloodDispersion, bloodDispersion);
+                    float x = Random.Range(-bloodDispersion, bloodDispersion);
+                    Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
+                        transform.position.z + x);
+                    if (_delayBloodTimer <= 0)
                     {
-                        _challengeManager.setTakedHit(true);
-                    }
-                    _currentLife -= damage;
-              
-                    if (isOnline)
-                    {                      
-                        photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
-                        if (!_isBurning)
-                        {
-                            float y = Random.Range(-bloodDispersion, bloodDispersion);
-                            float x = Random.Range(-bloodDispersion, bloodDispersion);
-                            var position = transform.position;
-                            Vector3 spawnPosition = new Vector3(position.x + y, position.y - 2f,
-                                position.z + x);
-                            photonView.RPC("InstantiateBlood", RpcTarget.All, spawnPosition, false, isCritical);
-                        }
-                    }
-                    else
-                    {
-                        _healthBarUi.SetHealth((int)_currentLife);
-                        if (!_isBurning)
-                        {
-                            float y = Random.Range(-bloodDispersion, bloodDispersion);
-                            float x = Random.Range(-bloodDispersion, bloodDispersion);
-                            Vector3 spawnPosition = new Vector3(transform.position.x + y, transform.position.y - 2f,
-                                transform.position.z + x);
-                            if (_delayBloodTimer <= 0)
-                            {
-                                int randomLessBloodIndex = Random.Range(0, lessBloodPrefabs.Length);
-                                _delayBloodTimer = delayBlood;
-                                GameObject blood1 = Instantiate(lessBloodPrefabs[randomLessBloodIndex], spawnPosition, lessBloodPrefabs[randomLessBloodIndex].transform.rotation);
-                                Destroy(blood1, 15f);
-                            }
-                        }
-                    }
-                
-
-                    if (_currentLife < 1)
-                    {
-                        DownPlayer(isCritical);
+                        int randomLessBloodIndex = Random.Range(0, lessBloodPrefabs.Length);
+                        _delayBloodTimer = delayBlood;
+                        GameObject blood1 = Instantiate(lessBloodPrefabs[randomLessBloodIndex], spawnPosition, lessBloodPrefabs[randomLessBloodIndex].transform.rotation);
+                        Destroy(blood1, 15f);
                     }
                 }
+            }
+                
+
+            if (_currentLife < 1)
+            {
+                DownPlayer(isCritical);
             }
         }
 
         private void DownPlayer(bool isCritical)
         {
                 _isDown = true;
-                _healthBarUi.setColor(Color.gray);
-                
+                _healthBarUi.DownPlayer();
+                _playerHeadUiHandler.DownPlayer(true);
+
                 if (isOnline)
                 {
                     Vector3 spawnPoint = new Vector3(transform.position.x, transform.position.y - 2f, transform.position.z);
@@ -354,13 +356,13 @@ namespace Runtime.Player.Combat.PlayerStatus
                     weaponSystem.SetIsIncapacitated(true);
                     characterController.enabled = false;
                     boxCollider.enabled = true;
-                    _camera.removePlayer(gameObject);
+                    _camera.RemoveTargetPlayer(gameObject.transform);
                     playerMovement.SetCanMove(false);
                     playerRotation.SetCanRotate(false);
                     playerAnimationManager.setDowning();
                     playerAnimationManager.setDown(true);
                     weaponSystem.SetGunVisable(false);
-                    _healthBarUi.setColor(Color.gray);
+                    _healthBarUi.DownPlayer();
                     reviveScript.addDownCount();
                 }
                 _mainGameManager.removeDownedPlayer(this.gameObject);
@@ -370,27 +372,27 @@ namespace Runtime.Player.Combat.PlayerStatus
     
         public void Revived()
         {
-            if (_isDown && !_isDead)
-            {
-                _mainGameManager.addDownedPlayer(gameObject);
-                _isIncapacitated = false;
-                weaponSystem.SetIsIncapacitated(false);
-                characterController.enabled = true;
-                boxCollider.enabled = false;
-                playerRotation.SetCanRotate(true);
-                playerMovement.SetCanMove(true);
-                _isDown = false;
-                playerAnimationManager.setDown(false);
-                _currentLife = _totalLife * 0.3f;
-                _camera.addPlayer(gameObject);
-                weaponSystem.SetGunVisable(true);
-                _healthBarUi.setColor(_characterColor);
-                if(isOnline)
-                    photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
-                else
-                    _healthBarUi.SetHealth((int)_currentLife);
-            }
-        
+            if (!_isDown || _isDead) return;
+            
+            _playerHeadUiHandler.DownPlayer(false);
+            _mainGameManager.addDownedPlayer(gameObject);
+            _isIncapacitated = false;
+            weaponSystem.SetIsIncapacitated(false);
+            characterController.enabled = true;
+            boxCollider.enabled = false;
+            playerRotation.SetCanRotate(true);
+            playerMovement.SetCanMove(true);
+            _isDown = false;
+            playerAnimationManager.setDown(false);
+            _currentLife = _totalLife * 0.3f;
+            _camera.AddTargetPlayer(gameObject.transform);
+            weaponSystem.SetGunVisable(true);
+            _healthBarUi.RevivePlayer();
+            if(isOnline)
+                photonView.RPC("UpdateHealthBar", RpcTarget.All, _currentLife);
+            else
+                _healthBarUi.SetHealth(_currentLife);
+
         }
     
 
@@ -418,7 +420,7 @@ namespace Runtime.Player.Combat.PlayerStatus
             }
             else
             {
-                _healthBarUi.SetHealth((int)_currentLife);
+                _healthBarUi.SetHealth(_currentLife);
                 if (!_isDown && !_isDead)
                     _currentLife += heal;
                 if (_currentLife > _totalLife)
@@ -429,7 +431,7 @@ namespace Runtime.Player.Combat.PlayerStatus
         [PunRPC]
         public void UpdateHealthBar(float lifeOnline)
         {
-            _healthBarUi.SetHealth((int)lifeOnline);
+            _healthBarUi.SetHealth(lifeOnline);
         }
     
         [PunRPC]
@@ -457,12 +459,14 @@ namespace Runtime.Player.Combat.PlayerStatus
             _vendingMachineHordeGenerator = findHordeManager.GetComponent<VendingMachineHorderGenerator>();
             _challengeManager = findHordeManager.GetComponent<ChallengeManager>();
             _vendingMachineHordeGenerator.addPlayer(gameObject);
-            _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraMovement>();
-            _camera.addPlayer(gameObject);
+            _camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CmGameplay>();
+            _camera.StartMatchAddPlayer(gameObject.transform);
             var findCanvaHud = GameObject.FindGameObjectWithTag("PlayersUiSpawn");
             if (findCanvaHud == null)
                 Debug.LogError("Não foi encontrado o Canvas HUD, posicione ele na cena");
             PlayerUiHandler playerUiConfig;
+            _playerHeadUiHandler = _mainGameManager.getPlayerHeadUiHandler();
+            _playerHeadUiHandler.SetPlayerSkinSpecs(customizePlayerInGame.GetPlayerCustom());
             if (isOnline)
             {
                 if (photonView.IsMine)
@@ -481,7 +485,9 @@ namespace Runtime.Player.Combat.PlayerStatus
             {
                 playerUiConfig =
                     Instantiate(playerUI, findCanvaHud.transform.position,Quaternion.identity).GetComponent<PlayerUiHandler>();
-                playerUiConfig.transform.parent = findCanvaHud.transform;
+                var uiTransform = playerUiConfig.transform;
+                uiTransform.parent = findCanvaHud.transform;
+                uiTransform.localScale = Vector3.one;
                 playerUiConfig.setPlayer(this.gameObject);
             }
             playerIndicator.material = _playerStatus.playerIndicator;
@@ -493,11 +499,12 @@ namespace Runtime.Player.Combat.PlayerStatus
         {
             GameObject child = PhotonView.Find(photonID).gameObject;
             GameObject parent = PhotonView.Find(888).gameObject;
-    
-            if (parent != null && child != null)
-            {
-                child.transform.parent = parent.transform;
-            }
+
+            if (parent == null || child == null) return;
+            
+            var uiTransform = child.transform;
+            uiTransform.parent = parent.transform;
+            uiTransform.localScale = Vector3.one;
         }
     
         public void BurnPlayer(float time)
@@ -635,8 +642,8 @@ namespace Runtime.Player.Combat.PlayerStatus
         public void SetHealthBarUi(HealthBar_UI healthBarUi)
         {
             _healthBarUi = healthBarUi;
-            healthBarUi.setColor(_characterColor);
-            healthBarUi.setMaxHealth((int)_totalLife);
+            healthBarUi.SetupPlayerColor(_characterColor);
+            healthBarUi.SetMaxHealth(_totalLife);
         }
         public bool GetIsDown()
         {
@@ -806,5 +813,9 @@ namespace Runtime.Player.Combat.PlayerStatus
             _challengeInProgress = value;
         }
     
+        public PlayerHeadUiHandler GetPlayerHeadUiHandler()
+        {
+            return _playerHeadUiHandler;
+        }
     }
 }

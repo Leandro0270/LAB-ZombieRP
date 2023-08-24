@@ -212,6 +212,7 @@ MonoBehaviour:
   playerStats: {fileID: 4110660743282712487}
   playerPoints: {fileID: 1921763957812739907}
   playerAnimationManager: {fileID: 7704960691108931514}
+  bulletPoolName: 
   bulletPrefab: {fileID: 2344096171901005769, guid: a80b19d9950ea844e87fe51e6e29247f, type: 3}
   reloadSlider: {fileID: 1319082764598586756, guid: 395280185071d2d49af5fa61f9de9f20, type: 3}
   bulletSpawnPoint: {fileID: 1809394511760243526}
@@ -230,18 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b831c9dbd7f694b81df9f9d8c7156e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  delayBlood: 1.5
-  lessBloodPrefabs:
-  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
-  moreBloodPrefabs:
-  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
   playerAnimationManager: {fileID: 7704960691108931514}
-  fireEffect: {fileID: 5102542545529860270}
-  bloodDispersion: 4
-  totalLife: 0
-  life: 0
-  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
-  playerHead: {fileID: 6071763367816855199}
   characterController: {fileID: 2607379241762753282}
   reviveScript: {fileID: 1534977132509532281}
   playerMovement: {fileID: 4110660743282712486}
@@ -251,6 +241,16 @@ MonoBehaviour:
   throwablePlayerStats: {fileID: 4962438788449095720}
   playerIndicator: {fileID: 8476164450946481546}
   boxCollider: {fileID: 3281851553285552828}
+  customizePlayerInGame: {fileID: 8166761122169303627}
+  lessBloodPrefabs:
+  - {fileID: 4034061662320433648, guid: d9cd1e2cb68560f4f90d59489d1db532, type: 3}
+  moreBloodPrefabs:
+  - {fileID: 1137770108706358507, guid: 4a93bd89ba50d4f48b4795b0cc56c2ed, type: 3}
+  playerUI: {fileID: 3552828503619246009, guid: 868ec71cef40e6043b2b50fa78a7d20f, type: 3}
+  bloodDispersion: 4
+  fireEffect: {fileID: 5102542545529860270}
+  delayBlood: 1.5
+  isOnline: 0
 --- !u!114 &4110660743282712486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4622c425b90ec47bd0acd39227ff8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 4110660743282712487}
+  status: {fileID: 4110660743282712487}
 --- !u!114 &4110660743282712480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -911,6 +911,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 3857840240969519102}
   m_SourcePrefab: {fileID: 100100000, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+--- !u!95 &972973158037288966 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
+  m_PrefabInstance: {fileID: 6695203684995679639}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1751075680383047673 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4276389627041721746, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
@@ -948,12 +953,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a77111fbdeb5db4cb835a3aa81319dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _animator: {fileID: 0}
---- !u!1 &6071763367816855199 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 624057349392186120, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
-  m_PrefabInstance: {fileID: 6695203684995679639}
-  m_PrefabAsset: {fileID: 0}
+  animator: {fileID: 972973158037288966}
 --- !u!23 &6584152666732624451 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 555560891962376148, guid: bf57127ee26851e47b6b596da0f98ba4, type: 3}
