@@ -1,5 +1,5 @@
 
-# Labs Zombies: A Cooperative Survival Game in a ZRP World
+# ZombieRP: A Cooperative Survival Game in a ZRP World
 
 This repository contains the **first Unity project** developed by me during the ZRP Training Program, a 2-hour-per-week initiative designed to foster skills and teamwork in game development. The project was a collaborative effort, with contributions from colleagues who worked on documentation and some 3D models.
 
